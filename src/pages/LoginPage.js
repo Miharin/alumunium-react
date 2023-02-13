@@ -5,7 +5,7 @@ import {
   // Link,
   Container,
   Typography,
-  Card,
+  Paper,
   // Divider,
   // Stack,
   // Button
@@ -77,12 +77,12 @@ export default function LoginPage() {
 
         <Container maxWidth="sm">
           <StyledContent>
-            <Card sx={{ padding: 5 }}>
+            <Paper sx={{ padding: 5 }} elevation={6}>
               <Typography sx={{ mb: 3 }} variant="h4" gutterBottom>
                 Masuk ke Alu Jaya
               </Typography>
               <LoginForm />
-            </Card>
+            </Paper>
           </StyledContent>
         </Container>
       </StyledRoot>
