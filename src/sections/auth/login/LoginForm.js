@@ -1,29 +1,59 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
-import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
+import {
+  // Link,
+  Stack,
+  IconButton,
+  InputAdornment,
+  TextField,
+  // Checkbox
+} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 // components
 import Iconify from '../../../components/iconify';
+import { useAuth } from '../../../store/index';
 
+const auth = getAuth();
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
+  const authState = useAuth((state) => state.auth);
+  const userCred = useAuth((state) => state.userCredentials);
+  const setAuth = useAuth((state) => state.setAuth);
+  const setUserCred = useAuth((state) => state.setUserCred);
+  const setErrorCode = useAuth((state) => state.setErrorCode);
+  const setErrorMessage = useAuth((state) => state.setErrorMessage);
+
+  console.log(userCred);
+
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClick = () => {
-    navigate('/dashboard', { replace: true });
+    signInWithEmailAndPassword(auth, authState.Username, authState.Password)
+      .then((userCredential) => {
+        // Signed in
+        setUserCred(userCredential.user);
+        // ...
+      })
+      .catch((error) => {
+        setErrorCode(error.code);
+        setErrorMessage(error.message);
+      });
+
+    // navigate('/dashboard', { replace: true });
   };
 
   return (
     <>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address" />
+        <TextField name="Username" label="Username" onChange={(event) => setAuth(event.target)} />
 
         <TextField
-          name="password"
+          name="Password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
           InputProps={{
@@ -35,17 +65,11 @@ export default function LoginForm() {
               </InputAdornment>
             ),
           }}
+          onChange={(event) => setAuth(event.target)}
         />
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-        <Checkbox name="remember" label="Remember me" />
-        <Link variant="subtitle2" underline="hover">
-          Forgot password?
-        </Link>
-      </Stack>
-
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick}>
+      <LoadingButton sx={{ mt: 5 }} fullWidth size="large" type="submit" variant="contained" onClick={handleClick}>
         Login
       </LoadingButton>
     </>
