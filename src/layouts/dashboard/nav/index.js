@@ -47,17 +47,21 @@ Nav.propTypes = {
   onCloseNav: PropTypes.func,
 };
 
-const ItemNav = [
+const itemNav = [
   {
     name: 'Dashboard',
     icon: '',
     links: '/dashboard',
     isExpand: false,
+    open: 'openDashboard',
+    toggle: 'toggleDashboard',
   },
   {
     name: 'Users',
     icon: '',
     isExpand: true,
+    open: 'openUsers',
+    toggle: 'toggleUsers',
     Expand: [
       {
         name: 'List Users',
@@ -75,6 +79,8 @@ const ItemNav = [
     name: 'Product',
     icon: '',
     isExpand: true,
+    open: 'openProduct',
+    toggle: 'toggleProduct',
     Expand: [
       {
         name: 'List Holo',
@@ -87,10 +93,38 @@ const ItemNav = [
 
 export default function Nav({ openNav, onCloseNav }) {
   const { pathname } = useLocation();
-  const open = useSidebarConfig((state) => state.open);
-  const toggle = useSidebarConfig((state) => state.toggle);
-
+  const openDashboard = useSidebarConfig((state) => state.openDashboard);
+  const toggleDashboard = useSidebarConfig((state) => state.toggleDashboard);
+  console.log(itemNav.length, itemNav[1].Expand.length);
   const isDesktop = useResponsive('up', 'lg');
+  const ItemNavigateSidebar = () => {
+    for (let itemNavigation = 0; itemNavigation < itemNav.length; itemNavigation++) {
+      return (
+        <List sx={{ pl: 1 }}>
+          <ListItemButton onClick={toggleDashboard}>
+            <ListItemIcon sx={{ minWidth: '0px', mr: 2 }}>
+              <EqualizerRounded />
+            </ListItemIcon>
+            <ListItemText
+              primaryTypographyProps={{ fontSize: '0.9em', fontWeight: openDashboard ? 'medium' : 'small' }}
+              primary="Dashboard"
+            />
+            {openDashboard ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openDashboard} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItemButton sx={{ pl: 4 }}>
+                <ListItemIcon>
+                  <StarBorder />
+                </ListItemIcon>
+                <ListItemText primaryTypographyProps={{ fontSize: '0.9em' }} primary="Starred" />
+              </ListItemButton>
+            </List>
+          </Collapse>
+        </List>
+      );
+    }
+  };
 
   const renderContent = (
     <Scrollbar
@@ -122,28 +156,7 @@ export default function Nav({ openNav, onCloseNav }) {
       </Box>
 
       <NavSection data={navConfig} onClick={onCloseNav} />
-      <List sx={{ pl: 1 }}>
-        <ListItemButton onClick={toggle}>
-          <ListItemIcon sx={{ minWidth: '0px', mr: 2 }}>
-            <EqualizerRounded />
-          </ListItemIcon>
-          <ListItemText
-            primaryTypographyProps={{ fontSize: '0.9em', fontWeight: open ? 'medium' : 'small' }}
-            primary="Dashboard"
-          />
-          {open ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={open} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItemButton sx={{ pl: 4 }}>
-              <ListItemIcon>
-                <StarBorder />
-              </ListItemIcon>
-              <ListItemText primaryTypographyProps={{ fontSize: '0.9em' }} primary="Starred" />
-            </ListItemButton>
-          </List>
-        </Collapse>
-      </List>
+      <ItemNavigateSidebar />
     </Scrollbar>
   );
 
