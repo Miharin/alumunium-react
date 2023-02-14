@@ -3,7 +3,19 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 // @mui
 import { styled, alpha } from '@mui/material/styles';
-import { Box, Link, Button, Drawer, Typography, Avatar, Stack } from '@mui/material';
+import {
+  Box,
+  Link,
+  Drawer,
+  Typography,
+  Avatar,
+  Divider,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+} from '@mui/material';
 // mock
 import account from '_mock/account';
 // hooks
@@ -12,9 +24,10 @@ import useResponsive from 'hooks/useResponsive';
 import Logo from 'components/logo';
 import Scrollbar from 'components/scrollbar';
 import NavSection from 'components/nav-section';
+import { EqualizerRounded, ExpandLess, ExpandMore, StarBorder } from '@mui/icons-material';
+import { useSidebarConfig } from 'store/index';
 //
 import navConfig from './config';
-
 // ----------------------------------------------------------------------
 
 const NAV_WIDTH = 280;
@@ -34,17 +47,50 @@ Nav.propTypes = {
   onCloseNav: PropTypes.func,
 };
 
+const ItemNav = [
+  {
+    name: 'Dashboard',
+    icon: '',
+    links: '/dashboard',
+    isExpand: false,
+  },
+  {
+    name: 'Users',
+    icon: '',
+    isExpand: true,
+    Expand: [
+      {
+        name: 'List Users',
+        icon: '',
+        links: '',
+      },
+      {
+        name: 'Create Users',
+        icon: '',
+        links: '',
+      },
+    ],
+  },
+  {
+    name: 'Product',
+    icon: '',
+    isExpand: true,
+    Expand: [
+      {
+        name: 'List Holo',
+        icon: '',
+        links: '',
+      },
+    ],
+  },
+];
+
 export default function Nav({ openNav, onCloseNav }) {
   const { pathname } = useLocation();
+  const open = useSidebarConfig((state) => state.open);
+  const toggle = useSidebarConfig((state) => state.toggle);
 
   const isDesktop = useResponsive('up', 'lg');
-
-  useEffect(() => {
-    if (openNav) {
-      onCloseNav();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
 
   const renderContent = (
     <Scrollbar
@@ -75,33 +121,29 @@ export default function Nav({ openNav, onCloseNav }) {
         </Link>
       </Box>
 
-      <NavSection data={navConfig} />
-
-      <Box sx={{ flexGrow: 1 }} />
-
-      <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
-        <Stack alignItems="center" spacing={3} sx={{ pt: 5, borderRadius: 2, position: 'relative' }}>
-          <Box
-            component="img"
-            src="/assets/illustrations/illustration_avatar.png"
-            sx={{ width: 100, position: 'absolute', top: -50 }}
+      <NavSection data={navConfig} onClick={onCloseNav} />
+      <List sx={{ pl: 1 }}>
+        <ListItemButton onClick={toggle}>
+          <ListItemIcon sx={{ minWidth: '0px', mr: 2 }}>
+            <EqualizerRounded />
+          </ListItemIcon>
+          <ListItemText
+            primaryTypographyProps={{ fontSize: '0.9em', fontWeight: open ? 'medium' : 'small' }}
+            primary="Dashboard"
           />
-
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography gutterBottom variant="h6">
-              Get more?
-            </Typography>
-
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              From only $69
-            </Typography>
-          </Box>
-
-          <Button href="https://material-ui.com/store/items/minimal-dashboard/" target="_blank" variant="contained">
-            Upgrade to Pro
-          </Button>
-        </Stack>
-      </Box>
+          {open ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItemButton sx={{ pl: 4 }}>
+              <ListItemIcon>
+                <StarBorder />
+              </ListItemIcon>
+              <ListItemText primaryTypographyProps={{ fontSize: '0.9em' }} primary="Starred" />
+            </ListItemButton>
+          </List>
+        </Collapse>
+      </List>
     </Scrollbar>
   );
 
@@ -110,18 +152,19 @@ export default function Nav({ openNav, onCloseNav }) {
       component="nav"
       sx={{
         flexShrink: { lg: 0 },
-        width: { lg: NAV_WIDTH },
+        // width: { lg: NAV_WIDTH },
       }}
     >
       {isDesktop ? (
         <Drawer
-          open
-          variant="permanent"
+          open={openNav}
+          onClose={onCloseNav}
+          ModalProps={{
+            keepMounted: true,
+          }}
           PaperProps={{
             sx: {
               width: NAV_WIDTH,
-              bgcolor: 'background.default',
-              borderRightStyle: 'dashed',
             },
           }}
         >

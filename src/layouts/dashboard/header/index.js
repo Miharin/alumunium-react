@@ -24,7 +24,7 @@ const StyledRoot = styled(AppBar)(({ theme }) => ({
   ...bgBlur({ color: theme.palette.background.default }),
   boxShadow: 'none',
   [theme.breakpoints.up('lg')]: {
-    width: `calc(100% - ${NAV_WIDTH + 1}px)`,
+    // width: `calc(100% - ${NAV_WIDTH + 1}px)`,
   },
 }));
 
@@ -51,7 +51,7 @@ export default function Header({ onOpenNav }) {
           sx={{
             mr: 1,
             color: 'text.primary',
-            display: { lg: 'none' },
+            // display: { lg: 'none' },
           }}
         >
           <Iconify icon="eva:menu-2-fill" />
