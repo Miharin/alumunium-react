@@ -47,84 +47,60 @@ Nav.propTypes = {
   onCloseNav: PropTypes.func,
 };
 
-const itemNav = [
-  {
-    name: 'Dashboard',
-    icon: '',
-    links: '/dashboard',
-    isExpand: false,
-    open: 'openDashboard',
-    toggle: 'toggleDashboard',
-  },
-  {
-    name: 'Users',
-    icon: '',
-    isExpand: true,
-    open: 'openUsers',
-    toggle: 'toggleUsers',
-    Expand: [
-      {
-        name: 'List Users',
-        icon: '',
-        links: '',
-      },
-      {
-        name: 'Create Users',
-        icon: '',
-        links: '',
-      },
-    ],
-  },
-  {
-    name: 'Product',
-    icon: '',
-    isExpand: true,
-    open: 'openProduct',
-    toggle: 'toggleProduct',
-    Expand: [
-      {
-        name: 'List Holo',
-        icon: '',
-        links: '',
-      },
-    ],
-  },
-];
-
 export default function Nav({ openNav, onCloseNav }) {
   const { pathname } = useLocation();
+  const isDesktop = useResponsive('up', 'lg');
+
   const openDashboard = useSidebarConfig((state) => state.openDashboard);
   const toggleDashboard = useSidebarConfig((state) => state.toggleDashboard);
-  console.log(itemNav.length, itemNav[1].Expand.length);
-  const isDesktop = useResponsive('up', 'lg');
-  const ItemNavigateSidebar = () => {
-    for (let itemNavigation = 0; itemNavigation < itemNav.length; itemNavigation++) {
-      return (
-        <List sx={{ pl: 1 }}>
-          <ListItemButton onClick={toggleDashboard}>
-            <ListItemIcon sx={{ minWidth: '0px', mr: 2 }}>
-              <EqualizerRounded />
-            </ListItemIcon>
-            <ListItemText
-              primaryTypographyProps={{ fontSize: '0.9em', fontWeight: openDashboard ? 'medium' : 'small' }}
-              primary="Dashboard"
-            />
-            {openDashboard ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-          <Collapse in={openDashboard} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItemButton sx={{ pl: 4 }}>
-                <ListItemIcon>
-                  <StarBorder />
-                </ListItemIcon>
-                <ListItemText primaryTypographyProps={{ fontSize: '0.9em' }} primary="Starred" />
-              </ListItemButton>
-            </List>
-          </Collapse>
-        </List>
-      );
-    }
-  };
+  const openUsers = useSidebarConfig((state) => state.openUsers);
+  const toggleUsers = useSidebarConfig((state) => state.toggleUsers);
+  const openProducts = useSidebarConfig((state) => state.openProducts);
+  const toggleProducts = useSidebarConfig((state) => state.toggleProducts);
+
+  const itemNav = [
+    {
+      name: 'Dashboard',
+      icon: '',
+      links: '/dashboard',
+      isExpand: false,
+      open: openDashboard,
+      toggle: toggleDashboard,
+    },
+    {
+      name: 'Users',
+      icon: '',
+      isExpand: true,
+      open: openUsers,
+      toggle: toggleUsers,
+      Expand: [
+        {
+          name: 'List Users',
+          icon: '',
+          links: '',
+        },
+        {
+          name: 'Create Users',
+          icon: '',
+          links: '',
+        },
+      ],
+    },
+    {
+      name: 'Products',
+      icon: '',
+      isExpand: true,
+      open: openProducts,
+      toggle: toggleProducts,
+      Expand: [
+        {
+          name: 'List Holo',
+          icon: '',
+          links: '',
+        },
+      ],
+    },
+  ];
 
   const renderContent = (
     <Scrollbar
@@ -156,7 +132,32 @@ export default function Nav({ openNav, onCloseNav }) {
       </Box>
 
       <NavSection data={navConfig} onClick={onCloseNav} />
-      <ItemNavigateSidebar />
+      {itemNav.map((object, i) => {
+        return (
+          <List sx={{ pl: 1 }} key={i}>
+            <ListItemButton onClick={object.toggle}>
+              <ListItemIcon sx={{ minWidth: '0px', mr: 2 }}>
+                <EqualizerRounded />
+              </ListItemIcon>
+              <ListItemText
+                primaryTypographyProps={{ fontSize: '0.9em', fontWeight: object.open ? 'medium' : 'small' }}
+                primary={object.name}
+              />
+              {object.open ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            <Collapse in={object.open} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemIcon>
+                    <StarBorder />
+                  </ListItemIcon>
+                  <ListItemText primaryTypographyProps={{ fontSize: '0.9em' }} primary="Starred" />
+                </ListItemButton>
+              </List>
+            </Collapse>
+          </List>
+        );
+      })}
     </Scrollbar>
   );
 
