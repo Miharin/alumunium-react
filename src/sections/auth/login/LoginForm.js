@@ -12,8 +12,8 @@ import {
 import { LoadingButton } from '@mui/lab';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 // components
-import Iconify from '../../../components/iconify';
-import { useAuth } from '../../../store/index';
+import Iconify from 'components/iconify';
+import { useAuth } from 'store/index';
 
 const auth = getAuth();
 // ----------------------------------------------------------------------

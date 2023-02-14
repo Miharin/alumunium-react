@@ -1,1 +1,1 @@
-export { authLogin as useAuth } from './auth/index';
+export { authLogin as useAuth } from 'store/auth/index';

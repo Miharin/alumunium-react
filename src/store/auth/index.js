@@ -3,7 +3,7 @@ import { getAuth } from 'firebase/auth';
 // -------------------------------Database---------------------------------
 import { create } from 'zustand';
 // -------------------------------Config---------------------------------
-import { firebaseConfig } from '../../config/firebaseConfig';
+import { firebaseConfig } from 'config/firebaseConfig';
 // -------------------------------Config---------------------------------
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);

@@ -2,7 +2,7 @@
 import { alpha, useTheme } from '@mui/material/styles';
 import { GlobalStyles } from '@mui/material';
 // utils
-import { bgBlur } from '../../utils/cssStyles';
+import { bgBlur } from 'utils/cssStyles';
 
 // ----------------------------------------------------------------------
 
