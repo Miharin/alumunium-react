@@ -1,6 +1,4 @@
 import PropTypes from 'prop-types';
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 // @mui
 import { styled, alpha } from '@mui/material/styles';
 import {
@@ -9,7 +7,7 @@ import {
   Drawer,
   Typography,
   Avatar,
-  Divider,
+  // Divider,
   List,
   ListItemButton,
   ListItemIcon,
@@ -24,7 +22,16 @@ import useResponsive from 'hooks/useResponsive';
 import Logo from 'components/logo';
 import Scrollbar from 'components/scrollbar';
 import NavSection from 'components/nav-section';
-import { EqualizerRounded, ExpandLess, ExpandMore, StarBorder } from '@mui/icons-material';
+import {
+  EqualizerRounded,
+  ExpandLess,
+  ExpandMore,
+  PeopleRounded,
+  FormatListBulletedRounded,
+  ManageAccountsRounded,
+  DashboardRounded,
+  CropSquareRounded,
+} from '@mui/icons-material';
 import { useSidebarConfig } from 'store/index';
 //
 import navConfig from './config';
@@ -48,7 +55,6 @@ Nav.propTypes = {
 };
 
 export default function Nav({ openNav, onCloseNav }) {
-  const { pathname } = useLocation();
   const isDesktop = useResponsive('up', 'lg');
 
   const openDashboard = useSidebarConfig((state) => state.openDashboard);
@@ -61,41 +67,44 @@ export default function Nav({ openNav, onCloseNav }) {
   const itemNav = [
     {
       name: 'Dashboard',
-      icon: '',
-      links: '/dashboard',
+      icon: <EqualizerRounded />,
+      links: '/dashboard/app',
       isExpand: false,
       open: openDashboard,
       toggle: toggleDashboard,
     },
     {
       name: 'Users',
-      icon: '',
+      icon: <PeopleRounded />,
       isExpand: true,
       open: openUsers,
       toggle: toggleUsers,
       Expand: [
         {
+          id: 'U1',
           name: 'List Users',
-          icon: '',
-          links: '',
+          icon: <FormatListBulletedRounded />,
+          links: '/dashboard/user',
         },
         {
-          name: 'Create Users',
-          icon: '',
+          id: 'U2',
+          name: 'Manage Users',
+          icon: <ManageAccountsRounded />,
           links: '',
         },
       ],
     },
     {
       name: 'Products',
-      icon: '',
+      icon: <DashboardRounded />,
       isExpand: true,
       open: openProducts,
       toggle: toggleProducts,
       Expand: [
         {
+          id: 'P1',
           name: 'List Holo',
-          icon: '',
+          icon: <CropSquareRounded />,
           links: '',
         },
       ],
@@ -132,32 +141,38 @@ export default function Nav({ openNav, onCloseNav }) {
       </Box>
 
       <NavSection data={navConfig} onClick={onCloseNav} />
-      {itemNav.map((object, i) => {
-        return (
-          <List sx={{ pl: 1 }} key={i}>
-            <ListItemButton onClick={object.toggle}>
-              <ListItemIcon sx={{ minWidth: '0px', mr: 2 }}>
-                <EqualizerRounded />
-              </ListItemIcon>
-              <ListItemText
-                primaryTypographyProps={{ fontSize: '0.9em', fontWeight: object.open ? 'medium' : 'small' }}
-                primary={object.name}
-              />
-              {object.open ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
+      {itemNav.map((object, i) => (
+        <List sx={{ pl: 1 }} key={i}>
+          <ListItemButton onClick={object.isExpand ? object.toggle : null}>
+            <ListItemIcon sx={{ minWidth: '0px', mr: 2, color: '#737373' }}>{object.icon}</ListItemIcon>
+            <ListItemText
+              primaryTypographyProps={{ fontSize: '0.9em', fontWeight: object.open ? 'medium' : 'small' }}
+              primary={object.name}
+            />
+            {object.isExpand ? object.open ? <ExpandLess /> : <ExpandMore /> : <></>}
+          </ListItemButton>
+          {object.isExpand ? (
             <Collapse in={object.open} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                <ListItemButton sx={{ pl: 4 }}>
-                  <ListItemIcon>
-                    <StarBorder />
-                  </ListItemIcon>
-                  <ListItemText primaryTypographyProps={{ fontSize: '0.9em' }} primary="Starred" />
-                </ListItemButton>
+                {(() => {
+                  const ListItemChild = [];
+                  for (let i = 0; i < object.Expand.length; i++) {
+                    ListItemChild.push(
+                      <ListItemButton key={object.Expand[i].id} sx={{ pl: 3 }}>
+                        <ListItemIcon sx={{ minWidth: '0px', mr: 2, color: '#737373' }}>
+                          {object.Expand[i].icon}
+                        </ListItemIcon>
+                        <ListItemText primaryTypographyProps={{ fontSize: '0.9em' }} primary={object.Expand[i].name} />
+                      </ListItemButton>
+                    );
+                  }
+                  return ListItemChild;
+                })()}
               </List>
             </Collapse>
-          </List>
-        );
-      })}
+          ) : null}
+        </List>
+      ))}
     </Scrollbar>
   );
 
