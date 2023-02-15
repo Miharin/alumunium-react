@@ -1,4 +1,6 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { NavLink as RouterLink } from 'react-router-dom';
 // @mui
 import { styled, alpha } from '@mui/material/styles';
 import {
@@ -56,19 +58,21 @@ Nav.propTypes = {
 
 export default function Nav({ openNav, onCloseNav }) {
   const isDesktop = useResponsive('up', 'lg');
-
   const openDashboard = useSidebarConfig((state) => state.openDashboard);
   const toggleDashboard = useSidebarConfig((state) => state.toggleDashboard);
   const openUsers = useSidebarConfig((state) => state.openUsers);
   const toggleUsers = useSidebarConfig((state) => state.toggleUsers);
   const openProducts = useSidebarConfig((state) => state.openProducts);
   const toggleProducts = useSidebarConfig((state) => state.toggleProducts);
+  const selectedIndex = useSidebarConfig((state) => state.selected);
+  const setSelectedIndex = useSidebarConfig((state) => state.setSelected);
 
   const itemNav = [
     {
       name: 'Dashboard',
       icon: <EqualizerRounded />,
       links: '/dashboard/app',
+      selected: 0,
       isExpand: false,
       open: openDashboard,
       toggle: toggleDashboard,
@@ -83,12 +87,14 @@ export default function Nav({ openNav, onCloseNav }) {
         {
           id: 'U1',
           name: 'List Users',
+          selected: 1,
           icon: <FormatListBulletedRounded />,
           links: '/dashboard/user',
         },
         {
           id: 'U2',
           name: 'Manage Users',
+          selected: 2,
           icon: <ManageAccountsRounded />,
           links: '',
         },
@@ -104,6 +110,7 @@ export default function Nav({ openNav, onCloseNav }) {
         {
           id: 'P1',
           name: 'List Holo',
+          selected: 3,
           icon: <CropSquareRounded />,
           links: '',
         },
@@ -140,10 +147,15 @@ export default function Nav({ openNav, onCloseNav }) {
         </Link>
       </Box>
 
-      <NavSection data={navConfig} onClick={onCloseNav} />
+      {/* <NavSection data={navConfig} onClick={onCloseNav} /> */}
       {itemNav.map((object, i) => (
         <List sx={{ pl: 1 }} key={i}>
-          <ListItemButton onClick={object.isExpand ? object.toggle : null}>
+          <ListItemButton
+            component={RouterLink}
+            selected={selectedIndex === object.selected}
+            onClick={object.isExpand ? object.toggle : () => setSelectedIndex(object.selected)}
+            to={object.links}
+          >
             <ListItemIcon sx={{ minWidth: '0px', mr: 2, color: '#737373' }}>{object.icon}</ListItemIcon>
             <ListItemText
               primaryTypographyProps={{ fontSize: '0.9em', fontWeight: object.open ? 'medium' : 'small' }}
@@ -158,7 +170,14 @@ export default function Nav({ openNav, onCloseNav }) {
                   const ListItemChild = [];
                   for (let i = 0; i < object.Expand.length; i++) {
                     ListItemChild.push(
-                      <ListItemButton key={object.Expand[i].id} sx={{ pl: 3 }}>
+                      <ListItemButton
+                        key={object.Expand[i].id}
+                        sx={{ pl: 3 }}
+                        component={RouterLink}
+                        selected={selectedIndex === object.Expand[i].selected}
+                        onClick={() => setSelectedIndex(object.Expand[i].selected)}
+                        to={object.Expand[i].links}
+                      >
                         <ListItemIcon sx={{ minWidth: '0px', mr: 2, color: '#737373' }}>
                           {object.Expand[i].icon}
                         </ListItemIcon>
