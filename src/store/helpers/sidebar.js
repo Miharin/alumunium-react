@@ -5,7 +5,7 @@ export const sidebarConfig = create(
   persist(
     (set) => ({
       nameRoutes: '',
-      selected: 0,
+      selected: null,
       setSelected: (selectedNumber, nameRoutesIndex) =>
         set(() => ({ selected: selectedNumber, nameRoutes: nameRoutesIndex })),
       openDashboard: false,
