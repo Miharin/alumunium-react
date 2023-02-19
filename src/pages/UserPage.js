@@ -2,6 +2,11 @@ import { Helmet } from 'react-helmet-async';
 import { useEffect } from 'react';
 // @mui
 import {
+  Slide,
+  TextField,
+  InputAdornment,
+  ClickAwayListener,
+  Button,
   Box,
   Paper,
   Table,
@@ -12,8 +17,18 @@ import {
   TablePagination,
   TableRow,
   TableSortLabel,
+  IconButton,
 } from '@mui/material';
-import { ModeEditRounded, DeleteForeverRounded } from '@mui/icons-material';
+import {
+  ModeEditRounded,
+  DeleteForeverRounded,
+  Search,
+  CheckCircleOutlineRounded,
+  DoDisturbRounded,
+  AddRounded,
+  Visibility,
+  VisibilityOff,
+} from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 // components
 // store
@@ -21,20 +36,17 @@ import { useDataUsers } from 'store/index';
 // ----------------------------------------------------------------------
 
 const columns = [
-  { id: 'name', label: 'Name', minWidth: 200, align: 'center' },
-  { id: 'role', label: 'Role', minWidth: 200, align: 'center' },
-  { id: 'status', label: 'Status', minWidth: 200, align: 'center' },
-  { id: 'shift', label: 'Shift', minWidth: 200, align: 'center' },
+  { id: 'name', label: 'Name', minWidth: 150, align: 'left' },
+  { id: 'role', label: 'Role', minWidth: 150, align: 'left' },
+  { id: 'status', label: 'Status', minWidth: 150, align: 'left' },
+  { id: 'shift', label: 'Shift', minWidth: 150, align: 'left' },
+  { id: 'username', label: 'Username', minWidth: 150, align: 'left' },
+  { id: 'password', label: 'Password', minWidth: 150, align: 'left' },
   {
     id: 'action',
     label: 'Action',
-    minWidth: 200,
-    align: 'center',
-    renderCell: () => (
-      <>
-        <ModeEditRounded sx={{ color: '#737373', mr: 2 }} /> <DeleteForeverRounded sx={{ color: '#737373' }} />
-      </>
-    ),
+    minWidth: 150,
+    align: 'left',
   },
 ];
 
@@ -47,7 +59,6 @@ const getComparator = (order, orderBy, descendingComparator) => {
 
 const stableSort = (array, comparator) => {
   const stabilizedThis = array.map((el, index) => [el, index]);
-  console.log(stabilizedThis);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) {
@@ -73,19 +84,69 @@ export default function UserPage() {
   const order = useDataUsers((state) => state.order);
   const orderBy = useDataUsers((state) => state.orderBy);
   const descendingComparator = useDataUsers((state) => state.descendingComparator);
+  const search = useDataUsers((state) => state.search);
+  const setSearch = useDataUsers((state) => state.setSearch);
+  const showSearch = useDataUsers((state) => state.showSearch);
+  const setShowSearch = useDataUsers((state) => state.setShowSearch);
+  const editMode = useDataUsers((state) => state.editMode);
+  const addUserMode = useDataUsers((state) => state.addUserMode);
+  const setAddUserMode = useDataUsers((state) => state.setAddUserMode);
+  const deleteAddUserNew = useDataUsers((state) => state.deleteAddUserNew);
+  const showPassword = useDataUsers((state) => state.showPassword);
+  const setShowPassword = useDataUsers((state) => state.setShowPassword);
+  const userId = useDataUsers((state) => state.editUserId);
+  const setUserId = useDataUsers((state) => state.setUserId);
   const rows = users;
+  const filtered = useDataUsers((state) => state.filtered);
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property, order, orderBy);
   };
-
+  console.log(userId);
+  const handleEdit = (event) => setUserId(event);
   return (
     <>
       <Helmet>
         <title> User | Alu Jaya </title>
       </Helmet>
       <Paper sx={{ mx: 5, alignItems: 'center' }} elevation={5}>
+        {showSearch ? (
+          <ClickAwayListener onClickAway={setShowSearch}>
+            <Slide direction="right" in={showSearch} mountOnEnter unmountOnExit>
+              <TextField
+                sx={{ m: 2 }}
+                name="Search"
+                label="Search"
+                variant="outlined"
+                onChange={(e) => setSearch(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                }}
+                onChange={(event) => setSearch(event.target.value)}
+              />
+            </Slide>
+          </ClickAwayListener>
+        ) : (
+          <Slide direction="left" in={!showSearch} mountOnEnter unmountOnExit>
+            <Search sx={{ m: 4 }} onClick={setShowSearch} />
+          </Slide>
+        )}
         <TableContainer>
           <Table aria-label="Sticky Table">
+            <caption>
+              <Button
+                disabled={addUserMode}
+                variant="text"
+                fullWidth
+                startIcon={<AddRounded />}
+                onClick={setAddUserMode}
+              >
+                Add Users
+              </Button>
+            </caption>
             <TableHead>
               <TableRow>
                 {columns.map((column) => (
@@ -113,6 +174,7 @@ export default function UserPage() {
             </TableHead>
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy, descendingComparator))
+                .filter((row) => filtered(row, search))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
@@ -120,7 +182,59 @@ export default function UserPage() {
                       const value = row[column.id];
                       return (
                         <TableCell key={column.id} id={index} align={column.align}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
+                          {editMode === true ? (
+                            column.id === 'action' ? (
+                              <>
+                                <IconButton>
+                                  <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
+                                </IconButton>
+                                <IconButton>
+                                  <DoDisturbRounded sx={{ color: '#737373' }} />
+                                </IconButton>
+                              </>
+                            ) : userId === row.id ? (
+                              <TextField name={column.id} label={column.label} value={value} />
+                            ) : (
+                              value
+                            )
+                          ) : column.id === 'action' &&
+                            editMode === false &&
+                            addUserMode === false &&
+                            userId !== row.id ? (
+                            <>
+                              {showPassword ? (
+                                <IconButton onClick={setShowPassword}>
+                                  <VisibilityOff sx={{ color: '#737373' }} />
+                                </IconButton>
+                              ) : (
+                                <IconButton onClick={setShowPassword}>
+                                  <Visibility sx={{ color: '#737373' }} />
+                                </IconButton>
+                              )}
+                              <IconButton onClick={() => handleEdit(row.id)}>
+                                <ModeEditRounded sx={{ color: '#737373' }} />
+                              </IconButton>
+                              <IconButton>
+                                <DeleteForeverRounded sx={{ color: '#737373' }} />
+                              </IconButton>
+                            </>
+                          ) : column.id === 'password' && addUserMode === false && showPassword === false ? (
+                            '********'
+                          ) : (
+                            value
+                          )}
+                          {addUserMode === true && value === '' ? (
+                            <TextField name={column.id} label={column.label} sx={{ width: column.minWidth }} />
+                          ) : addUserMode === true && column.id === 'action' && row.id === '' ? (
+                            <>
+                              <IconButton>
+                                <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
+                              </IconButton>
+                              <IconButton onClick={deleteAddUserNew}>
+                                <DoDisturbRounded sx={{ color: '#737373' }} />
+                              </IconButton>
+                            </>
+                          ) : null}
                         </TableCell>
                       );
                     })}

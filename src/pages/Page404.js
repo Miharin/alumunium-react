@@ -15,14 +15,13 @@ const StyledContent = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   padding: theme.spacing(12, 0),
 }));
-
 // ----------------------------------------------------------------------
 
 export default function Page404() {
   return (
     <>
       <Helmet>
-        <title> 404 Page Not Found | Minimal UI </title>
+        <title> 404 Page Not Found | Alu Jaya </title>
       </Helmet>
 
       <Container>
@@ -42,7 +41,7 @@ export default function Page404() {
             sx={{ height: 260, mx: 'auto', my: { xs: 5, sm: 10 } }}
           />
 
-          <Button to="/" size="large" variant="contained" component={RouterLink}>
+          <Button to="/dashboard" size="large" variant="contained" component={RouterLink}>
             Go to Home
           </Button>
         </StyledContent>

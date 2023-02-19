@@ -1,5 +1,5 @@
 import { useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 // @mui
 import {
   // Link,
@@ -20,15 +20,12 @@ const auth = getAuth();
 
 export default function LoginForm() {
   const authState = useAuth((state) => state.auth);
-  const userCred = useAuth((state) => state.userCredentials);
   const setAuth = useAuth((state) => state.setAuth);
   const setUserCred = useAuth((state) => state.setUserCred);
   const setErrorCode = useAuth((state) => state.setErrorCode);
   const setErrorMessage = useAuth((state) => state.setErrorMessage);
 
-  console.log(userCred);
-
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -37,6 +34,7 @@ export default function LoginForm() {
       .then((userCredential) => {
         // Signed in
         setUserCred(userCredential.user);
+        navigate('/dashboard', { replace: true });
         // ...
       })
       .catch((error) => {

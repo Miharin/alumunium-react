@@ -16,7 +16,7 @@ export const sidebarConfig = create(
       toggleProducts: () => set((state) => ({ openProducts: !state.openProducts })),
     }),
     {
-      name: 'sidebare-storage',
+      name: 'sidebar-storage',
       storage: createJSONStorage(() => sessionStorage),
     }
   )
