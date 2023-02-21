@@ -40,8 +40,8 @@ import { useDataUsers } from 'store/index';
 // ----------------------------------------------------------------------
 
 const columns = [
-  { id: 'name', label: 'Name', minWidth: 150, align: 'left' },
-  { id: 'role', label: 'Role', minWidth: 150, align: 'left' },
+  { id: 'name', label: 'Nama', minWidth: 150, align: 'left' },
+  { id: 'role', label: 'Pekerjaan', minWidth: 150, align: 'left' },
   { id: 'status', label: 'Status', minWidth: 150, align: 'left' },
   { id: 'shift', label: 'Shift', minWidth: 150, align: 'left' },
   { id: 'username', label: 'Username', minWidth: 150, align: 'left' },

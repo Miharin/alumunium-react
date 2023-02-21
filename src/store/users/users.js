@@ -32,7 +32,6 @@ export const dataUsers = create((set, get) => ({
     const editUserFinal = get().editUser;
     getUser.forEach(async (user) => {
       if (user.id === userId) {
-        set((state) => ({ editUser: { ...state.editUser, id: userId } }));
         if (editUserFinal.name === '') {
           delete editUserFinal.name;
         }
@@ -51,7 +50,6 @@ export const dataUsers = create((set, get) => ({
         if (editUserFinal.password === '') {
           delete editUserFinal.password;
         }
-
         const updateDocument = doc(db, 'users', userId);
         set((state) => ({ loading: !state.loading }));
         await updateDoc(updateDocument, editUserFinal);
