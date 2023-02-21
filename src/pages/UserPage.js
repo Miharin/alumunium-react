@@ -107,6 +107,7 @@ export default function UserPage() {
   const setAddUser = useDataUsers((state) => state.setAddUser);
   const addUserIcon = useDataUsers((state) => state.addUserIcon);
   const setFinalAddUser = useDataUsers((state) => state.setFinalAddUser);
+  const setDeleteUser = useDataUsers((state) => state.setDeleteUser);
   const rows = users;
   const filtered = useDataUsers((state) => state.filtered);
   const createSortHandler = (property) => (event) => {
@@ -247,7 +248,7 @@ export default function UserPage() {
                                   <ModeEditRounded sx={{ color: '#737373' }} />
                                 </Tooltip>
                               </IconButton>
-                              <IconButton>
+                              <IconButton onClick={() => setDeleteUser(row.id)}>
                                 <Tooltip title="Delete User">
                                   <DeleteForeverRounded sx={{ color: '#737373' }} />
                                 </Tooltip>
@@ -269,11 +270,6 @@ export default function UserPage() {
                           ) : column.id === 'password' &&
                             addUserMode === true &&
                             showPassword === false &&
-                            userId !== row.id ? (
-                            '********'
-                          ) : column.id === 'password' &&
-                            addUserMode === true &&
-                            showPassword === true &&
                             userId !== row.id ? (
                             '********'
                           ) : (

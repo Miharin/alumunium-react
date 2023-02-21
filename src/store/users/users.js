@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { sha256 } from 'crypto-hash';
-import { collection, onSnapshot, updateDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, onSnapshot, updateDoc, doc, addDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { db } from 'config/firebaseConfig';
 
 export const dataUsers = create((set, get) => ({
@@ -75,7 +75,6 @@ export const dataUsers = create((set, get) => ({
   },
   setFinalAddUser: async () => {
     const userAddFinal = get().addUser;
-    console.log(userAddFinal);
     delete userAddFinal.id;
     set((state) => ({ addUser: { ...state.addUser, timeStamp: serverTimestamp() }, loading: !state.loading }));
     await addDoc(collection(db, 'users'), userAddFinal);
@@ -94,17 +93,13 @@ export const dataUsers = create((set, get) => ({
     }));
   },
   setShowPassword: (id) => {
-    console.log(id);
     set((state) =>
       id === null || undefined
         ? { showPassword: !state.showPassword, editUserId: '' }
         : { showPassword: !state.showPassword, editUserId: id }
     );
   },
-  setUserId: (id) =>
-    set((state) =>
-      id === undefined ? { editUserId: 'id', editMode: !state.editMode } : { editUserId: id, editMode: !state.editMode }
-    ),
+  setUserId: (id) => set((state) => ({ editUserId: id, editMode: !state.editMode, showPassword: false })),
   deleteAddUserNew: () => {
     const userDelete = get().users;
     userDelete.pop();
@@ -113,6 +108,8 @@ export const dataUsers = create((set, get) => ({
   setAddUserMode: () => {
     set((state) => ({
       addUserMode: !state.addUserMode,
+      editUserId: state.addUser.id,
+      showPassword: false,
       users: [
         ...state.users,
         {
@@ -127,6 +124,9 @@ export const dataUsers = create((set, get) => ({
       ],
     }));
   },
+  setDeleteUser: async (id) => {
+    await deleteDoc(doc(db, 'users', id));
+  },
   filtered: (row, search) =>
     row.name.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.role.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
@@ -136,7 +136,6 @@ export const dataUsers = create((set, get) => ({
   setSearch: (event) => set(() => ({ search: event })),
   setPage: (newPage) => set(() => ({ page: newPage })),
   setChangeRowsPerPage: (event) => {
-    console.log(event);
     set(() => ({ rowsPerPage: +event, page: 0 }));
   },
   onRequestSort: (event, property, order, orderBy) => {
