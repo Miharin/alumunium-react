@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { sha256 } from 'crypto-hash';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, updateDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from 'config/firebaseConfig';
 
 export const dataUsers = create((set, get) => ({
+  loading: false,
   users: [],
   editUserId: '',
   page: 0,
@@ -11,6 +12,7 @@ export const dataUsers = create((set, get) => ({
   order: '',
   orderBy: '',
   search: '',
+  editUser: {},
   addUser: {
     id: '',
     name: '',
@@ -21,14 +23,91 @@ export const dataUsers = create((set, get) => ({
     password: '',
   },
   addUserMode: false,
+  addUserIcon: false,
   editMode: false,
   showSearch: false,
   showPassword: false,
-  setShowPassword: () => set((state) => ({ showPassword: !state.showPassword })),
-  setUserId: (id) => set((state) => ({ editUserId: id, editMode: !state.editMode })),
+  setEditUser: (userId) => {
+    const getUser = get().users;
+    const editUserFinal = get().editUser;
+    getUser.forEach(async (user) => {
+      if (user.id === userId) {
+        set((state) => ({ editUser: { ...state.editUser, id: userId } }));
+        if (editUserFinal.name === '') {
+          delete editUserFinal.name;
+        }
+        if (editUserFinal.role === '') {
+          delete editUserFinal.role;
+        }
+        if (editUserFinal.status === '') {
+          delete editUserFinal.status;
+        }
+        if (editUserFinal.shift === '') {
+          delete editUserFinal.shift;
+        }
+        if (editUserFinal.username === '') {
+          delete editUserFinal.username;
+        }
+        if (editUserFinal.password === '') {
+          delete editUserFinal.password;
+        }
+
+        const updateDocument = doc(db, 'users', userId);
+        set((state) => ({ loading: !state.loading }));
+        await updateDoc(updateDocument, editUserFinal);
+        set((state) => ({ loading: !state.loading, editMode: !state.editMode, editUser: {} }));
+      }
+    });
+  },
+  setEdit: (event) => set((state) => ({ editUser: { ...state.editUser, [event.name]: event.value } })),
+  setAddUser: (event) => {
+    set((state) => ({ addUser: { ...state.addUser, [event.name]: event.value } }));
+    set((state) =>
+      state.addUser.name === '' ||
+      state.addUser.role === '' ||
+      state.addUser.status === '' ||
+      state.addUser.shift === '' ||
+      state.addUser.user === '' ||
+      state.addUser.password === ''
+        ? null
+        : { addUserIcon: !state.adduserIcon }
+    );
+  },
+  setFinalAddUser: async () => {
+    const userAddFinal = get().addUser;
+    console.log(userAddFinal);
+    delete userAddFinal.id;
+    set((state) => ({ addUser: { ...state.addUser, timeStamp: serverTimestamp() }, loading: !state.loading }));
+    await addDoc(collection(db, 'users'), userAddFinal);
+    set((state) => ({
+      addUser: {
+        id: '',
+        name: '',
+        role: '',
+        status: '',
+        shift: '',
+        username: '',
+        password: '',
+      },
+      addUserMode: !state.addUserMode,
+      loading: !state.loading,
+    }));
+  },
+  setShowPassword: (id) => {
+    console.log(id);
+    set((state) =>
+      id === null || undefined
+        ? { showPassword: !state.showPassword, editUserId: '' }
+        : { showPassword: !state.showPassword, editUserId: id }
+    );
+  },
+  setUserId: (id) =>
+    set((state) =>
+      id === undefined ? { editUserId: 'id', editMode: !state.editMode } : { editUserId: id, editMode: !state.editMode }
+    ),
   deleteAddUserNew: () => {
     const userDelete = get().users;
-    delete userDelete[userDelete.length - 1];
+    userDelete.pop();
     set((state) => ({ addUserMode: !state.addUserMode }));
   },
   setAddUserMode: () => {

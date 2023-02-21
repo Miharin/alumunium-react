@@ -5,7 +5,6 @@ import {
   ExpandMore,
   PeopleRounded,
   FormatListBulletedRounded,
-  ManageAccountsRounded,
   DashboardRounded,
   CropSquareRounded,
 } from '@mui/icons-material';
@@ -45,17 +44,10 @@ export const NavSection = (onCloseNav) => {
       Expand: [
         {
           id: 'U1',
-          name: 'List Users',
+          name: 'List And Manage Users',
           selected: 1,
           icon: <FormatListBulletedRounded />,
           links: '/dashboard/user',
-        },
-        {
-          id: 'U2',
-          name: 'Manage Users',
-          selected: 2,
-          icon: <ManageAccountsRounded />,
-          links: '',
         },
       ],
     },

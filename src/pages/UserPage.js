@@ -17,7 +17,11 @@ import {
   TablePagination,
   TableRow,
   TableSortLabel,
+  ButtonGroup,
   IconButton,
+  Tooltip,
+  Backdrop,
+  CircularProgress,
 } from '@mui/material';
 import {
   ModeEditRounded,
@@ -75,6 +79,7 @@ export default function UserPage() {
   useEffect(() => {
     getUsers();
   }, [getUsers]);
+  const loading = useDataUsers((state) => state.loading);
   const users = useDataUsers((state) => state.users);
   const page = useDataUsers((state) => state.page);
   const rowsPerPage = useDataUsers((state) => state.rowsPerPage);
@@ -96,12 +101,17 @@ export default function UserPage() {
   const setShowPassword = useDataUsers((state) => state.setShowPassword);
   const userId = useDataUsers((state) => state.editUserId);
   const setUserId = useDataUsers((state) => state.setUserId);
+  const setEditUser = useDataUsers((state) => state.setEditUser);
+  const setEdit = useDataUsers((state) => state.setEdit);
+  const editUser = useDataUsers((state) => state.editUser);
+  const setAddUser = useDataUsers((state) => state.setAddUser);
+  const addUserIcon = useDataUsers((state) => state.addUserIcon);
+  const setFinalAddUser = useDataUsers((state) => state.setFinalAddUser);
   const rows = users;
   const filtered = useDataUsers((state) => state.filtered);
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property, order, orderBy);
   };
-  console.log(userId);
   const handleEdit = (event) => setUserId(event);
   return (
     <>
@@ -183,57 +193,124 @@ export default function UserPage() {
                       return (
                         <TableCell key={column.id} id={index} align={column.align}>
                           {editMode === true ? (
-                            column.id === 'action' ? (
-                              <>
-                                <IconButton>
-                                  <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
+                            column.id === 'action' && userId === row.id ? (
+                              <ButtonGroup variant="outlined">
+                                <IconButton onClick={() => setEditUser(row.id)}>
+                                  <Tooltip title="Confirm">
+                                    <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
+                                  </Tooltip>
                                 </IconButton>
-                                <IconButton>
-                                  <DoDisturbRounded sx={{ color: '#737373' }} />
+                                <Backdrop
+                                  sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                  open={loading}
+                                >
+                                  <CircularProgress color="inherit" />
+                                </Backdrop>
+                                <IconButton onClick={() => handleEdit()}>
+                                  <Tooltip title="Cancel">
+                                    <DoDisturbRounded sx={{ color: '#737373' }} />
+                                  </Tooltip>
                                 </IconButton>
-                              </>
+                              </ButtonGroup>
                             ) : userId === row.id ? (
-                              <TextField name={column.id} label={column.label} value={value} />
+                              <TextField
+                                fullWidth
+                                onChange={(event) => setEdit(event.target)}
+                                InputProps={{ disableUnderline: true }}
+                                name={column.id}
+                                placeholder={value}
+                                variant="standard"
+                                value={editUser[column.id] === undefined ? '' : editUser[column.id]}
+                              />
+                            ) : column.id === 'password' && value.length > 15 && userId !== row.id ? (
+                              '********'
                             ) : (
                               value
                             )
-                          ) : column.id === 'action' &&
-                            editMode === false &&
-                            addUserMode === false &&
-                            userId !== row.id ? (
-                            <>
+                          ) : column.id === 'action' && editMode === false && addUserMode === false ? (
+                            <ButtonGroup variant="outlined">
                               {showPassword ? (
                                 <IconButton onClick={setShowPassword}>
-                                  <VisibilityOff sx={{ color: '#737373' }} />
+                                  <Tooltip title="Hide Password">
+                                    <VisibilityOff sx={{ color: '#737373' }} />
+                                  </Tooltip>
                                 </IconButton>
                               ) : (
-                                <IconButton onClick={setShowPassword}>
-                                  <Visibility sx={{ color: '#737373' }} />
+                                <IconButton onClick={() => setShowPassword(row.id)}>
+                                  <Tooltip title="Show Password">
+                                    <Visibility sx={{ color: '#737373' }} />
+                                  </Tooltip>
                                 </IconButton>
                               )}
                               <IconButton onClick={() => handleEdit(row.id)}>
-                                <ModeEditRounded sx={{ color: '#737373' }} />
+                                <Tooltip title="Edit User">
+                                  <ModeEditRounded sx={{ color: '#737373' }} />
+                                </Tooltip>
                               </IconButton>
                               <IconButton>
-                                <DeleteForeverRounded sx={{ color: '#737373' }} />
+                                <Tooltip title="Delete User">
+                                  <DeleteForeverRounded sx={{ color: '#737373' }} />
+                                </Tooltip>
                               </IconButton>
-                            </>
+                            </ButtonGroup>
                           ) : column.id === 'password' && addUserMode === false && showPassword === false ? (
+                            '********'
+                          ) : column.id === 'password' &&
+                            value.length > 15 &&
+                            addUserMode === false &&
+                            showPassword === true &&
+                            userId === row.id ? (
+                            `${value.slice(0, 15)}...`
+                          ) : column.id === 'password' &&
+                            addUserMode === false &&
+                            showPassword === true &&
+                            userId !== row.id ? (
+                            '********'
+                          ) : column.id === 'password' &&
+                            addUserMode === true &&
+                            showPassword === false &&
+                            userId !== row.id ? (
+                            '********'
+                          ) : column.id === 'password' &&
+                            addUserMode === true &&
+                            showPassword === true &&
+                            userId !== row.id ? (
                             '********'
                           ) : (
                             value
                           )}
                           {addUserMode === true && value === '' ? (
-                            <TextField name={column.id} label={column.label} sx={{ width: column.minWidth }} />
+                            <TextField
+                              required
+                              fullWidth
+                              name={column.id}
+                              onChange={(event) => setAddUser(event.target)}
+                              InputProps={{ disableUnderline: true }}
+                              variant="standard"
+                              placeholder={column.label}
+                              sx={{ width: column.minWidth }}
+                            />
                           ) : addUserMode === true && column.id === 'action' && row.id === '' ? (
-                            <>
-                              <IconButton>
-                                <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
-                              </IconButton>
+                            <ButtonGroup variant="outlined">
+                              {addUserIcon ? (
+                                <IconButton onClick={setFinalAddUser}>
+                                  <Tooltip title="Confirm">
+                                    <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
+                                  </Tooltip>
+                                  <Backdrop
+                                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                    open={loading}
+                                  >
+                                    <CircularProgress color="inherit" />
+                                  </Backdrop>
+                                </IconButton>
+                              ) : null}
                               <IconButton onClick={deleteAddUserNew}>
-                                <DoDisturbRounded sx={{ color: '#737373' }} />
+                                <Tooltip title="Cancel">
+                                  <DoDisturbRounded sx={{ color: '#737373' }} />
+                                </Tooltip>
                               </IconButton>
-                            </>
+                            </ButtonGroup>
                           ) : null}
                         </TableCell>
                       );
