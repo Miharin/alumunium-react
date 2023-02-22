@@ -22,6 +22,7 @@ import {
   Tooltip,
   Backdrop,
   CircularProgress,
+  Autocomplete,
 } from '@mui/material';
 import {
   ModeEditRounded,
@@ -52,6 +53,14 @@ const columns = [
     minWidth: 150,
     align: 'left',
   },
+];
+const optionsStatus = [
+  { id: 'active', name: 'status', label: 'Aktif', value: 'Aktif' },
+  { id: 'notActive', name: 'status', label: 'Tidak Aktif', value: 'Tidak Aktif' },
+];
+const optionsShift = [
+  { id: 'Shift1', name: 'shift', label: 'Shift 1', value: 'Shift 1' },
+  { id: 'Shift2', name: 'shift', label: 'Shift 2', value: 'Shift 2' },
 ];
 
 // eslint-disable-next-line
@@ -114,6 +123,7 @@ export default function UserPage() {
     onRequestSort(event, property, order, orderBy);
   };
   const handleEdit = (event) => setUserId(event);
+  console.log(editUser);
   return (
     <>
       <Helmet>
@@ -214,15 +224,54 @@ export default function UserPage() {
                                 </IconButton>
                               </ButtonGroup>
                             ) : userId === row.id ? (
-                              <TextField
-                                fullWidth
-                                onChange={(event) => setEdit(event.target)}
-                                InputProps={{ disableUnderline: true }}
-                                name={column.id}
-                                placeholder={value}
-                                variant="standard"
-                                value={editUser[column.id] === undefined ? '' : editUser[column.id]}
-                              />
+                              column.id === 'status' ? (
+                                <Autocomplete
+                                  isOptionEqualToValue={(option, value) => option.label === value}
+                                  id="optionsStatus"
+                                  name={column.id}
+                                  onChange={(event, newValue) =>
+                                    newValue !== null ? setEdit(newValue) : setEdit(column.id)
+                                  }
+                                  options={optionsStatus}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      InputProps={{ ...params.InputProps, disableUnderline: true }}
+                                      variant="standard"
+                                      placeholder={column.label}
+                                    />
+                                  )}
+                                />
+                              ) : column.id === 'shift' ? (
+                                <Autocomplete
+                                  isOptionEqualToValue={(option, value) => option.label === value}
+                                  disablePortal
+                                  id="optionsShift"
+                                  name={column.id}
+                                  onChange={(event, newValue) =>
+                                    newValue !== null ? setEdit(newValue) : setEdit(event.target)
+                                  }
+                                  options={optionsShift}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      InputProps={{ ...params.InputProps, disableUnderline: true }}
+                                      variant="standard"
+                                      placeholder={column.label}
+                                    />
+                                  )}
+                                />
+                              ) : (
+                                <TextField
+                                  fullWidth
+                                  onChange={(event) => setEdit(event.target)}
+                                  InputProps={{ disableUnderline: true }}
+                                  name={column.id}
+                                  placeholder={value}
+                                  variant="standard"
+                                  value={editUser[column.id] !== undefined ? editUser[column.id] : ''}
+                                />
+                              )
                             ) : column.id === 'password' && value.length > 15 && userId !== row.id ? (
                               '********'
                             ) : (
@@ -230,7 +279,7 @@ export default function UserPage() {
                             )
                           ) : column.id === 'action' && editMode === false && addUserMode === false ? (
                             <ButtonGroup variant="outlined">
-                              {showPassword ? (
+                              {showPassword && userId === row.id ? (
                                 <IconButton onClick={setShowPassword}>
                                   <Tooltip title="Hide Password">
                                     <VisibilityOff sx={{ color: '#737373' }} />
@@ -276,16 +325,56 @@ export default function UserPage() {
                             value
                           )}
                           {addUserMode === true && value === '' ? (
-                            <TextField
-                              required
-                              fullWidth
-                              name={column.id}
-                              onChange={(event) => setAddUser(event.target)}
-                              InputProps={{ disableUnderline: true }}
-                              variant="standard"
-                              placeholder={column.label}
-                              sx={{ width: column.minWidth }}
-                            />
+                            column.id === 'status' ? (
+                              <Autocomplete
+                                isOptionEqualToValue={(option, value) => option.label === value}
+                                disablePortal
+                                id="optionsStatus"
+                                name={column.id}
+                                onChange={(event, newValue) =>
+                                  newValue !== null ? setAddUser(newValue) : setAddUser(event.target)
+                                }
+                                options={optionsStatus}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    InputProps={{ ...params.InputProps, disableUnderline: true }}
+                                    variant="standard"
+                                    placeholder={column.label}
+                                  />
+                                )}
+                              />
+                            ) : column.id === 'shift' ? (
+                              <Autocomplete
+                                isOptionEqualToValue={(option, value) => option.label === value}
+                                disablePortal
+                                id="optionsStatus"
+                                name={column.id}
+                                onChange={(event, newValue) =>
+                                  newValue !== null ? setAddUser(newValue) : setAddUser(event.target)
+                                }
+                                options={optionsStatus}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    InputProps={{ ...params.InputProps, disableUnderline: true }}
+                                    variant="standard"
+                                    placeholder={column.label}
+                                  />
+                                )}
+                              />
+                            ) : (
+                              <TextField
+                                required
+                                fullWidth
+                                name={column.id}
+                                onChange={(event) => setAddUser(event.target)}
+                                InputProps={{ disableUnderline: true }}
+                                variant="standard"
+                                placeholder={column.label}
+                                sx={{ width: column.minWidth }}
+                              />
+                            )
                           ) : addUserMode === true && column.id === 'action' && row.id === '' ? (
                             <ButtonGroup variant="outlined">
                               {addUserIcon ? (

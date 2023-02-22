@@ -57,7 +57,15 @@ export const dataUsers = create((set, get) => ({
       }
     });
   },
-  setEdit: (event) => set((state) => ({ editUser: { ...state.editUser, [event.name]: event.value } })),
+  setEdit: (event) => {
+    const getEditUser = get().editUser;
+    console.log(getEditUser.length);
+    set((state) =>
+      event === 'status' || event === 'shift'
+        ? { editUser: { ...state.editUser, [event]: '' } }
+        : { editUser: { ...state.editUser, [event.name]: event.value } }
+    );
+  },
   setAddUser: (event) => {
     set((state) => ({ addUser: { ...state.addUser, [event.name]: event.value } }));
     set((state) =>
