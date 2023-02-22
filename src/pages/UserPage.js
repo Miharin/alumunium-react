@@ -59,8 +59,8 @@ const optionsStatus = [
   { id: 'notActive', name: 'status', label: 'Tidak Aktif', value: 'Tidak Aktif' },
 ];
 const optionsShift = [
-  { id: 'Shift1', name: 'shift', label: 'Shift 1', value: 'Shift 1' },
-  { id: 'Shift2', name: 'shift', label: 'Shift 2', value: 'Shift 2' },
+  { id: 'shift1', name: 'shift', label: 'Shift 1', value: 'Shift 1' },
+  { id: 'shift2', name: 'shift', label: 'Shift 2', value: 'Shift 2' },
 ];
 
 // eslint-disable-next-line
@@ -85,9 +85,6 @@ const stableSort = (array, comparator) => {
 
 export default function UserPage() {
   const getUsers = useDataUsers((state) => state.getUsers);
-  useEffect(() => {
-    getUsers();
-  }, [getUsers]);
   const loading = useDataUsers((state) => state.loading);
   const users = useDataUsers((state) => state.users);
   const page = useDataUsers((state) => state.page);
@@ -119,11 +116,22 @@ export default function UserPage() {
   const setDeleteUser = useDataUsers((state) => state.setDeleteUser);
   const rows = users;
   const filtered = useDataUsers((state) => state.filtered);
+  const roleManager = [];
+  users.forEach((role) => {
+    roleManager.push({
+      id: role.id + 1,
+      name: 'role',
+      label: role.role,
+      value: role.role,
+    });
+  });
+  useEffect(() => {
+    getUsers();
+  }, [getUsers]);
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property, order, orderBy);
   };
   const handleEdit = (event) => setUserId(event);
-  console.log(editUser);
   return (
     <>
       <Helmet>
@@ -226,7 +234,7 @@ export default function UserPage() {
                             ) : userId === row.id ? (
                               column.id === 'status' ? (
                                 <Autocomplete
-                                  isOptionEqualToValue={(option, value) => option.label === value}
+                                  isOptionEqualToValue={(option, value) => option.label === value.value}
                                   id="optionsStatus"
                                   name={column.id}
                                   onChange={(event, newValue) =>
@@ -244,7 +252,7 @@ export default function UserPage() {
                                 />
                               ) : column.id === 'shift' ? (
                                 <Autocomplete
-                                  isOptionEqualToValue={(option, value) => option.label === value}
+                                  isOptionEqualToValue={(option, value) => option.label === value.value}
                                   disablePortal
                                   id="optionsShift"
                                   name={column.id}
@@ -252,6 +260,25 @@ export default function UserPage() {
                                     newValue !== null ? setEdit(newValue) : setEdit(event.target)
                                   }
                                   options={optionsShift}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      InputProps={{ ...params.InputProps, disableUnderline: true }}
+                                      variant="standard"
+                                      placeholder={column.label}
+                                    />
+                                  )}
+                                />
+                              ) : column.id === 'role' ? (
+                                <Autocomplete
+                                  isOptionEqualToValue={(option, value) => option.label === value.value}
+                                  disablePortal
+                                  id="optionsShift"
+                                  name={column.id}
+                                  onChange={(event, newValue) =>
+                                    newValue !== null ? setEdit(newValue) : setEdit(event.target)
+                                  }
+                                  options={roleManager}
                                   renderInput={(params) => (
                                     <TextField
                                       {...params}
