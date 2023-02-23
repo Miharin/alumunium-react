@@ -379,6 +379,25 @@ export default function UserPage() {
                                   />
                                 )}
                               />
+                            ) : column.id === 'role' ? (
+                              <Autocomplete
+                                isOptionEqualToValue={(option, value) => option.label === value.value}
+                                disablePortal
+                                id="optionsShift"
+                                name={column.id}
+                                onChange={(event, newValue) =>
+                                  newValue !== null ? setEdit(newValue) : setEdit(event.target)
+                                }
+                                options={roleManager}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    InputProps={{ ...params.InputProps, disableUnderline: true }}
+                                    variant="standard"
+                                    placeholder={column.label}
+                                  />
+                                )}
+                              />
                             ) : (
                               <TextField
                                 required

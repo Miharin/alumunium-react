@@ -22,6 +22,7 @@ import {
   Tooltip,
   Backdrop,
   CircularProgress,
+  Autocomplete,
 } from '@mui/material';
 import {
   ModeEditRounded,
@@ -40,9 +41,8 @@ import { useDataUsers } from 'store/index';
 // ----------------------------------------------------------------------
 
 const columns = [
-  { id: 'name', label: 'Code', minWidth: 100, align: 'left' },
-  { id: 'role', label: 'Merk', minWidth: 100, align: 'left' },
-  { id: 'status', label: 'Nama Produk', minWidth: 150, align: 'left' },
+  { id: 'name', label: 'Nama', minWidth: 150, align: 'left' },
+  { id: 'role', label: 'Pekerjaan', minWidth: 150, align: 'left' },
   {
     id: 'action',
     label: 'Action',
@@ -71,11 +71,10 @@ const stableSort = (array, comparator) => {
 };
 // ----------------------------------------------------------------------
 
-export default function ProductPage() {
+export default function UserPage() {
   const getUsers = useDataUsers((state) => state.getUsers);
-  useEffect(() => {
-    getUsers();
-  }, [getUsers]);
+  const getConfigs = useDataUsers((state) => state.getConfigs);
+  const configs = useDataUsers((state) => state.configs);
   const loading = useDataUsers((state) => state.loading);
   const users = useDataUsers((state) => state.users);
   const page = useDataUsers((state) => state.page);
@@ -107,14 +106,19 @@ export default function ProductPage() {
   const setDeleteUser = useDataUsers((state) => state.setDeleteUser);
   const rows = users;
   const filtered = useDataUsers((state) => state.filtered);
+  useEffect(() => {
+    getUsers();
+    getConfigs();
+  }, [getUsers, getConfigs]);
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property, order, orderBy);
   };
   const handleEdit = (event) => setUserId(event);
+  const roleManager = getConfigs === {} ? [] : configs.role;
   return (
     <>
       <Helmet>
-        <title> Produk - Code | Alu Jaya </title>
+        <title> Product | Alu Jaya </title>
       </Helmet>
       <Paper sx={{ mx: 5, alignItems: 'center' }} elevation={5}>
         {showSearch ? (
@@ -211,15 +215,36 @@ export default function ProductPage() {
                                 </IconButton>
                               </ButtonGroup>
                             ) : userId === row.id ? (
-                              <TextField
-                                fullWidth
-                                onChange={(event) => setEdit(event.target)}
-                                InputProps={{ disableUnderline: true }}
-                                name={column.id}
-                                placeholder={value}
-                                variant="standard"
-                                value={editUser[column.id] === undefined ? '' : editUser[column.id]}
-                              />
+                              column.id === 'role' ? (
+                                <Autocomplete
+                                  isOptionEqualToValue={(option, value) => option.label === value.value}
+                                  disablePortal
+                                  id="optionsShift"
+                                  name={column.id}
+                                  onChange={(event, newValue) =>
+                                    newValue !== null ? setEdit(newValue) : setEdit(event.target)
+                                  }
+                                  options={roleManager}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      InputProps={{ ...params.InputProps, disableUnderline: true }}
+                                      variant="standard"
+                                      placeholder={column.label}
+                                    />
+                                  )}
+                                />
+                              ) : (
+                                <TextField
+                                  fullWidth
+                                  onChange={(event) => setEdit(event.target)}
+                                  InputProps={{ disableUnderline: true }}
+                                  name={column.id}
+                                  placeholder={value}
+                                  variant="standard"
+                                  value={editUser[column.id] !== undefined ? editUser[column.id] : ''}
+                                />
+                              )
                             ) : column.id === 'password' && value.length > 15 && userId !== row.id ? (
                               '********'
                             ) : (
@@ -273,16 +298,37 @@ export default function ProductPage() {
                             value
                           )}
                           {addUserMode === true && value === '' ? (
-                            <TextField
-                              required
-                              fullWidth
-                              name={column.id}
-                              onChange={(event) => setAddUser(event.target)}
-                              InputProps={{ disableUnderline: true }}
-                              variant="standard"
-                              placeholder={column.label}
-                              sx={{ width: column.minWidth }}
-                            />
+                            column.id === 'role' ? (
+                              <Autocomplete
+                                isOptionEqualToValue={(option, value) => option.label === value.value}
+                                disablePortal
+                                id="optionsShift"
+                                name={column.id}
+                                onChange={(event, newValue) =>
+                                  newValue !== null ? setEdit(newValue) : setEdit(event.target)
+                                }
+                                options={roleManager}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    InputProps={{ ...params.InputProps, disableUnderline: true }}
+                                    variant="standard"
+                                    placeholder={column.label}
+                                  />
+                                )}
+                              />
+                            ) : (
+                              <TextField
+                                required
+                                fullWidth
+                                name={column.id}
+                                onChange={(event) => setAddUser(event.target)}
+                                InputProps={{ disableUnderline: true }}
+                                variant="standard"
+                                placeholder={column.label}
+                                sx={{ width: column.minWidth }}
+                              />
+                            )
                           ) : addUserMode === true && column.id === 'action' && row.id === '' ? (
                             <ButtonGroup variant="outlined">
                               {addUserIcon ? (
