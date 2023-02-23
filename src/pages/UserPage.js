@@ -54,14 +54,6 @@ const columns = [
     align: 'left',
   },
 ];
-const optionsStatus = [
-  { id: 'active', name: 'status', label: 'Aktif', value: 'Aktif' },
-  { id: 'notActive', name: 'status', label: 'Tidak Aktif', value: 'Tidak Aktif' },
-];
-const optionsShift = [
-  { id: 'shift1', name: 'shift', label: 'Shift 1', value: 'Shift 1' },
-  { id: 'shift2', name: 'shift', label: 'Shift 2', value: 'Shift 2' },
-];
 
 // eslint-disable-next-line
 const getComparator = (order, orderBy, descendingComparator) => {
@@ -85,6 +77,8 @@ const stableSort = (array, comparator) => {
 
 export default function UserPage() {
   const getUsers = useDataUsers((state) => state.getUsers);
+  const getConfigs = useDataUsers((state) => state.getConfigs);
+  const configs = useDataUsers((state) => state.configs);
   const loading = useDataUsers((state) => state.loading);
   const users = useDataUsers((state) => state.users);
   const page = useDataUsers((state) => state.page);
@@ -116,22 +110,17 @@ export default function UserPage() {
   const setDeleteUser = useDataUsers((state) => state.setDeleteUser);
   const rows = users;
   const filtered = useDataUsers((state) => state.filtered);
-  const roleManager = [];
-  users.forEach((role) => {
-    roleManager.push({
-      id: role.id + 1,
-      name: 'role',
-      label: role.role,
-      value: role.role,
-    });
-  });
   useEffect(() => {
     getUsers();
-  }, [getUsers]);
+    getConfigs();
+  }, [getUsers, getConfigs]);
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property, order, orderBy);
   };
   const handleEdit = (event) => setUserId(event);
+  const optionsStatus = getConfigs === {} ? [] : configs.status;
+  const optionsShift = getConfigs === {} ? [] : configs.shift;
+  const roleManager = getConfigs === {} ? [] : configs.role;
   return (
     <>
       <Helmet>

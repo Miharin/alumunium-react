@@ -6,6 +6,7 @@ import { db } from 'config/firebaseConfig';
 export const dataUsers = create((set, get) => ({
   loading: false,
   users: [],
+  configs: {},
   editUserId: '',
   page: 0,
   rowsPerPage: 10,
@@ -155,6 +156,22 @@ export const dataUsers = create((set, get) => ({
       return 1;
     }
     return 0;
+  },
+  getConfigs: async () => {
+    await onSnapshot(collection(db, 'configs'), (configsData) => {
+      configsData.forEach((config) =>
+        config.id === 'users'
+          ? set((state) => ({
+              configs: {
+                ...state.configs,
+                status: config.data().status,
+                shift: config.data().shift,
+                role: config.data().role,
+              },
+            }))
+          : null
+      );
+    });
   },
   getUsers: async () => {
     await onSnapshot(collection(db, 'users'), (usersData) => {
