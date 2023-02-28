@@ -45,7 +45,7 @@ export const NavSection = (onCloseNav) => {
         {
           id: 'U1',
           name: 'List And Manage Users',
-          selected: 1,
+          selected: 2,
           icon: <FormatListBulletedRounded />,
           links: '/dashboard/user',
         },
@@ -60,7 +60,7 @@ export const NavSection = (onCloseNav) => {
       Expand: [
         {
           id: 'P1',
-          name: 'List Holo',
+          name: 'List Code Barang',
           selected: 3,
           icon: <CropSquareRounded />,
           links: '/dashboard/products',

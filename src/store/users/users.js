@@ -3,8 +3,10 @@ import { sha256 } from 'crypto-hash';
 import { collection, onSnapshot, updateDoc, doc, addDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { db } from 'config/firebaseConfig';
 
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
 export const dataUsers = create((set, get) => ({
-  loading: false,
+  loading: true,
   users: [],
   configs: {},
   editUserId: '',
@@ -59,7 +61,6 @@ export const dataUsers = create((set, get) => ({
     });
   },
   setEdit: (event) => {
-    console.log(event);
     set((state) =>
       event === 'status' || event === 'shift'
         ? { editUser: { ...state.editUser, [event]: '' } }
@@ -133,30 +134,6 @@ export const dataUsers = create((set, get) => ({
   setDeleteUser: async (id) => {
     await deleteDoc(doc(db, 'users', id));
   },
-  filtered: (row, search) =>
-    row.name.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
-    row.role.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
-    row.status.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
-    row.shift.toString().toLowerCase().includes(search.toString().toLowerCase()),
-  setShowSearch: () => set((state) => ({ showSearch: !state.showSearch })),
-  setSearch: (event) => set(() => ({ search: event })),
-  setPage: (newPage) => set(() => ({ page: newPage })),
-  setChangeRowsPerPage: (event) => {
-    set(() => ({ rowsPerPage: +event, page: 0 }));
-  },
-  onRequestSort: (event, property, order, orderBy) => {
-    const isAsc = orderBy === property && order === 'asc';
-    set(() => (isAsc ? { order: 'desc', orderBy: property } : { order: 'asc', orderBy: property }));
-  },
-  descendingComparator: (a, b, orderBy) => {
-    if (b[orderBy] < a[orderBy]) {
-      return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-      return 1;
-    }
-    return 0;
-  },
   getConfigs: async () => {
     await onSnapshot(collection(db, 'configs'), (configsData) => {
       configsData.forEach((config) =>
@@ -196,5 +173,7 @@ export const dataUsers = create((set, get) => ({
         }));
       });
     });
+    await delay(2000);
+    set((state) => ({ loading: !state.loading }));
   },
 }));

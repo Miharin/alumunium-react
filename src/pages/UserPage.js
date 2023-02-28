@@ -1,6 +1,7 @@
+// Start Import
 import { Helmet } from 'react-helmet-async';
 import { useEffect } from 'react';
-// @mui
+// @mui Components
 import {
   Slide,
   TextField,
@@ -23,6 +24,7 @@ import {
   Backdrop,
   CircularProgress,
   Autocomplete,
+  Skeleton,
 } from '@mui/material';
 import {
   ModeEditRounded,
@@ -35,11 +37,12 @@ import {
   VisibilityOff,
 } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
-// components
-// store
-import { useDataUsers } from 'store/index';
-// ----------------------------------------------------------------------
 
+// store
+import { useDataUsers, useTableHelper } from 'store/index';
+// End Import
+
+// Declaration for Column of Table
 const columns = [
   { id: 'name', label: 'Nama', minWidth: 150, align: 'left' },
   { id: 'role', label: 'Pekerjaan', minWidth: 150, align: 'left' },
@@ -54,6 +57,8 @@ const columns = [
     align: 'left',
   },
 ];
+
+// Start Function of Filtered
 
 // eslint-disable-next-line
 const getComparator = (order, orderBy, descendingComparator) => {
@@ -73,26 +78,31 @@ const stableSort = (array, comparator) => {
   });
   return stabilizedThis.map((el) => el[0]);
 };
-// ----------------------------------------------------------------------
+// End Function of Filtered
 
 export default function UserPage() {
+  // Start Helper Table
+  const page = useTableHelper((state) => state.page);
+  const rowsPerPage = useTableHelper((state) => state.rowsPerPage);
+  const setPage = useTableHelper((state) => state.setPage);
+  const setChangeRowsPerPage = useTableHelper((state) => state.setChangeRowsPerPage);
+  const onRequestSort = useTableHelper((state) => state.onRequestSort);
+  const order = useTableHelper((state) => state.order);
+  const orderBy = useTableHelper((state) => state.orderBy);
+  const descendingComparator = useTableHelper((state) => state.descendingComparator);
+  const search = useTableHelper((state) => state.search);
+  const setSearch = useTableHelper((state) => state.setSearch);
+  const showSearch = useTableHelper((state) => state.showSearch);
+  const setShowSearch = useTableHelper((state) => state.setShowSearch);
+  const filtered = useTableHelper((state) => state.filteredUser);
+  // End Helper Table
+
+  // Start User Initialization
+  const loading = useDataUsers((state) => state.loading);
   const getUsers = useDataUsers((state) => state.getUsers);
   const getConfigs = useDataUsers((state) => state.getConfigs);
   const configs = useDataUsers((state) => state.configs);
-  const loading = useDataUsers((state) => state.loading);
   const users = useDataUsers((state) => state.users);
-  const page = useDataUsers((state) => state.page);
-  const rowsPerPage = useDataUsers((state) => state.rowsPerPage);
-  const setPage = useDataUsers((state) => state.setPage);
-  const setChangeRowsPerPage = useDataUsers((state) => state.setChangeRowsPerPage);
-  const onRequestSort = useDataUsers((state) => state.onRequestSort);
-  const order = useDataUsers((state) => state.order);
-  const orderBy = useDataUsers((state) => state.orderBy);
-  const descendingComparator = useDataUsers((state) => state.descendingComparator);
-  const search = useDataUsers((state) => state.search);
-  const setSearch = useDataUsers((state) => state.setSearch);
-  const showSearch = useDataUsers((state) => state.showSearch);
-  const setShowSearch = useDataUsers((state) => state.setShowSearch);
   const editMode = useDataUsers((state) => state.editMode);
   const addUserMode = useDataUsers((state) => state.addUserMode);
   const setAddUserMode = useDataUsers((state) => state.setAddUserMode);
@@ -109,24 +119,37 @@ export default function UserPage() {
   const setFinalAddUser = useDataUsers((state) => state.setFinalAddUser);
   const setDeleteUser = useDataUsers((state) => state.setDeleteUser);
   const rows = users;
-  const filtered = useDataUsers((state) => state.filtered);
+  // End User Initialization
+
+  // Function for Getting User from Database and Configs
   useEffect(() => {
     getUsers();
     getConfigs();
   }, [getUsers, getConfigs]);
+
+  // Function for Filter Table
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property, order, orderBy);
   };
+
+  // Function Helper for Edit
   const handleEdit = (event) => setUserId(event);
+
+  // Initialization Options
   const optionsStatus = getConfigs === {} ? [] : configs.status;
   const optionsShift = getConfigs === {} ? [] : configs.shift;
   const roleManager = getConfigs === {} ? [] : configs.role;
-  return (
+
+  // Return Display
+  return loading ? (
+    <Skeleton sx={{ mx: 5, alignItems: 'center' }} animation="wave" height={300} variant="rectangular" />
+  ) : (
     <>
       <Helmet>
         <title> User | Alu Jaya </title>
       </Helmet>
       <Paper sx={{ mx: 5, alignItems: 'center' }} elevation={5}>
+        {/* Start Function Showing Search and Filter */}
         {showSearch ? (
           <ClickAwayListener onClickAway={setShowSearch}>
             <Slide direction="right" in={showSearch} mountOnEnter unmountOnExit>
@@ -152,6 +175,7 @@ export default function UserPage() {
             <Search sx={{ m: 4 }} onClick={setShowSearch} />
           </Slide>
         )}
+        {/* End Function Showing Search and Filter */}
         <TableContainer>
           <Table aria-label="Sticky Table">
             <caption>
@@ -167,6 +191,7 @@ export default function UserPage() {
             </caption>
             <TableHead>
               <TableRow>
+                {/* Start Define Column */}
                 {columns.map((column) => (
                   <TableCell
                     key={column.id}
@@ -188,9 +213,11 @@ export default function UserPage() {
                     </TableSortLabel>
                   </TableCell>
                 ))}
+                {/* End Define Column */}
               </TableRow>
             </TableHead>
             <TableBody>
+              {/* Start Define Rows */}
               {stableSort(rows, getComparator(order, orderBy, descendingComparator))
                 .filter((row) => filtered(row, search))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -340,6 +367,8 @@ export default function UserPage() {
                           ) : (
                             value
                           )}
+                          {/* End Edit Rows and Display Rows */}
+                          {/* Start Add Rows */}
                           {addUserMode === true && value === '' ? (
                             column.id === 'status' ? (
                               <Autocomplete
@@ -348,6 +377,9 @@ export default function UserPage() {
                                 id="optionsStatus"
                                 name={column.id}
                                 onChange={(event, newValue) =>
+                                  newValue !== null ? setAddUser(newValue) : setAddUser(event.target)
+                                }
+                                onInputChange={(event, newValue) =>
                                   newValue !== null ? setAddUser(newValue) : setAddUser(event.target)
                                 }
                                 options={optionsStatus}
@@ -383,7 +415,7 @@ export default function UserPage() {
                               <Autocomplete
                                 isOptionEqualToValue={(option, value) => option.label === value.value}
                                 disablePortal
-                                id="optionsShift"
+                                id="optionsRole"
                                 name={column.id}
                                 onChange={(event, newValue) =>
                                   newValue !== null ? setEdit(newValue) : setEdit(event.target)
@@ -437,6 +469,8 @@ export default function UserPage() {
                     })}
                   </TableRow>
                 ))}
+              {/* End Add Rows */}
+              {/* End Define Rows */}
             </TableBody>
           </Table>
         </TableContainer>
