@@ -25,6 +25,8 @@ import {
   CircularProgress,
   Autocomplete,
   Skeleton,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import {
   ModeEditRounded,
@@ -118,6 +120,9 @@ export default function UserPage() {
   const addUserIcon = useDataUsers((state) => state.addUserIcon);
   const setFinalAddUser = useDataUsers((state) => state.setFinalAddUser);
   const setDeleteUser = useDataUsers((state) => state.setDeleteUser);
+  const openSnackbar = useDataUsers((state) => state.openSnackbar);
+  const snackbarMessage = useDataUsers((state) => state.snackbarMessage);
+  const setOpenSnackbar = useDataUsers((state) => state.setOpenSnackbar);
   const rows = users;
   // End User Initialization
 
@@ -150,6 +155,11 @@ export default function UserPage() {
       </Helmet>
       <Paper sx={{ mx: 5, alignItems: 'center' }} elevation={5}>
         {/* Start Function Showing Search and Filter */}
+        <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={setOpenSnackbar}>
+          <Alert onClose={setOpenSnackbar} severity="success" sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
         {showSearch ? (
           <ClickAwayListener onClickAway={setShowSearch}>
             <Slide direction="right" in={showSearch} mountOnEnter unmountOnExit>
@@ -372,15 +382,12 @@ export default function UserPage() {
                           {addUserMode === true && value === '' ? (
                             column.id === 'status' ? (
                               <Autocomplete
-                                isOptionEqualToValue={(option, value) => option.label === value}
+                                isOptionEqualToValue={(option, value) => option === value}
                                 disablePortal
                                 id="optionsStatus"
                                 name={column.id}
                                 onChange={(event, newValue) =>
-                                  newValue !== null ? setAddUser(newValue) : setAddUser(event.target)
-                                }
-                                onInputChange={(event, newValue) =>
-                                  newValue !== null ? setAddUser(newValue) : setAddUser(event.target)
+                                  newValue !== null ? setAddUser(column.id, newValue) : setAddUser(event.target)
                                 }
                                 options={optionsStatus}
                                 renderInput={(params) => (
@@ -394,14 +401,14 @@ export default function UserPage() {
                               />
                             ) : column.id === 'shift' ? (
                               <Autocomplete
-                                isOptionEqualToValue={(option, value) => option.label === value}
+                                isOptionEqualToValue={(option, value) => option === value}
                                 disablePortal
-                                id="optionsStatus"
+                                id="optionsShift"
                                 name={column.id}
                                 onChange={(event, newValue) =>
-                                  newValue !== null ? setAddUser(newValue) : setAddUser(event.target)
+                                  newValue !== null ? setAddUser(column.id, newValue) : setAddUser(event.target)
                                 }
-                                options={optionsStatus}
+                                options={optionsShift}
                                 renderInput={(params) => (
                                   <TextField
                                     {...params}
@@ -418,7 +425,7 @@ export default function UserPage() {
                                 id="optionsRole"
                                 name={column.id}
                                 onChange={(event, newValue) =>
-                                  newValue !== null ? setEdit(newValue) : setEdit(event.target)
+                                  newValue !== null ? setAddUser(column.id, newValue) : setAddUser(event.target)
                                 }
                                 options={roleManager}
                                 renderInput={(params) => (

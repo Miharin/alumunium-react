@@ -7,6 +7,8 @@ const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 export const dataUsers = create((set, get) => ({
   loading: true,
+  openSnackbar: false,
+  snackbarMessage: '',
   users: [],
   configs: {},
   editUserId: '',
@@ -30,9 +32,11 @@ export const dataUsers = create((set, get) => ({
   editMode: false,
   showSearch: false,
   showPassword: false,
+  setOpenSnackbar: () => set((state) => ({ openSnackbar: !state.openSnackbar })),
   setEditUser: (userId) => {
     const getUser = get().users;
     const editUserFinal = get().editUser;
+    const getOpenSnackbar = get().setOpenSnackbar;
     getUser.forEach(async (user) => {
       if (user.id === userId) {
         if (editUserFinal.name === '') {
@@ -56,7 +60,9 @@ export const dataUsers = create((set, get) => ({
         const updateDocument = doc(db, 'users', userId);
         set((state) => ({ loading: !state.loading }));
         await updateDoc(updateDocument, editUserFinal);
+        set(() => ({ snackbarMessage: `User dengan Id ${userId} Berhasil Di Update !` }));
         set((state) => ({ loading: !state.loading, editMode: !state.editMode, editUser: {} }));
+        getOpenSnackbar();
       }
     });
   },
@@ -67,14 +73,19 @@ export const dataUsers = create((set, get) => ({
         : { editUser: { ...state.editUser, [event.name]: event.value } }
     );
   },
-  setAddUser: (event) => {
-    set((state) => ({ addUser: { ...state.addUser, [event.name]: event.value } }));
+  setAddUser: (event, newValue) => {
+    if (event === 'status' || event === 'role' || event === 'shift') {
+      set((state) => ({ addUser: { ...state.addUser, [event]: newValue } }));
+    } else {
+      set((state) => ({ addUser: { ...state.addUser, [event.name]: event.value } }));
+    }
+
     set((state) =>
       state.addUser.name === '' ||
       state.addUser.role === '' ||
       state.addUser.status === '' ||
       state.addUser.shift === '' ||
-      state.addUser.user === '' ||
+      state.addUser.username === '' ||
       state.addUser.password === ''
         ? null
         : { addUserIcon: !state.adduserIcon }
@@ -82,9 +93,11 @@ export const dataUsers = create((set, get) => ({
   },
   setFinalAddUser: async () => {
     const userAddFinal = get().addUser;
+    const getOpenSnackbar = get().setOpenSnackbar;
     delete userAddFinal.id;
     set((state) => ({ addUser: { ...state.addUser, timeStamp: serverTimestamp() }, loading: !state.loading }));
     await addDoc(collection(db, 'users'), userAddFinal);
+    set(() => ({ snackbarMessage: `User dengan Nama ${userAddFinal.name} Berhasil Di Tambahkan !` }));
     set((state) => ({
       addUser: {
         id: '',
@@ -98,6 +111,7 @@ export const dataUsers = create((set, get) => ({
       addUserMode: !state.addUserMode,
       loading: !state.loading,
     }));
+    getOpenSnackbar();
   },
   setShowPassword: (id) => {
     set((state) =>
@@ -132,7 +146,12 @@ export const dataUsers = create((set, get) => ({
     }));
   },
   setDeleteUser: async (id) => {
+    const getOpenSnackbar = get().setOpenSnackbar;
+    set((state) => ({ loading: !state.loading }));
     await deleteDoc(doc(db, 'users', id));
+    set(() => ({ snackbarMessage: `User dengan Id ${id} Berhasil Di Hapus !` }));
+    set((state) => ({ loading: !state.loading }));
+    getOpenSnackbar();
   },
   getConfigs: async () => {
     await onSnapshot(collection(db, 'configs'), (configsData) => {
