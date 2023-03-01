@@ -2,12 +2,14 @@ import { create } from 'zustand';
 
 export const tableHelper = create((set) => ({
   page: 0,
+  open: false,
   rowsPerPage: 10,
   order: '',
   orderBy: '',
   search: '',
   editMode: false,
   showSearch: false,
+  setOpen: () => set((state) => ({ open: !state.open })),
   filtered: (row, search) =>
     row.code.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.name.toString().toLowerCase().includes(search.toString().toLowerCase()) ||

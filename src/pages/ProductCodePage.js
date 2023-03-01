@@ -1,6 +1,6 @@
 // Start Import
 import { Helmet } from 'react-helmet-async';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 // @mui Components
 import {
   Slide,
@@ -28,6 +28,16 @@ import {
   Divider,
   Alert,
   Skeleton,
+  Dialog,
+  DialogTitle,
+  FormControl,
+  Select,
+  MenuItem,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  InputLabel,
+  Snackbar,
 } from '@mui/material';
 import {
   ModeEditRounded,
@@ -80,6 +90,8 @@ export default function ProductPage() {
   const showSearch = useTableHelper((state) => state.showSearch);
   const setShowSearch = useTableHelper((state) => state.setShowSearch);
   const filtered = useTableHelper((state) => state.filtered);
+  const open = useTableHelper((state) => state.open);
+  const setOpen = useTableHelper((state) => state.setOpen);
   // End Helper Table
 
   // Start CodeProduct Initialization
@@ -106,6 +118,15 @@ export default function ProductPage() {
   const addCodeProductIcon = useItemCode((state) => state.addCodeProductIcon);
   const setFinalAddCodeProduct = useItemCode((state) => state.setFinalAddCodeProduct);
   const setDeleteCodeProduct = useItemCode((state) => state.setDeleteCodeProduct);
+  const getField = useItemCode((state) => state.getField);
+  const addCategory = useItemCode((state) => state.addCategory);
+  const setAddCategory = useItemCode((state) => state.setAddCategory);
+  const setAddCategoryValue = useItemCode((state) => state.setAddCategoryValue);
+  const helperAddCategory = useItemCode((state) => state.helperAddCategory);
+  const setAddCategoryFinal = useItemCode((state) => state.setAddCategoryFinal);
+  const openSnackbar = useItemCode((state) => state.openSnackbar);
+  const snackbarMessage = useItemCode((state) => state.snackbarMessage);
+  const setOpenSnackbar = useItemCode((state) => state.setOpenSnackbar);
   const rows = codeProducts;
   // End ProductCode Initialization
 
@@ -132,14 +153,17 @@ export default function ProductPage() {
   // Function for Getting Code Product Data from Database
   useEffect(() => {
     getCodeProducts();
-  }, [getCodeProducts]);
+    getField();
+  }, [getCodeProducts, getField]);
 
   // Function for Filter Table
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property, order, orderBy);
   };
+
   // Function Helper for Edit
   const handleEdit = (event) => setCodeProductId(event);
+
   // Return Display
   return loading ? (
     <Skeleton sx={{ mx: 5, alignItems: 'center' }} animation="wave" height={300} variant="rectangular" />
@@ -150,6 +174,11 @@ export default function ProductPage() {
       </Helmet>
       <Paper sx={{ mx: 5, alignItems: 'center' }} elevation={5}>
         {/* Start Function Showing Search and Filter */}
+        <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={setOpenSnackbar}>
+          <Alert onClose={setOpenSnackbar} severity="success" sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
         {showSearch ? (
           <ClickAwayListener onClickAway={setShowSearch}>
             <Slide direction="down" in={showSearch} mountOnEnter unmountOnExit>
@@ -168,7 +197,6 @@ export default function ProductPage() {
                       </InputAdornment>
                     ),
                   }}
-                  onChange={(event) => setSearch(event.target.value)}
                 />
                 <Divider orientation="vertical" variant="middle" flexItem />
                 <Autocomplete
@@ -214,6 +242,9 @@ export default function ProductPage() {
                     />
                   )}
                 />
+                <Button sx={{ mx: 2 }} variant="text" onClick={setOpen}>
+                  Tambah Katalog
+                </Button>
               </Stack>
             </Slide>
           </ClickAwayListener>
@@ -222,6 +253,42 @@ export default function ProductPage() {
             <FilterAltRounded sx={{ m: 4 }} onClick={setShowSearch} />
           </Slide>
         )}
+        <Dialog maxWidth="xs" open={open} onClose={setOpen}>
+          <DialogTitle>Tambah Katalog</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Pilih Katalog yang Akan Ditambah</DialogContentText>
+            <Box
+              noValidate
+              component="form"
+              sx={{ display: 'flex', flexDirection: 'column', m: 'auto', width: 'fitContent' }}
+            >
+              <FormControl sx={{ mt: 2, minWidth: 120 }}>
+                <InputLabel id="katalog">Katalog</InputLabel>
+                <Select value={addCategory} onChange={(event) => setAddCategory(event.target)} label="Katalog">
+                  <MenuItem value="merk">Merk</MenuItem>
+                  <MenuItem value="categories">Categories</MenuItem>
+                </Select>
+                {addCategory !== '' || undefined || null ? (
+                  <TextField
+                    sx={{ my: 4, mx: 2 }}
+                    name={addCategory}
+                    placeholder={`${addCategory[0].toUpperCase() + addCategory.slice(1)} Baru`}
+                    variant="standard"
+                    onChange={(e) => setAddCategoryValue(e.target)}
+                    InputProps={{
+                      disableUnderline: true,
+                    }}
+                    helperText={helperAddCategory}
+                  />
+                ) : null}
+              </FormControl>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setAddCategoryFinal()}>Save</Button>
+            <Button onClick={setOpen}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
         {/* End Function Showing Search and Filter */}
         <TableContainer>
           <Table aria-label="Sticky Table">

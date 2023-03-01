@@ -9,15 +9,22 @@ import {
   deleteDoc,
   query,
   where,
+  arrayUnion,
 } from 'firebase/firestore';
 import { db } from 'config/firebaseConfig';
+import { useTableHelper } from 'store/index';
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 export const itemCodeStore = create((set, get) => ({
   loading: true,
-  listCategories: ['Hollow', 'Hollow Tiang', 'Hollow Kepala'],
-  listMerk: ['Indal', 'SAA'],
+  openSnackbar: false,
+  snackbarMessage: '',
+  listCategories: [],
+  listMerk: [],
+  addCategory: '',
+  addCategoryValue: '',
+  helperAddCategory: '',
   merk: '',
   categories: '',
   editCodeProductId: '',
@@ -41,9 +48,58 @@ export const itemCodeStore = create((set, get) => ({
   editMode: false,
   editCodeProductIcon: false,
   showSearch: false,
+  setOpenSnackbar: () => set((state) => ({ openSnackbar: !state.openSnackbar })),
+  setAddCategory: (event) => set(() => ({ addCategory: event.value })),
+  setAddCategoryValue: (event) => {
+    /* eslint-disable */
+    const listMerk = get().listMerk;
+    const listCategories = get().listCategories;
+    /* eslint-disable */
+    set(() => ({ addCategoryValue: event.value }));
+    if (event.name === 'merk') {
+      if (listMerk.find((merk) => merk.toLowerCase() === event.value.toLowerCase())) {
+        set(() => ({ helperAddCategory: `${event.value} Sudah Ada` }));
+      } else {
+        set(() => ({ helperAddCategory: '' }));
+      }
+    } else if (event.name === 'category') {
+      if (listCategories.find((category) => category.toLowerCase() === event.value.toLowerCase())) {
+        set(() => ({ helperAddCategory: `${event.value} Sudah Ada` }));
+      } else {
+        set(() => ({ helperAddCategory: '' }));
+      }
+    }
+  },
+  setAddCategoryFinal: async () => {
+    const addCategories = get().addCategory;
+    const addCategoriesFinal = get().addCategoryValue;
+    const getOpenSnackbar = get().setOpenSnackbar;
+    const tempArray = addCategoriesFinal.split(' ');
+    let tempArrayFinal = [];
+    let addCategoriesNew = '';
+    if (addCategories === 'merk') {
+      const addCategoriesFinal = get().addCategoryValue.toUpperCase();
+    } else {
+      for (let i = 0; i < tempArray.length; i++) {
+        tempArrayFinal.push(tempArray[i][0].toUpperCase() + tempArray[i].slice(1).toLowerCase());
+      }
+      addCategoriesNew = tempArrayFinal.join(' ');
+    }
+    const setOpen = useTableHelper.getState().setOpen;
+    const updateDocument = doc(db, 'configs', 'ProductCode');
+    set((state) => ({ loading: !state.loading }));
+    await updateDoc(updateDocument, {
+      [addCategories]: arrayUnion(addCategoriesNew),
+    });
+    set((state) => ({ snackbarMessage: `${addCategoriesNew} Berhasil Ditambahkan !` }));
+    set((state) => ({ loading: !state.loading, addCategory: '', addCategoyValue: '' }));
+    getOpenSnackbar();
+    setOpen();
+  },
   setEditCodeProduct: (id) => {
     const getCodeProducts = get().codeProducts;
     const editCodeProductFinal = get().editCodeProduct;
+    const getOpenSnackbar = get().setOpenSnackbar;
     getCodeProducts.forEach(async (product) => {
       if (product.id === id) {
         if (editCodeProductFinal.merk === '') {
@@ -61,21 +117,25 @@ export const itemCodeStore = create((set, get) => ({
         const updateDocument = doc(db, 'codeProducts', id);
         set((state) => ({ loading: !state.loading }));
         await updateDoc(updateDocument, editCodeProductFinal);
+        set((state) => ({ snackbarMessage: `${product.name} Berhasil di Ubah !` }));
         set((state) => ({ loading: !state.loading, editMode: !state.editMode, editCodeProduct: {} }));
+        getOpenSnackbar();
       }
     });
   },
   setEdit: (event) => {
-    set((state) =>
-      event.name === 'name' &&
-      state.editCodeProduct.name.toString().toLowerCase().includes(state.merk.toString().toLowerCase()) &&
-      state.editCodeProduct.name.toString().toLowerCase().includes(state.categories.toString().toLowerCase())
-        ? { editCodeProduct: { ...state.editCodeProduct, [event.name]: event.value }, editCodeProductIcon: true }
-        : { editCodeProduct: { ...state.editCodeProduct, [event.name]: event.value }, editCodeProductIcon: false }
-    );
-    set((state) =>
-      event.name === 'code' ? { editCodeProduct: { ...state.editCodeProduct, [event.name]: event.value } } : null
-    );
+    event.name === 'name'
+      ? set((state) =>
+          event.value.toString().toLowerCase().includes(state.merk.toString().toLowerCase()) &&
+          event.value.toString().toLowerCase().includes(state.categories.toString().toLowerCase())
+            ? { editCodeProduct: { ...state.editCodeProduct, [event.name]: event.value }, editCodeProductIcon: true }
+            : { editCodeProduct: { ...state.editCodeProduct, [event.name]: event.value }, editCodeProductIcon: false }
+        )
+      : set((state) =>
+          event.value !== ''
+            ? { editCodeProduct: { ...state.editCodeProduct, [event.name]: event.value }, editCodeProductIcon: true }
+            : { editCodeProduct: { ...state.editCodeProduct, [event.name]: event.value }, editCodeProductIcon: false }
+        );
   },
   setCategories: (category) =>
     category !== undefined || null || ''
@@ -94,19 +154,21 @@ export const itemCodeStore = create((set, get) => ({
           state.addCodeProduct.name.toString().toLowerCase().includes(state.categories.toString().toLowerCase())
         ? {
             addCodeProductIcon: true,
-            addCodeProduct: { ...state.addCodeProduct, merk: state.merk, categories: state.categories },
+            addCodeProduct: { ...state.addCodeProduct, merk: state.merk.toUpperCase(), categories: state.categories },
           }
         : { addCodeProductIcon: false }
     );
   },
   setFinalAddCodeProduct: async () => {
     const codeProductAddFinal = get().addCodeProduct;
+    const getOpenSnackbar = get().setOpenSnackbar;
     delete codeProductAddFinal.id;
     set((state) => ({
       addCodeProduct: { ...state.addCodeProduct, timeStamp: serverTimestamp() },
       loading: !state.loading,
     }));
     await addDoc(collection(db, 'codeProducts'), codeProductAddFinal);
+    set((state) => ({ snackbarMessage: `${codeProductAddFinal.name} Berhasil Ditambahkan !` }));
     set((state) => ({
       addCodeProduct: {
         id: '',
@@ -118,6 +180,7 @@ export const itemCodeStore = create((set, get) => ({
       addCodeProductMode: !state.addCodeProductMode,
       loading: !state.loading,
     }));
+    getOpenSnackbar();
   },
   setCodeProductId: (id) =>
     set((state) => ({
@@ -147,10 +210,31 @@ export const itemCodeStore = create((set, get) => ({
     }));
   },
   setDeleteCodeProduct: async (id) => {
+    const getOpenSnackbar = get().setOpenSnackbar;
     await deleteDoc(doc(db, 'codeProducts', id));
+    set((state) => ({ snackbarMessage: `Code Barang dengan id ${id} Berhasil Dihapus !` }));
+    getOpenSnackbar();
+  },
+  getField: async () => {
+    await onSnapshot(collection(db, 'configs'), (configsData) => {
+      configsData.forEach((config) => {
+        if (config.id === 'ProductCode') {
+          const dataCategories = config.data().categories;
+          const dataMerk = [];
+          for (let a = 0; a < config.data().merk.length; a++) {
+            const merks = config.data().merk[a];
+            dataMerk.push(merks[0].toUpperCase() + merks.slice(1).toString().toLowerCase());
+          }
+          set(() => ({
+            listCategories: dataCategories,
+            listMerk: dataMerk,
+          }));
+        }
+      });
+    });
   },
   getCodeProducts: async () => {
-    const merks = get().merk;
+    const merks = get().merk.toUpperCase();
     const categorieses = get().categories;
     if (merks === '' && categorieses === '') {
       await onSnapshot(collection(db, 'codeProducts'), (codeProduct) => {
