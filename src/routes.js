@@ -7,7 +7,7 @@ import BlogPage from 'pages/BlogPage';
 import UserPage from 'pages/UserPage';
 import LoginPage from 'pages/LoginPage';
 import Page404 from 'pages/Page404';
-import ProductsPage from 'pages/ProductCodePage';
+import CodeProductsPage from 'pages/ProductCodePage';
 import DashboardAppPage from 'pages/DashboardAppPage';
 import { useAuth } from 'store/index';
 
@@ -26,7 +26,7 @@ export default function Router() {
             { element: <Navigate to="/dashboard/app" />, index: true },
             { path: 'app', element: <DashboardAppPage /> },
             { path: 'user', element: <UserPage /> },
-            { path: 'products', element: <ProductsPage /> },
+            { path: 'products/code', element: <CodeProductsPage /> },
             { path: 'blog', element: <BlogPage /> },
           ],
         },
@@ -51,7 +51,7 @@ export default function Router() {
           children: [
             { element: <Navigate to="/dashboard/app" />, index: true },
             { path: 'app', element: <DashboardAppPage /> },
-            { path: 'products', element: <ProductsPage /> },
+            { path: 'products/code', element: <CodeProductsPage /> },
             { path: 'blog', element: <BlogPage /> },
           ],
         },

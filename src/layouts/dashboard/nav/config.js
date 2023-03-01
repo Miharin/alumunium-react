@@ -6,7 +6,7 @@ import {
   PeopleRounded,
   FormatListBulletedRounded,
   DashboardRounded,
-  CropSquareRounded,
+  ListRounded,
 } from '@mui/icons-material';
 import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
 // Import Router
@@ -64,8 +64,8 @@ export const NavSection = (onCloseNav) => {
             id: 'P1',
             name: 'List Code Barang',
             selected: 3,
-            icon: <CropSquareRounded />,
-            links: '/dashboard/products',
+            icon: <ListRounded />,
+            links: '/dashboard/products/code',
           },
         ],
       },
@@ -92,8 +92,8 @@ export const NavSection = (onCloseNav) => {
             id: 'P1',
             name: 'List Code Barang',
             selected: 3,
-            icon: <CropSquareRounded />,
-            links: '/dashboard/products',
+            icon: <ListRounded />,
+            links: '/dashboard/products/code',
           },
         ],
       },
