@@ -378,6 +378,7 @@ export default function ProductPage() {
                                 fullWidth
                                 onChange={(event) => setEdit(event.target)}
                                 InputProps={{ disableUnderline: true }}
+                                type={column.id === 'code' ? 'number' : 'text'}
                                 name={column.id}
                                 placeholder={value}
                                 variant="standard"
@@ -411,6 +412,7 @@ export default function ProductPage() {
                               required
                               fullWidth
                               name={column.id}
+                              type={column.id === 'code' ? 'number' : 'text'}
                               onChange={(event) => setAddCodeProduct(event.target)}
                               InputProps={{ disableUnderline: true }}
                               variant="standard"

@@ -318,6 +318,7 @@ export default function UserPage() {
                                 <TextField
                                   fullWidth
                                   onChange={(event) => setEdit(event.target)}
+                                  type={column.id === 'password' ? 'password' : 'text'}
                                   InputProps={{ disableUnderline: true }}
                                   name={column.id}
                                   placeholder={value}
@@ -442,6 +443,7 @@ export default function UserPage() {
                                 required
                                 fullWidth
                                 name={column.id}
+                                type={column.id === 'password' ? 'password' : 'text'}
                                 onChange={(event) => setAddUser(event.target)}
                                 InputProps={{ disableUnderline: true }}
                                 variant="standard"

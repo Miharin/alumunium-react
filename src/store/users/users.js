@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { sha256 } from 'crypto-hash';
 import { collection, onSnapshot, updateDoc, doc, addDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { db } from 'config/firebaseConfig';
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -86,7 +87,8 @@ export const dataUsers = create((set, get) => ({
       state.addUser.status === '' ||
       state.addUser.shift === '' ||
       state.addUser.username === '' ||
-      state.addUser.password === ''
+      state.addUser.password === '' ||
+      state.addUser.password.length <= 5
         ? null
         : { addUserIcon: !state.adduserIcon }
     );
@@ -94,8 +96,11 @@ export const dataUsers = create((set, get) => ({
   setFinalAddUser: async () => {
     const userAddFinal = get().addUser;
     const getOpenSnackbar = get().setOpenSnackbar;
+    const email = `${userAddFinal.username}@gmail.com`;
+    const auth = getAuth();
     delete userAddFinal.id;
     set((state) => ({ addUser: { ...state.addUser, timeStamp: serverTimestamp() }, loading: !state.loading }));
+    createUserWithEmailAndPassword(auth, email, userAddFinal.password);
     await addDoc(collection(db, 'users'), userAddFinal);
     set(() => ({ snackbarMessage: `User dengan Nama ${userAddFinal.name} Berhasil Di Tambahkan !` }));
     set((state) => ({

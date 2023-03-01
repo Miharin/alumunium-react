@@ -12,7 +12,7 @@ import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui
 // Import Router
 import { NavLink as RouterLink } from 'react-router-dom';
 // Import Helpers
-import { useSidebarConfig } from 'store/index';
+import { useSidebarConfig, useAuth } from 'store/index';
 
 export const NavSection = (onCloseNav) => {
   // Start Initialization
@@ -24,50 +24,82 @@ export const NavSection = (onCloseNav) => {
   const toggleProducts = useSidebarConfig((state) => state.toggleProducts);
   const selectedIndex = useSidebarConfig((state) => state.selected);
   const setSelectedIndex = useSidebarConfig((state) => state.setSelected);
+  const userCred = useAuth((state) => state.userCredentials);
+  let itemNav = [];
+  if (userCred.email.toLowerCase() === 'admin@alujaya.com' || userCred.email.toLowerCase() === 'bambang@gmail.com') {
+    itemNav = [
+      {
+        name: 'Dashboard',
+        icon: <EqualizerRounded />,
+        links: '/dashboard/app',
+        selected: 0,
+        isExpand: false,
+        open: openDashboard,
+        toggle: toggleDashboard,
+      },
+      {
+        name: 'Users',
+        icon: <PeopleRounded />,
+        isExpand: true,
+        open: openUsers,
+        toggle: toggleUsers,
+        Expand: [
+          {
+            id: 'U1',
+            name: 'List And Manage Users',
+            selected: 2,
+            icon: <FormatListBulletedRounded />,
+            links: '/dashboard/user',
+          },
+        ],
+      },
+      {
+        name: 'Products',
+        icon: <DashboardRounded />,
+        isExpand: true,
+        open: openProducts,
+        toggle: toggleProducts,
+        Expand: [
+          {
+            id: 'P1',
+            name: 'List Code Barang',
+            selected: 3,
+            icon: <CropSquareRounded />,
+            links: '/dashboard/products',
+          },
+        ],
+      },
+    ];
+  } else {
+    itemNav = [
+      {
+        name: 'Dashboard',
+        icon: <EqualizerRounded />,
+        links: '/dashboard/app',
+        selected: 0,
+        isExpand: false,
+        open: openDashboard,
+        toggle: toggleDashboard,
+      },
+      {
+        name: 'Products',
+        icon: <DashboardRounded />,
+        isExpand: true,
+        open: openProducts,
+        toggle: toggleProducts,
+        Expand: [
+          {
+            id: 'P1',
+            name: 'List Code Barang',
+            selected: 3,
+            icon: <CropSquareRounded />,
+            links: '/dashboard/products',
+          },
+        ],
+      },
+    ];
+  }
 
-  const itemNav = [
-    {
-      name: 'Dashboard',
-      icon: <EqualizerRounded />,
-      links: '/dashboard/app',
-      selected: 0,
-      isExpand: false,
-      open: openDashboard,
-      toggle: toggleDashboard,
-    },
-    {
-      name: 'Users',
-      icon: <PeopleRounded />,
-      isExpand: true,
-      open: openUsers,
-      toggle: toggleUsers,
-      Expand: [
-        {
-          id: 'U1',
-          name: 'List And Manage Users',
-          selected: 2,
-          icon: <FormatListBulletedRounded />,
-          links: '/dashboard/user',
-        },
-      ],
-    },
-    {
-      name: 'Products',
-      icon: <DashboardRounded />,
-      isExpand: true,
-      open: openProducts,
-      toggle: toggleProducts,
-      Expand: [
-        {
-          id: 'P1',
-          name: 'List Code Barang',
-          selected: 3,
-          icon: <CropSquareRounded />,
-          links: '/dashboard/products',
-        },
-      ],
-    },
-  ];
   // End initialization
 
   const NavSectionItem = (

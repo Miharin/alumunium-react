@@ -17,31 +17,58 @@ export default function Router() {
   const userCred = useAuth((state) => state.userCredentials);
   let routePath;
   if (userCred.uid !== undefined) {
-    routePath = [
-      {
-        path: '/dashboard',
-        element: <DashboardLayout />,
-        children: [
-          { element: <Navigate to="/dashboard/app" />, index: true },
-          { path: 'app', element: <DashboardAppPage /> },
-          { path: 'user', element: <UserPage /> },
-          { path: 'products', element: <ProductsPage /> },
-          { path: 'blog', element: <BlogPage /> },
-        ],
-      },
-      {
-        path: '/login',
-        element: <Navigate to="/dashboard" replace />,
-      },
-      {
-        path: '/404',
-        element: <Page404 />,
-      },
-      {
-        path: '/*',
-        element: <Navigate to="/404" replace />,
-      },
-    ];
+    if (userCred.email.toLowerCase() === 'admin@alujaya.com' || userCred.email.toLowerCase() === 'bambang@gmail.com') {
+      routePath = [
+        {
+          path: '/dashboard',
+          element: <DashboardLayout />,
+          children: [
+            { element: <Navigate to="/dashboard/app" />, index: true },
+            { path: 'app', element: <DashboardAppPage /> },
+            { path: 'user', element: <UserPage /> },
+            { path: 'products', element: <ProductsPage /> },
+            { path: 'blog', element: <BlogPage /> },
+          ],
+        },
+        {
+          path: '/login',
+          element: <Navigate to="/dashboard" replace />,
+        },
+        {
+          path: '/404',
+          element: <Page404 />,
+        },
+        {
+          path: '/*',
+          element: <Navigate to="/404" replace />,
+        },
+      ];
+    } else {
+      routePath = [
+        {
+          path: '/dashboard',
+          element: <DashboardLayout />,
+          children: [
+            { element: <Navigate to="/dashboard/app" />, index: true },
+            { path: 'app', element: <DashboardAppPage /> },
+            { path: 'products', element: <ProductsPage /> },
+            { path: 'blog', element: <BlogPage /> },
+          ],
+        },
+        {
+          path: '/login',
+          element: <Navigate to="/dashboard" replace />,
+        },
+        {
+          path: '/404',
+          element: <Page404 />,
+        },
+        {
+          path: '/*',
+          element: <Navigate to="/404" replace />,
+        },
+      ];
+    }
   } else {
     routePath = [
       {

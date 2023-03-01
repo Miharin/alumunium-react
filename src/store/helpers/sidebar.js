@@ -6,6 +6,7 @@ export const sidebarConfig = create(
     (set) => ({
       nameRoutes: '',
       selected: null,
+      setLogout: () => {},
       setSelected: (selectedNumber, nameRoutesIndex) =>
         set(() => ({ selected: selectedNumber, nameRoutes: nameRoutesIndex })),
       openDashboard: false,
