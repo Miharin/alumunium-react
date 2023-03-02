@@ -15,6 +15,9 @@ export const tableHelper = create((set) => ({
     row.name.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.categories.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.merk.toString().toLowerCase().includes(search.toString().toLowerCase()),
+  filteredProducts: (row, search) =>
+    row.categories.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.merk.toString().toLowerCase().includes(search.toString().toLowerCase()),
   filteredUser: (row, search) =>
     row.name.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.role.toString().toLowerCase().includes(search.toString().toLowerCase()) ||

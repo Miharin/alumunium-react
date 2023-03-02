@@ -16,7 +16,7 @@ import { useTableHelper } from 'store/index';
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-export const itemCodeStore = create((set, get) => ({
+export const listProductStore = create((set, get) => ({
   loading: true,
   openSnackbar: false,
   snackbarMessage: '',
@@ -28,7 +28,7 @@ export const itemCodeStore = create((set, get) => ({
   merk: '',
   categories: '',
   editCodeProductId: '',
-  codeProducts: [],
+  listProducts: [],
   configs: {},
   search: '',
   editCodeProduct: {},
@@ -229,78 +229,30 @@ export const itemCodeStore = create((set, get) => ({
       });
     });
   },
-  getCodeProducts: async () => {
+  getProducts: async () => {
     const merks = get().merk.toUpperCase();
     const categorieses = get().categories;
-    await onSnapshot(
-      query(collection(db, 'codeProducts'), orderBy('categories'), orderBy('merk'), orderBy('name')),
-      (codeProduct) => {
-        set(() => ({ codeProducts: [] }));
-        codeProduct.forEach(async (codeData) => {
-          if (
-            merks !== '' &&
-            categorieses !== '' &&
-            merks === codeData.data().merk &&
-            categorieses === codeData.data().categories
-          ) {
+    await onSnapshot(query(collection(db, 'configs'), orderBy('categories')), (listProduct) => {
+      set(() => ({ codeProducts: [] }));
+      listProduct.forEach(async (productData) => {
+        let tempDataCategories = productData.data().categories.sort();
+        let tempDataMerk = productData.data().merk.sort();
+        for (let i = 0; i < tempDataMerk.length; i++) {
+          for (let j = 0; j < tempDataCategories.length; j++) {
             set((state) => ({
-              codeProducts: [
-                ...state.codeProducts,
+              listProducts: [
+                ...state.listProducts,
                 {
-                  id: codeData.id,
-                  code: codeData.data().code,
-                  name: codeData.data().name,
-                  categories: codeData.data().categories,
-                  merk: codeData.data().merk,
+                  id: tempDataMerk[i] + j,
+                  categories: tempDataCategories[j],
+                  merk: tempDataMerk[i],
                 },
               ],
             }));
           }
-          if (categorieses !== '' && categorieses === codeData.data().categories && merks === '') {
-            set((state) => ({
-              codeProducts: [
-                ...state.codeProducts,
-                {
-                  id: codeData.id,
-                  code: codeData.data().code,
-                  name: codeData.data().name,
-                  categories: codeData.data().categories,
-                  merk: codeData.data().merk,
-                },
-              ],
-            }));
-          }
-          if (merks !== '' && merks === codeData.data().merk && categorieses === '') {
-            set((state) => ({
-              codeProducts: [
-                ...state.codeProducts,
-                {
-                  id: codeData.id,
-                  code: codeData.data().code,
-                  name: codeData.data().name,
-                  categories: codeData.data().categories,
-                  merk: codeData.data().merk,
-                },
-              ],
-            }));
-          }
-          if (merks === '' && categorieses === '') {
-            set((state) => ({
-              codeProducts: [
-                ...state.codeProducts,
-                {
-                  id: codeData.id,
-                  code: codeData.data().code,
-                  name: codeData.data().name,
-                  categories: codeData.data().categories,
-                  merk: codeData.data().merk,
-                },
-              ],
-            }));
-          }
-        });
-      }
-    );
+        }
+      });
+    });
     await delay(2000);
     set((state) => ({ loading: !state.loading }));
   },

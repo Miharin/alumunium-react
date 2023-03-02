@@ -50,7 +50,7 @@ import {
 import { visuallyHidden } from '@mui/utils';
 
 // store
-import { useItemCode, useTableHelper } from 'store/index';
+import { useItemCode, useTableHelper, useListProductStore } from 'store/index';
 // End Import
 
 // Start Function of Filtered
@@ -89,10 +89,12 @@ export default function ProductPage() {
   const setSearch = useTableHelper((state) => state.setSearch);
   const showSearch = useTableHelper((state) => state.showSearch);
   const setShowSearch = useTableHelper((state) => state.setShowSearch);
-  const filtered = useTableHelper((state) => state.filtered);
+  const filtered = useTableHelper((state) => state.filteredProducts);
   const open = useTableHelper((state) => state.open);
   const setOpen = useTableHelper((state) => state.setOpen);
   // End Helper Table
+  const getProducts = useListProductStore((state) => state.getProducts);
+  const listProducts = useListProductStore((state) => state.listProducts);
 
   // Start CodeProduct Initialization
   const loading = useItemCode((state) => state.loading);
@@ -128,15 +130,15 @@ export default function ProductPage() {
   const openSnackbar = useItemCode((state) => state.openSnackbar);
   const snackbarMessage = useItemCode((state) => state.snackbarMessage);
   const setOpenSnackbar = useItemCode((state) => state.setOpenSnackbar);
-  const rows = codeProducts;
+  const rows = listProducts;
   // End ProductCode Initialization
 
   // Declaration for Column of Table
   let columns = [];
   if ((categories !== '' || null || undefined) && (merk !== '' || null || undefined)) {
     columns = [
-      { id: 'code', label: 'Code', minWidth: 150, align: 'left' },
-      { id: 'name', label: 'Nama', minWidth: 150, align: 'left' },
+      { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
+      { id: 'categories', label: 'Kategori', minWidth: 150, align: 'left' },
       {
         id: 'action',
         label: 'Action',
@@ -146,8 +148,8 @@ export default function ProductPage() {
     ];
   } else {
     columns = [
-      { id: 'code', label: 'Code', minWidth: 150, align: 'left' },
-      { id: 'name', label: 'Nama', minWidth: 150, align: 'left' },
+      { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
+      { id: 'categories', label: 'Kategori', minWidth: 150, align: 'left' },
     ];
   }
 
@@ -155,7 +157,8 @@ export default function ProductPage() {
   useEffect(() => {
     getCodeProducts();
     getField();
-  }, [getCodeProducts, getField]);
+    getProducts();
+  }, [getCodeProducts, getField, getProducts]);
 
   // Function for Filter Table
   const createSortHandler = (property) => (event) => {

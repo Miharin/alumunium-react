@@ -67,6 +67,13 @@ export const NavSection = (onCloseNav) => {
             icon: <ListRounded />,
             links: '/dashboard/products/code',
           },
+          {
+            id: 'P2',
+            name: 'List Barang',
+            selected: 4,
+            icon: <FormatListBulletedRounded />,
+            links: '/dashboard/products',
+          },
         ],
       },
     ];
@@ -94,6 +101,13 @@ export const NavSection = (onCloseNav) => {
             selected: 3,
             icon: <ListRounded />,
             links: '/dashboard/products/code',
+          },
+          {
+            id: 'P2',
+            name: 'List Barang',
+            selected: 4,
+            icon: <FormatListBulletedRounded />,
+            links: '/dashboard/products',
           },
         ],
       },
