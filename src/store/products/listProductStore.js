@@ -20,6 +20,44 @@ export const listProductStore = create((set, get) => ({
   loading: true,
   openSnackbar: false,
   snackbarMessage: '',
+  columnMoreData: [
+    {
+      id: 'code',
+      label: 'Code',
+      align: 'left',
+      minWidth: 150,
+    },
+    {
+      id: 'name',
+      label: 'Nama Barang',
+      align: 'left',
+      minWidth: 150,
+    },
+    {
+      id: 'price_1',
+      label: 'Harga 1',
+      align: 'left',
+      minWidth: 150,
+    },
+    {
+      id: 'price_2',
+      label: 'Harga 2',
+      align: 'left',
+      minWidth: 150,
+    },
+    {
+      id: 'price_3',
+      label: 'Harga 3',
+      align: 'left',
+      minWidth: 150,
+    },
+    {
+      id: 'action',
+      label: 'Action',
+      minWidth: 150,
+      align: 'left',
+    },
+  ],
   listCategories: [],
   listMerk: [],
   addCategory: '',
@@ -232,6 +270,7 @@ export const listProductStore = create((set, get) => ({
   getProducts: async () => {
     const merks = get().merk.toUpperCase();
     const categorieses = get().categories;
+    const productList = [];
     await onSnapshot(query(collection(db, 'configs'), orderBy('categories')), (listProduct) => {
       set(() => ({ codeProducts: [] }));
       listProduct.forEach(async (productData) => {
@@ -239,19 +278,28 @@ export const listProductStore = create((set, get) => ({
         let tempDataMerk = productData.data().merk.sort();
         for (let i = 0; i < tempDataMerk.length; i++) {
           for (let j = 0; j < tempDataCategories.length; j++) {
-            set((state) => ({
-              listProducts: [
-                ...state.listProducts,
-                {
-                  id: tempDataMerk[i] + j,
-                  categories: tempDataCategories[j],
-                  merk: tempDataMerk[i],
-                },
-              ],
-            }));
+            productList.push({
+              id: tempDataMerk[i] + j,
+              categories: tempDataCategories[j],
+              merk: tempDataMerk[i],
+              products: [],
+            });
           }
         }
       });
+    });
+    await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (listProductData) => {
+      listProductData.forEach((productData) => {
+        productList[
+          productList.findIndex(
+            (productListData) =>
+              productListData.merk === productData.data().merk &&
+              productListData.categories === productData.data().categories
+          )
+        ].products.push(productData.data());
+      });
+      set(() => ({ listProducts: productList }));
+      console.log(get().listProducts);
     });
     await delay(2000);
     set((state) => ({ loading: !state.loading }));
