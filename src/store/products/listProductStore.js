@@ -8,11 +8,10 @@ import {
   serverTimestamp,
   deleteDoc,
   query,
-  arrayUnion,
   orderBy,
 } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { db } from 'config/firebaseConfig';
-import { useTableHelper } from 'store/index';
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -20,157 +19,79 @@ export const listProductStore = create((set, get) => ({
   loading: true,
   openSnackbar: false,
   snackbarMessage: '',
-  columnMoreData: [
-    {
-      id: 'code',
-      label: 'Code',
-      align: 'left',
-      minWidth: 150,
-    },
-    {
-      id: 'name',
-      label: 'Nama Barang',
-      align: 'left',
-      minWidth: 150,
-    },
-    {
-      id: 'price_1',
-      label: 'Harga 1',
-      align: 'left',
-      minWidth: 150,
-    },
-    {
-      id: 'price_2',
-      label: 'Harga 2',
-      align: 'left',
-      minWidth: 150,
-    },
-    {
-      id: 'price_3',
-      label: 'Harga 3',
-      align: 'left',
-      minWidth: 150,
-    },
-    {
-      id: 'action',
-      label: 'Action',
-      minWidth: 150,
-      align: 'left',
-    },
-  ],
   listCategories: [],
   listMerk: [],
-  addCategory: '',
-  addCategoryValue: '',
-  helperAddCategory: '',
+  listName: [],
+  codeNew: '',
+  name: '',
   merk: '',
   categories: '',
-  editCodeProductId: '',
+  editProductId: '',
   listProducts: [],
   configs: {},
   search: '',
-  editCodeProduct: {},
-  addCodeProduct: {
+  editProduct: {},
+  addProduct: {
     id: '',
-    merk: '',
-    categories: '',
     code: '',
+    categories: '',
+    merk: '',
     name: '',
+    price_1: '',
+    price_2: '',
+    price_3: '',
+    stock: '',
+    lastInput: '',
   },
-  addCodeProductMode: false,
-  addCodeProductIcon: false,
+  addProductMode: false,
+  addProductIcon: false,
   editMode: false,
-  editCodeProductIcon: false,
+  editProductIcon: false,
   showSearch: false,
   setOpenSnackbar: () => set((state) => ({ openSnackbar: !state.openSnackbar })),
-  setAddCategory: (event) => set(() => ({ addCategory: event.value })),
-  setAddCategoryValue: (event) => {
-    /* eslint-disable */
-    const listMerk = get().listMerk;
-    const listCategories = get().listCategories;
-    /* eslint-disable */
-    set(() => ({ addCategoryValue: event.value }));
-    if (event.name === 'merk') {
-      if (listMerk.find((merk) => merk.toLowerCase() === event.value.toLowerCase())) {
-        set(() => ({ helperAddCategory: `${event.value} Sudah Ada` }));
-      } else {
-        set(() => ({ helperAddCategory: '' }));
-      }
-    } else if (event.name === 'category') {
-      if (listCategories.find((category) => category.toLowerCase() === event.value.toLowerCase())) {
-        set(() => ({ helperAddCategory: `${event.value} Sudah Ada` }));
-      } else {
-        set(() => ({ helperAddCategory: '' }));
-      }
-    }
-  },
-  setAddCategoryFinal: async () => {
-    const addCategories = get().addCategory;
-    const addCategoriesFinal = get().addCategoryValue;
+  setEditProduct: (id) => {
+    set((state) => ({
+      editProduct: { ...state.editProduct, timeStamp: serverTimestamp(), lastInput: getAuth().currentUser.email },
+    }));
+    const getProducts = get().listProducts;
+    const editProductFinal = get().editProduct;
     const getOpenSnackbar = get().setOpenSnackbar;
-    const tempArray = addCategoriesFinal.split(' ');
-    let tempArrayFinal = [];
-    let addCategoriesNew = '';
-    if (addCategories === 'merk') {
-      const addCategoriesFinal = get().addCategoryValue.toUpperCase();
-    } else {
-      for (let i = 0; i < tempArray.length; i++) {
-        tempArrayFinal.push(tempArray[i][0].toUpperCase() + tempArray[i].slice(1).toLowerCase());
-      }
-      addCategoriesNew = tempArrayFinal.join(' ');
-    }
-    const setOpen = useTableHelper.getState().setOpen;
-    const updateDocument = doc(db, 'configs', 'ProductCode');
-    set((state) => ({ loading: !state.loading }));
-    await updateDoc(updateDocument, {
-      [addCategories]: arrayUnion(addCategoriesNew),
-    });
-    set((state) => ({ snackbarMessage: `${addCategoriesNew} Berhasil Ditambahkan !` }));
-    set((state) => ({ loading: !state.loading, addCategory: '', addCategoyValue: '' }));
-    getOpenSnackbar();
-    setOpen();
-  },
-  setEditCodeProduct: (id) => {
-    const getCodeProducts = get().codeProducts;
-    const editCodeProductFinal = get().editCodeProduct;
-    const getOpenSnackbar = get().setOpenSnackbar;
-    getCodeProducts.forEach(async (product) => {
+    getProducts.forEach(async (product) => {
       if (product.id === id) {
-        if (editCodeProductFinal.merk === '') {
-          delete editCodeProductFinal.merk;
+        if (editProductFinal.merk === '') {
+          delete editProductFinal.merk;
         }
-        if (editCodeProductFinal.categories === '') {
-          delete editCodeProductFinal.categories;
+        if (editProductFinal.categories === '') {
+          delete editProductFinal.categories;
         }
-        if (editCodeProductFinal.code === '') {
-          delete editCodeProductFinal.code;
+        if (editProductFinal.code === '') {
+          delete editProductFinal.code;
         }
-        if (editCodeProductFinal.name === '') {
-          delete editCodeProductFinal.name;
+        if (editProductFinal.name === '') {
+          delete editProductFinal.name;
         }
-        const updateDocument = doc(db, 'codeProducts', id);
+        const updateDocument = doc(db, 'listProducts', id);
         set((state) => ({ loading: !state.loading }));
-        await updateDoc(updateDocument, editCodeProductFinal);
-        set((state) => ({ snackbarMessage: `${product.name} Berhasil di Ubah !` }));
-        set((state) => ({ loading: !state.loading, editMode: !state.editMode, editCodeProduct: {} }));
+        await updateDoc(updateDocument, editProductFinal);
+        set(() => ({ snackbarMessage: `${product.name} Berhasil di Ubah !` }));
+        set((state) => ({ loading: !state.loading, editMode: !state.editMode, editProduct: {} }));
         getOpenSnackbar();
       }
     });
   },
-  setEdit: (event) => {
+  setEdit: (event) =>
     event.name === 'name'
       ? set((state) =>
           event.value.toString().toLowerCase().includes(state.merk.toString().toLowerCase()) &&
           event.value.toString().toLowerCase().includes(state.categories.toString().toLowerCase())
-            ? { editCodeProduct: { ...state.editCodeProduct, [event.name]: event.value }, editCodeProductIcon: true }
-            : { editCodeProduct: { ...state.editCodeProduct, [event.name]: event.value }, editCodeProductIcon: false }
+            ? { editProduct: { ...state.editProduct, [event.name]: event.value }, editProductIcon: true }
+            : { editProduct: { ...state.editProduct, [event.name]: event.value }, editProductIcon: false }
         )
       : set((state) =>
           event.value !== ''
-            ? { editCodeProduct: { ...state.editCodeProduct, [event.name]: event.value }, editCodeProductIcon: true }
-            : { editCodeProduct: { ...state.editCodeProduct, [event.name]: event.value }, editCodeProductIcon: false }
-        );
-  },
+            ? { editProduct: { ...state.editProduct, [event.name]: event.value }, editProductIcon: true }
+            : { editProduct: { ...state.editProduct, [event.name]: event.value }, editProductIcon: false }
+        ),
   setCategories: (category) =>
     category !== undefined || null || ''
       ? set((state) => ({ categories: category, loading: !state.loading }))
@@ -179,77 +100,112 @@ export const listProductStore = create((set, get) => ({
     merkChoose !== undefined || null || ''
       ? set((state) => ({ merk: merkChoose, loading: !state.loading }))
       : set((state) => ({ merk: '', loading: !state.loading })),
-  setAddCodeProduct: (event) => {
-    set((state) => ({ addCodeProduct: { ...state.addCodeProduct, [event.name]: event.value } }));
+  setName: (nameChoose) => {
+    console.log(nameChoose);
+    if (nameChoose !== undefined || null || '') {
+      set(() => ({ name: nameChoose.label, codeNew: nameChoose.code }));
+    } else {
+      set(() => ({ name: '' }));
+    }
+  },
+  setAddProduct: (event) => {
+    set((state) => ({ addProduct: { ...state.addProduct, [event.name]: event.value } }));
     set((state) =>
-      state.addCodeProduct.code === '' || state.addCodeProduct.name === ''
-        ? { addCodeProductIcon: false }
-        : state.addCodeProduct.name.toString().toLowerCase().includes(state.merk.toString().toLowerCase()) &&
-          state.addCodeProduct.name.toString().toLowerCase().includes(state.categories.toString().toLowerCase())
+      state.addProduct.code === '' || state.addProduct.name === ''
+        ? { addProductIcon: false }
+        : state.addProduct.name.toString().toLowerCase().includes(state.merk.toString().toLowerCase()) &&
+          state.addProduct.name.toString().toLowerCase().includes(state.categories.toString().toLowerCase())
         ? {
-            addCodeProductIcon: true,
-            addCodeProduct: { ...state.addCodeProduct, merk: state.merk.toUpperCase(), categories: state.categories },
+            addProductIcon: true,
+            addProduct: { ...state.addProduct, merk: state.merk.toUpperCase(), categories: state.categories },
           }
-        : { addCodeProductIcon: false }
+        : { addProductIcon: false }
     );
   },
-  setFinalAddCodeProduct: async () => {
-    const codeProductAddFinal = get().addCodeProduct;
+  setFinalAddProduct: async () => {
+    const productAddFinal = get().addProduct;
+    const listProduct = get().listProducts;
     const getOpenSnackbar = get().setOpenSnackbar;
-    delete codeProductAddFinal.id;
-    set((state) => ({
-      addCodeProduct: { ...state.addCodeProduct, timeStamp: serverTimestamp() },
-      loading: !state.loading,
-    }));
-    await addDoc(collection(db, 'codeProducts'), codeProductAddFinal);
-    set((state) => ({ snackbarMessage: `${codeProductAddFinal.name} Berhasil Ditambahkan !` }));
-    set((state) => ({
-      addCodeProduct: {
-        id: '',
-        merk: '',
-        categories: '',
-        code: '',
-        name: '',
-      },
-      addCodeProductMode: !state.addCodeProductMode,
-      loading: !state.loading,
-    }));
-    getOpenSnackbar();
+    delete productAddFinal.id;
+    listProduct.forEach((product) => {
+      /* eslint-disable */
+      if (product.name === productAddFinal.name && product.code === productAddFinal.code) {
+        set(() => ({ helperCodeName: product.name + ' Sudah Ada !', helperCode: product.code + ' Sudah Ada !' }));
+      } else if (product.code === productAddFinal.code) {
+        set(() => ({ helperCode: product.code + ' Sudah Ada !' }));
+      } else if (product.name === productAddFinal.name) {
+        set(() => ({ helperCodeName: product.name + ' Sudah Ada !' }));
+      } else {
+        async () => {
+          set((state) => ({
+            addProduct: { ...state.addProduct, timeStamp: serverTimestamp() },
+            loading: !state.loading,
+          }));
+          await addDoc(collection(db, 'listProducts'), productAddFinal);
+          set(() => ({ snackbarMessage: `${productAddFinal.name} Berhasil Ditambahkan !` }));
+          set((state) => ({
+            addProduct: {
+              id: '',
+              code: '',
+              categories: '',
+              merk: '',
+              name: '',
+              price_1: '',
+              price_2: '',
+              price_3: '',
+              stock: '',
+              lastInput: '',
+            },
+            addProductMode: !state.addProductMode,
+            loading: !state.loading,
+          }));
+          getOpenSnackbar();
+        };
+      }
+      /* eslint-disable */
+    });
   },
-  setCodeProductId: (id) =>
+  setProductId: (id) =>
     set((state) => ({
-      editCodeProductId: id,
-      editCodeProductMode: !state.editCodeProductMode,
+      editProductId: id,
+      editProductMode: !state.editProductMode,
       editMode: !state.editMode,
     })),
-  deleteAddCodeProductNew: () => {
-    const codeProductDelete = get().codeProducts;
-    codeProductDelete.pop();
+  deleteAddProductNew: () => {
+    const productDelete = get().listProduct;
+    productDelete.pop();
     set((state) => ({ addCodeProductMode: !state.addCodeProductMode }));
   },
-  setAddCodeProductMode: () => {
+  setAddProductMode: () => {
     set((state) => ({
-      addCodeProductMode: !state.addCodeProductMode,
-      editCodeProductId: state.addCodeProduct.id,
-      codeProducts: [
-        ...state.codeProducts,
+      addProductMode: !state.addProductMode,
+      editProductId: state.addProduct.id,
+      listProducts: [
+        ...state.listProducts,
         {
-          id: state.addCodeProduct.id,
-          merk: state.addCodeProduct.merk,
-          categories: state.addCodeProduct.categories,
-          code: state.addCodeProduct.code,
-          name: state.addCodeProduct.name,
+          id: state.addProduct.id,
+          code: state.addProduct.code,
+          categories: state.addProduct.categories,
+          merk: state.addProduct.merk,
+          name: state.addProduct.name,
+          price_1: state.addProduct.price_1,
+          price_2: state.addProduct.price_2,
+          price_3: state.addProduct.price_3,
+          stock: state.addProduct.stock,
+          lastInput: state.addProduct.lastInput,
         },
       ],
     }));
   },
-  setDeleteCodeProduct: async (id) => {
+  setDeleteProduct: async (id) => {
     const getOpenSnackbar = get().setOpenSnackbar;
-    await deleteDoc(doc(db, 'codeProducts', id));
-    set((state) => ({ snackbarMessage: `Code Barang dengan id ${id} Berhasil Dihapus !` }));
+    await deleteDoc(doc(db, 'listProducts', id));
+    set(() => ({ snackbarMessage: `Barang dengan id ${id} Berhasil Dihapus !` }));
     getOpenSnackbar();
   },
   getField: async () => {
+    const merks = get().merk.toUpperCase();
+    const categorieses = get().categories;
     await onSnapshot(collection(db, 'configs'), (configsData) => {
       configsData.forEach((config) => {
         if (config.id === 'ProductCode') {
@@ -267,41 +223,168 @@ export const listProductStore = create((set, get) => ({
       });
     });
   },
+  getProductName: async () => {
+    const merks = get().merk.toUpperCase();
+    const categorieses = get().categories;
+    const codename = get().name;
+    await delay(2000);
+    let listProducts = get().listProducts;
+    let listCodeProduct = [];
+    await onSnapshot(query(collection(db, 'codeProducts'), orderBy('categories')), (codeProducts) => {
+      codeProducts.forEach((codeProduct) => {
+        listCodeProduct.push(codeProduct.data());
+      });
+      const CodeProductFinal = listCodeProduct.filter((code) => listProducts.every((list) => list.code !== code.code));
+      set((state) => ({ listName: [] }));
+      CodeProductFinal.forEach((codes) => {
+        if (merks !== '' && categorieses !== '' && merks === codes.merk && categorieses === codes.categories) {
+          set((state) => ({
+            listName: [
+              ...state.listName,
+              {
+                code: codes.code,
+                label: codes.name,
+              },
+            ],
+          }));
+        }
+        if (categorieses !== '' && categorieses === codes.categories && merks === '') {
+          set((state) => ({
+            listName: [
+              ...state.listName,
+              {
+                code: codes.code,
+                label: codes.name,
+              },
+            ],
+          }));
+        }
+        if (merks !== '' && merks === codes.merk && categorieses === '') {
+          set((state) => ({
+            listName: [
+              ...state.listName,
+              {
+                code: codes.code,
+                label: codes.name,
+              },
+            ],
+          }));
+        }
+        if (merks === '' && categorieses === '') {
+          set((state) => ({
+            listName: [
+              ...state.listName,
+              {
+                code: codes.code,
+                label: codes.name,
+              },
+            ],
+          }));
+        }
+      });
+    });
+  },
   getProducts: async () => {
     const merks = get().merk.toUpperCase();
     const categorieses = get().categories;
-    const productList = [];
-    await onSnapshot(query(collection(db, 'configs'), orderBy('categories')), (listProduct) => {
-      set(() => ({ codeProducts: [] }));
+    await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (listProduct) => {
+      set(() => ({ listProducts: [] }));
       listProduct.forEach(async (productData) => {
-        let tempDataCategories = productData.data().categories.sort();
-        let tempDataMerk = productData.data().merk.sort();
-        for (let i = 0; i < tempDataMerk.length; i++) {
-          for (let j = 0; j < tempDataCategories.length; j++) {
-            productList.push({
-              id: tempDataMerk[i] + j,
-              categories: tempDataCategories[j],
-              merk: tempDataMerk[i],
-              products: [],
-            });
+        if (productData.data().timeStamp !== null) {
+          if (
+            merks !== '' &&
+            categorieses !== '' &&
+            merks === productData.data().merk &&
+            categorieses === productData.data().categories
+          ) {
+            set((state) => ({
+              listProducts: [
+                ...state.listProducts,
+                {
+                  id: productData.id,
+                  code: productData.data().code,
+                  categories: productData.data().categories,
+                  merk: productData.data().merk,
+                  name: productData.data().name,
+                  price_1: productData.data().price_1,
+                  price_2: productData.data().price_2,
+                  price_3: productData.data().price_3,
+                  stock: productData.data().stock,
+                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000)}' By '${
+                    productData.data().lastInput
+                  }`,
+                },
+              ],
+            }));
+          }
+          if (categorieses !== '' && categorieses === productData.data().categories && merks === '') {
+            set((state) => ({
+              listProducts: [
+                ...state.listProducts,
+                {
+                  id: productData.id,
+                  code: productData.data().code,
+                  categories: productData.data().categories,
+                  merk: productData.data().merk,
+                  name: productData.data().name,
+                  price_1: productData.data().price_1,
+                  price_2: productData.data().price_2,
+                  price_3: productData.data().price_3,
+                  stock: productData.data().stock,
+                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000)}' By '${
+                    productData.data().lastInput
+                  }`,
+                },
+              ],
+            }));
+          }
+          if (merks !== '' && merks === productData.data().merk && categorieses === '') {
+            set((state) => ({
+              listProducts: [
+                ...state.listProducts,
+                {
+                  id: productData.id,
+                  code: productData.data().code,
+                  categories: productData.data().categories,
+                  merk: productData.data().merk,
+                  name: productData.data().name,
+                  price_1: productData.data().price_1,
+                  price_2: productData.data().price_2,
+                  price_3: productData.data().price_3,
+                  stock: productData.data().stock,
+                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000)}' By '${
+                    productData.data().lastInput
+                  }`,
+                },
+              ],
+            }));
+          }
+          if (merks === '' && categorieses === '') {
+            set((state) => ({
+              listProducts: [
+                ...state.listProducts,
+                {
+                  id: productData.id,
+                  code: productData.data().code,
+                  categories: productData.data().categories,
+                  merk: productData.data().merk,
+                  name: productData.data().name,
+                  price_1: productData.data().price_1,
+                  price_2: productData.data().price_2,
+                  price_3: productData.data().price_3,
+                  stock: productData.data().stock,
+                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000)}' By '${
+                    productData.data().lastInput
+                  }`,
+                },
+              ],
+            }));
           }
         }
       });
     });
-    await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (listProductData) => {
-      listProductData.forEach((productData) => {
-        productList[
-          productList.findIndex(
-            (productListData) =>
-              productListData.merk === productData.data().merk &&
-              productListData.categories === productData.data().categories
-          )
-        ].products.push(productData.data());
-      });
-      set(() => ({ listProducts: productList }));
-      console.log(get().listProducts);
-    });
-    await delay(2000);
+    get().getProductName();
+    await delay(1000);
     set((state) => ({ loading: !state.loading }));
   },
 }));

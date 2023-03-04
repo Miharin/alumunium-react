@@ -21,6 +21,8 @@ export const itemCodeStore = create((set, get) => ({
   openSnackbar: false,
   snackbarMessage: '',
   listCategories: [],
+  helperCode: '',
+  helperCodeName: '',
   listMerk: [],
   addCategory: '',
   addCategoryValue: '',
@@ -158,25 +160,39 @@ export const itemCodeStore = create((set, get) => ({
   setFinalAddCodeProduct: async () => {
     const codeProductAddFinal = get().addCodeProduct;
     const getOpenSnackbar = get().setOpenSnackbar;
-    delete codeProductAddFinal.id;
-    set((state) => ({
-      addCodeProduct: { ...state.addCodeProduct, timeStamp: serverTimestamp() },
-      loading: !state.loading,
-    }));
-    await addDoc(collection(db, 'codeProducts'), codeProductAddFinal);
-    set((state) => ({ snackbarMessage: `${codeProductAddFinal.name} Berhasil Ditambahkan !` }));
-    set((state) => ({
-      addCodeProduct: {
-        id: '',
-        merk: '',
-        categories: '',
-        code: '',
-        name: '',
-      },
-      addCodeProductMode: !state.addCodeProductMode,
-      loading: !state.loading,
-    }));
-    getOpenSnackbar();
+    const getCodeProduct = get().codeProducts;
+    getCodeProduct.forEach((codes) => {
+      if (codes.name === codeProductAddFinal.name && codes.code === codeProductAddFinal.code) {
+        set(() => ({ helperCodeName: codes.name + ' Sudah Ada !', helperCode: codes.code + ' Sudah Ada !' }));
+      } else if (codes.code === codeProductAddFinal.code) {
+        set(() => ({ helperCode: codes.code + ' Sudah Ada !' }));
+      } else if (codes.name === codeProductAddFinal.name) {
+        set(() => ({ helperCodeName: codes.name + ' Sudah Ada !' }));
+      } else {
+        set(() => ({ helperCodeName: '', helperCode: '' }));
+        async () => {
+          delete codeProductAddFinal.id;
+          set((state) => ({
+            addCodeProduct: { ...state.addCodeProduct, timeStamp: serverTimestamp() },
+            loading: !state.loading,
+          }));
+          await addDoc(collection(db, 'codeProducts'), codeProductAddFinal);
+          set((state) => ({ snackbarMessage: `${codeProductAddFinal.name} Berhasil Ditambahkan !` }));
+          set((state) => ({
+            addCodeProduct: {
+              id: '',
+              merk: '',
+              categories: '',
+              code: '',
+              name: '',
+            },
+            addCodeProductMode: !state.addCodeProductMode,
+            loading: !state.loading,
+          }));
+          getOpenSnackbar();
+        };
+      }
+    });
   },
   setCodeProductId: (id) =>
     set((state) => ({

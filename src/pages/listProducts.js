@@ -28,15 +28,6 @@ import {
   Divider,
   Alert,
   Skeleton,
-  Dialog,
-  DialogTitle,
-  FormControl,
-  Select,
-  MenuItem,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  InputLabel,
   Snackbar,
 } from '@mui/material';
 import {
@@ -50,7 +41,7 @@ import {
 import { visuallyHidden } from '@mui/utils';
 
 // store
-import { useItemCode, useTableHelper, useListProductStore } from 'store/index';
+import { useTableHelper, useListProductStore } from 'store/index';
 // End Import
 
 // Start Function of Filtered
@@ -90,55 +81,56 @@ export default function ProductPage() {
   const showSearch = useTableHelper((state) => state.showSearch);
   const setShowSearch = useTableHelper((state) => state.setShowSearch);
   const filtered = useTableHelper((state) => state.filteredProducts);
-  const open = useTableHelper((state) => state.open);
-  const setOpen = useTableHelper((state) => state.setOpen);
   // End Helper Table
+
+  // Start ListProduct Initialization
+  const code = useListProductStore((state) => state.codeNew);
+  const loading = useListProductStore((state) => state.loading);
+  const listCategory = useListProductStore((state) => state.listCategories);
+  const listMerk = useListProductStore((state) => state.listMerk);
+  const categories = useListProductStore((state) => state.categories);
+  const name = useListProductStore((state) => state.name);
+  const setName = useListProductStore((state) => state.setName);
+  const merk = useListProductStore((state) => state.merk);
+  const setCategories = useListProductStore((state) => state.setCategories);
+  const setMerk = useListProductStore((state) => state.setMerk);
+  const editMode = useListProductStore((state) => state.editMode);
+  const addProductMode = useListProductStore((state) => state.addProductMode);
+  const setAddProductMode = useListProductStore((state) => state.setAddProductMode);
+  const deleteAddProductNew = useListProductStore((state) => state.deleteAddProductNew);
+  const productId = useListProductStore((state) => state.editProductId);
+  const setProductId = useListProductStore((state) => state.setProductId);
+  const setEditProduct = useListProductStore((state) => state.setEditProduct);
+  const setEdit = useListProductStore((state) => state.setEdit);
+  const editProduct = useListProductStore((state) => state.editProduct);
+  const editProductIcon = useListProductStore((state) => state.editProductIcon);
+  const setAddProduct = useListProductStore((state) => state.setAddProduct);
+  const addProductIcon = useListProductStore((state) => state.addProductIcon);
+  const setFinalAddProduct = useListProductStore((state) => state.setFinalAddProduct);
+  const setDeleteProduct = useListProductStore((state) => state.setDeleteProduct);
+  const getField = useListProductStore((state) => state.getField);
+  const openSnackbar = useListProductStore((state) => state.openSnackbar);
+  const snackbarMessage = useListProductStore((state) => state.snackbarMessage);
+  const setOpenSnackbar = useListProductStore((state) => state.setOpenSnackbar);
   const getProducts = useListProductStore((state) => state.getProducts);
   const listProducts = useListProductStore((state) => state.listProducts);
-
-  // Start CodeProduct Initialization
-  const loading = useItemCode((state) => state.loading);
-  const listCategory = useItemCode((state) => state.listCategories);
-  const listMerk = useItemCode((state) => state.listMerk);
-  const categories = useItemCode((state) => state.categories);
-  const merk = useItemCode((state) => state.merk);
-  const setCategories = useItemCode((state) => state.setCategories);
-  const setMerk = useItemCode((state) => state.setMerk);
-  const getCodeProducts = useItemCode((state) => state.getCodeProducts);
-  const codeProducts = useItemCode((state) => state.codeProducts);
-  const editMode = useItemCode((state) => state.editMode);
-  const addCodeProductMode = useItemCode((state) => state.addCodeProductMode);
-  const setAddCodeProductMode = useItemCode((state) => state.setAddCodeProductMode);
-  const deleteAddCodeProductNew = useItemCode((state) => state.deleteAddCodeProductNew);
-  const codeProductId = useItemCode((state) => state.editCodeProductId);
-  const setCodeProductId = useItemCode((state) => state.setCodeProductId);
-  const setEditCodeProduct = useItemCode((state) => state.setEditCodeProduct);
-  const setEdit = useItemCode((state) => state.setEdit);
-  const editCodeProduct = useItemCode((state) => state.editCodeProduct);
-  const editCodeProductIcon = useItemCode((state) => state.editCodeProductIcon);
-  const setAddCodeProduct = useItemCode((state) => state.setAddCodeProduct);
-  const addCodeProductIcon = useItemCode((state) => state.addCodeProductIcon);
-  const setFinalAddCodeProduct = useItemCode((state) => state.setFinalAddCodeProduct);
-  const setDeleteCodeProduct = useItemCode((state) => state.setDeleteCodeProduct);
-  const getField = useItemCode((state) => state.getField);
-  const addCategory = useItemCode((state) => state.addCategory);
-  const setAddCategory = useItemCode((state) => state.setAddCategory);
-  const addCategoryValue = useItemCode((state) => state.addCategoryValue);
-  const setAddCategoryValue = useItemCode((state) => state.setAddCategoryValue);
-  const helperAddCategory = useItemCode((state) => state.helperAddCategory);
-  const setAddCategoryFinal = useItemCode((state) => state.setAddCategoryFinal);
-  const openSnackbar = useItemCode((state) => state.openSnackbar);
-  const snackbarMessage = useItemCode((state) => state.snackbarMessage);
-  const setOpenSnackbar = useItemCode((state) => state.setOpenSnackbar);
+  const listName = useListProductStore((state) => state.listName);
   const rows = listProducts;
-  // End ProductCode Initialization
+  // End ListProduct Initialization
 
   // Declaration for Column of Table
   let columns = [];
   if ((categories !== '' || null || undefined) && (merk !== '' || null || undefined)) {
     columns = [
-      { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
+      { id: 'code', label: 'Kode', minWidth: 150, align: 'left' },
       { id: 'categories', label: 'Kategori', minWidth: 150, align: 'left' },
+      { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
+      { id: 'name', label: 'Nama', minWidth: 450, align: 'left' },
+      { id: 'price_1', label: 'Harga 1', minWidth: 150, align: 'left' },
+      { id: 'price_2', label: 'Harga 2', minWidth: 150, align: 'left' },
+      { id: 'price_3', label: 'Harga 3', minWidth: 150, align: 'left' },
+      { id: 'stock', label: 'Stok', minWidth: 150, align: 'left' },
+      { id: 'lastInput', label: '', minWidth: 150, align: 'left' },
       {
         id: 'action',
         label: 'Action',
@@ -148,17 +140,23 @@ export default function ProductPage() {
     ];
   } else {
     columns = [
-      { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
+      { id: 'code', label: 'Code', minWidth: 150, align: 'left' },
       { id: 'categories', label: 'Kategori', minWidth: 150, align: 'left' },
+      { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
+      { id: 'name', label: 'Nama', minWidth: 450, align: 'left' },
+      { id: 'price_1', label: 'Harga 1', minWidth: 150, align: 'left' },
+      { id: 'price_2', label: 'Harga 2', minWidth: 150, align: 'left' },
+      { id: 'price_3', label: 'Harga 3', minWidth: 150, align: 'left' },
+      { id: 'stock', label: 'Stok', minWidth: 150, align: 'left' },
+      { id: 'lastInput', label: '', minWidth: 150, align: 'left' },
     ];
   }
 
-  // Function for Getting Code Product Data from Database
+  // Function for Getting Product Data from Database
   useEffect(() => {
-    getCodeProducts();
     getField();
     getProducts();
-  }, [getCodeProducts, getField, getProducts]);
+  }, [getField, getProducts]);
 
   // Function for Filter Table
   const createSortHandler = (property) => (event) => {
@@ -166,7 +164,7 @@ export default function ProductPage() {
   };
 
   // Function Helper for Edit
-  const handleEdit = (event) => setCodeProductId(event);
+  const handleEdit = (event) => setProductId(event);
 
   // Return Display
   return loading ? (
@@ -209,9 +207,7 @@ export default function ProductPage() {
                   id="category"
                   name="categories"
                   onChange={(event, newValue) =>
-                    newValue !== null
-                      ? (setCategories(newValue), getCodeProducts())
-                      : (setCategories(), getCodeProducts())
+                    newValue !== null ? (setCategories(newValue), getProducts()) : (setCategories(), getProducts())
                   }
                   options={listCategory}
                   value={categories}
@@ -232,7 +228,7 @@ export default function ProductPage() {
                   id="merk"
                   name="merk"
                   onChange={(event, newValue) =>
-                    newValue !== null ? (setMerk(newValue), getCodeProducts()) : (setMerk(), getCodeProducts())
+                    newValue !== null ? (setMerk(newValue), getProducts()) : (setMerk(), getProducts())
                   }
                   options={listMerk}
                   value={merk}
@@ -246,9 +242,6 @@ export default function ProductPage() {
                     />
                   )}
                 />
-                <Button sx={{ mx: 2 }} variant="text" onClick={setOpen}>
-                  Tambah Katalog
-                </Button>
               </Stack>
             </Slide>
           </ClickAwayListener>
@@ -257,57 +250,19 @@ export default function ProductPage() {
             <FilterAltRounded sx={{ m: 4 }} onClick={setShowSearch} />
           </Slide>
         )}
-        <Dialog maxWidth="xs" open={open} onClose={setOpen}>
-          <DialogTitle>Tambah Katalog</DialogTitle>
-          <DialogContent>
-            <DialogContentText>Pilih Katalog yang Akan Ditambah</DialogContentText>
-            <Box
-              noValidate
-              component="form"
-              sx={{ display: 'flex', flexDirection: 'column', m: 'auto', width: 'fitContent' }}
-            >
-              <FormControl sx={{ mt: 2, minWidth: 120 }}>
-                <InputLabel id="katalog">Katalog</InputLabel>
-                <Select value={addCategory} onChange={(event) => setAddCategory(event.target)} label="Katalog">
-                  <MenuItem value="merk">Merk</MenuItem>
-                  <MenuItem value="categories">Categories</MenuItem>
-                </Select>
-                {addCategory !== '' || undefined || null ? (
-                  <TextField
-                    sx={{ my: 4, mx: 2 }}
-                    name={addCategory}
-                    placeholder={`${addCategory[0].toUpperCase() + addCategory.slice(1)} Baru`}
-                    variant="standard"
-                    onChange={(e) => setAddCategoryValue(e.target)}
-                    InputProps={{
-                      disableUnderline: true,
-                    }}
-                    helperText={helperAddCategory}
-                  />
-                ) : null}
-              </FormControl>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            {(addCategory !== '' || undefined || null) && (addCategoryValue !== '' || undefined || null) ? (
-              <Button onClick={() => setAddCategoryFinal()}>Save</Button>
-            ) : null}
-            <Button onClick={setOpen}>Cancel</Button>
-          </DialogActions>
-        </Dialog>
         {/* End Function Showing Search and Filter */}
         <TableContainer>
           <Table aria-label="Sticky Table">
             <caption>
               {(categories !== '' || null || undefined) && (merk !== '' || null || undefined) ? (
                 <Button
-                  disabled={addCodeProductMode}
+                  disabled={addProductMode}
                   variant="text"
                   fullWidth
                   startIcon={<AddRounded />}
-                  onClick={setAddCodeProductMode}
+                  onClick={setAddProductMode}
                 >
-                  Add Code Product
+                  Tambah Produk
                 </Button>
               ) : (
                 <Alert severity="warning">
@@ -358,10 +313,10 @@ export default function ProductPage() {
                         <TableCell key={column.id} id={index} align={column.align}>
                           {/* Start Edit Rows and Display Rows */}
                           {editMode === true ? (
-                            column.id === 'action' && codeProductId === row.id ? (
+                            column.id === 'action' && productId === row.id ? (
                               <ButtonGroup variant="outlined">
-                                {editCodeProductIcon ? (
-                                  <IconButton onClick={() => setEditCodeProduct(row.id)}>
+                                {editProductIcon ? (
+                                  <IconButton onClick={() => setEditProduct(row.id)}>
                                     <Tooltip title="Confirm">
                                       <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
                                     </Tooltip>
@@ -379,7 +334,12 @@ export default function ProductPage() {
                                   </Tooltip>
                                 </IconButton>
                               </ButtonGroup>
-                            ) : codeProductId === row.id ? (
+                            ) : productId === row.id &&
+                              column.id !== 'lastInput' &&
+                              column.id !== 'code' &&
+                              column.id !== 'name' &&
+                              column.id !== 'categories' &&
+                              column.id !== 'merk' ? (
                               <TextField
                                 fullWidth
                                 onChange={(event) => setEdit(event.target)}
@@ -388,12 +348,12 @@ export default function ProductPage() {
                                 name={column.id}
                                 placeholder={value}
                                 variant="standard"
-                                value={editCodeProduct[column.id] !== undefined ? editCodeProduct[column.id] : ''}
+                                value={editProduct[column.id] !== undefined ? editProduct[column.id] : ''}
                               />
                             ) : (
                               value
                             )
-                          ) : column.id === 'action' && editMode === false && addCodeProductMode === false ? (
+                          ) : column.id === 'action' && editMode === false && addProductMode === false ? (
                             (categories !== '' || null || undefined) && (merk !== '' || null || undefined) ? (
                               <ButtonGroup variant="outlined">
                                 <IconButton onClick={() => handleEdit(row.id)}>
@@ -401,7 +361,7 @@ export default function ProductPage() {
                                     <ModeEditRounded sx={{ color: '#737373' }} />
                                   </Tooltip>
                                 </IconButton>
-                                <IconButton onClick={() => setDeleteCodeProduct(row.id)}>
+                                <IconButton onClick={() => setDeleteProduct(row.id)}>
                                   <Tooltip title="Delete Code Product">
                                     <DeleteForeverRounded sx={{ color: '#737373' }} />
                                   </Tooltip>
@@ -413,22 +373,50 @@ export default function ProductPage() {
                           )}
                           {/* End Edit Rows and Display Rows */}
                           {/* Start Add Rows */}
-                          {addCodeProductMode === true && value === '' ? (
+                          {addProductMode === true && value === '' && row.id === '' && column.id === 'name' ? (
+                            <Autocomplete
+                              isOptionEqualToValue={(option, value) => option.label === value}
+                              sx={{ mx: 2 }}
+                              id="name"
+                              name="name"
+                              onChange={(event, newValue) => (newValue !== null ? setName(newValue) : setName())}
+                              options={listName}
+                              value={name}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  sx={{ my: 4, minWidth: 100 }}
+                                  InputProps={{ ...params.InputProps, disableUnderline: true }}
+                                  variant="standard"
+                                  placeholder="Nama Produk"
+                                />
+                              )}
+                            />
+                          ) : (addProductMode === true && row.id === '' && value === '' && column.id === 'stock') ||
+                            (addProductMode === true && row.id === '' && value === '' && column.id === 'price_1') ||
+                            (addProductMode === true && row.id === '' && value === '' && column.id === 'price_2') ||
+                            (addProductMode === true && row.id === '' && value === '' && column.id === 'price_3') ? (
                             <TextField
                               required
                               fullWidth
                               name={column.id}
-                              type={column.id === 'code' ? 'number' : 'text'}
-                              onChange={(event) => setAddCodeProduct(event.target)}
+                              type="number"
+                              onChange={(event) => setAddProduct(event.target)}
                               InputProps={{ disableUnderline: true }}
                               variant="standard"
                               placeholder={column.label}
                               sx={{ minWidth: column.minWidth }}
                             />
-                          ) : addCodeProductMode === true && column.id === 'action' && row.id === '' ? (
+                          ) : addProductMode === true && row.id === '' && column.id === 'categories' ? (
+                            categories
+                          ) : addProductMode === true && row.id === '' && column.id === 'merk' ? (
+                            merk
+                          ) : addProductMode === true && row.id === '' && column.id === 'code' ? (
+                            code
+                          ) : addProductMode === true && row.id === '' && column.id === 'action' && row.id === '' ? (
                             <ButtonGroup variant="outlined">
-                              {addCodeProductIcon ? (
-                                <IconButton onClick={setFinalAddCodeProduct}>
+                              {addProductIcon ? (
+                                <IconButton onClick={setFinalAddProduct}>
                                   <Tooltip title="Confirm">
                                     <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
                                   </Tooltip>
@@ -440,7 +428,7 @@ export default function ProductPage() {
                                   </Backdrop>
                                 </IconButton>
                               ) : null}
-                              <IconButton onClick={deleteAddCodeProductNew}>
+                              <IconButton onClick={deleteAddProductNew}>
                                 <Tooltip title="Cancel">
                                   <DoDisturbRounded sx={{ color: '#737373' }} />
                                 </Tooltip>

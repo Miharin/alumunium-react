@@ -94,13 +94,15 @@ export const dataUsers = create((set, get) => ({
     );
   },
   setFinalAddUser: async () => {
+    set((state) => ({ addUser: { ...state.addUser, timeStamp: serverTimestamp() }, loading: !state.loading }));
     const userAddFinal = get().addUser;
     const getOpenSnackbar = get().setOpenSnackbar;
     const email = `${userAddFinal.username}@gmail.com`;
     const auth = getAuth();
     delete userAddFinal.id;
-    set((state) => ({ addUser: { ...state.addUser, timeStamp: serverTimestamp() }, loading: !state.loading }));
-    createUserWithEmailAndPassword(auth, email, userAddFinal.password);
+    if (userAddFinal.role !== 'User') {
+      createUserWithEmailAndPassword(auth, email, userAddFinal.password);
+    }
     await addDoc(collection(db, 'users'), userAddFinal);
     set(() => ({ snackbarMessage: `User dengan Nama ${userAddFinal.name} Berhasil Di Tambahkan !` }));
     set((state) => ({
@@ -197,6 +199,7 @@ export const dataUsers = create((set, get) => ({
         }));
       });
     });
+    console.log(getAuth());
     await delay(2000);
     set((state) => ({ loading: !state.loading }));
   },

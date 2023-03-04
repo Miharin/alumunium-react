@@ -128,6 +128,8 @@ export default function ProductPage() {
   const openSnackbar = useItemCode((state) => state.openSnackbar);
   const snackbarMessage = useItemCode((state) => state.snackbarMessage);
   const setOpenSnackbar = useItemCode((state) => state.setOpenSnackbar);
+  const helperCode = useItemCode((state) => state.helperCode);
+  const helperCodeName = useItemCode((state) => state.helperCodeName);
   const rows = codeProducts;
   // End ProductCode Initialization
 
@@ -308,7 +310,7 @@ export default function ProductPage() {
                 </Button>
               ) : (
                 <Alert severity="warning">
-                  Jika Ingin Menambahkan, Mengubah, atau Menghapus Code Product Baru Maka{' '}
+                  Jika Ingin Menambahkan, Mengubah, atau Menghapus Produk Maka{' '}
                   {categories === '' || undefined || null ? 'Kategori' : null}{' '}
                   {(categories === '' || undefined || null) && (merk === '' || null || undefined) ? 'dan ' : null}
                   {merk === '' || undefined || null ? 'Merk' : null} Harap Diisi
@@ -418,6 +420,7 @@ export default function ProductPage() {
                               type={column.id === 'code' ? 'number' : 'text'}
                               onChange={(event) => setAddCodeProduct(event.target)}
                               InputProps={{ disableUnderline: true }}
+                              helperText={column.id === 'code' ? helperCode : helperCodeName}
                               variant="standard"
                               placeholder={column.label}
                               sx={{ minWidth: column.minWidth }}

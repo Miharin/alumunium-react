@@ -16,9 +16,15 @@ export const tableHelper = create((set) => ({
     row.categories.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.merk.toString().toLowerCase().includes(search.toString().toLowerCase()),
   filteredProducts: (row, search) =>
+    row.code.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.categories.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.merk.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
-    row.product.toString().toLowerCase().includes(search.toString().toLowerCase()),
+    row.name.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.price_1.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.price_2.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.price_3.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.stock.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.lastInput.toString().toLowerCase().includes(search.toString().toLowerCase()),
   filteredUser: (row, search) =>
     row.name.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.role.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
