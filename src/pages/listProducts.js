@@ -32,7 +32,6 @@ import {
 } from '@mui/material';
 import {
   ModeEditRounded,
-  DeleteForeverRounded,
   FilterAltRounded,
   CheckCircleOutlineRounded,
   DoDisturbRounded,
@@ -107,7 +106,6 @@ export default function ProductPage() {
   const setAddProduct = useListProductStore((state) => state.setAddProduct);
   const addProductIcon = useListProductStore((state) => state.addProductIcon);
   const setFinalAddProduct = useListProductStore((state) => state.setFinalAddProduct);
-  const setDeleteProduct = useListProductStore((state) => state.setDeleteProduct);
   const getField = useListProductStore((state) => state.getField);
   const openSnackbar = useListProductStore((state) => state.openSnackbar);
   const snackbarMessage = useListProductStore((state) => state.snackbarMessage);
@@ -125,12 +123,12 @@ export default function ProductPage() {
       { id: 'code', label: 'Kode', minWidth: 150, align: 'left' },
       { id: 'categories', label: 'Kategori', minWidth: 150, align: 'left' },
       { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
-      { id: 'name', label: 'Nama', minWidth: 450, align: 'left' },
+      { id: 'name', label: 'Nama', minWidth: 300, align: 'left' },
       { id: 'price_1', label: 'Harga 1', minWidth: 150, align: 'left' },
       { id: 'price_2', label: 'Harga 2', minWidth: 150, align: 'left' },
       { id: 'price_3', label: 'Harga 3', minWidth: 150, align: 'left' },
       { id: 'stock', label: 'Stok', minWidth: 150, align: 'left' },
-      { id: 'lastInput', label: '', minWidth: 150, align: 'left' },
+      { id: 'lastInput', label: '', minWidth: 350, align: 'left' },
       {
         id: 'action',
         label: 'Action',
@@ -143,12 +141,12 @@ export default function ProductPage() {
       { id: 'code', label: 'Code', minWidth: 150, align: 'left' },
       { id: 'categories', label: 'Kategori', minWidth: 150, align: 'left' },
       { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
-      { id: 'name', label: 'Nama', minWidth: 450, align: 'left' },
+      { id: 'name', label: 'Nama', minWidth: 300, align: 'left' },
       { id: 'price_1', label: 'Harga 1', minWidth: 150, align: 'left' },
       { id: 'price_2', label: 'Harga 2', minWidth: 150, align: 'left' },
       { id: 'price_3', label: 'Harga 3', minWidth: 150, align: 'left' },
       { id: 'stock', label: 'Stok', minWidth: 150, align: 'left' },
-      { id: 'lastInput', label: '', minWidth: 150, align: 'left' },
+      { id: 'lastInput', label: '', minWidth: 350, align: 'left' },
     ];
   }
 
@@ -343,6 +341,13 @@ export default function ProductPage() {
                               <TextField
                                 fullWidth
                                 onChange={(event) => setEdit(event.target)}
+                                /* eslint-disable */
+                                onInput={(e) => {
+                                  column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3'
+                                    ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 3))
+                                    : null;
+                                }}
+                                /* eslint-disable */
                                 InputProps={{ disableUnderline: true }}
                                 type={column.id === 'code' ? 'number' : 'text'}
                                 name={column.id}
@@ -361,13 +366,12 @@ export default function ProductPage() {
                                     <ModeEditRounded sx={{ color: '#737373' }} />
                                   </Tooltip>
                                 </IconButton>
-                                <IconButton onClick={() => setDeleteProduct(row.id)}>
-                                  <Tooltip title="Delete Code Product">
-                                    <DeleteForeverRounded sx={{ color: '#737373' }} />
-                                  </Tooltip>
-                                </IconButton>
                               </ButtonGroup>
                             ) : null
+                          ) : (column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3') &&
+                            editMode === false &&
+                            addProductMode === false ? (
+                            `Rp.${value}.000,-`
                           ) : (
                             value
                           )}
@@ -375,8 +379,8 @@ export default function ProductPage() {
                           {/* Start Add Rows */}
                           {addProductMode === true && value === '' && row.id === '' && column.id === 'name' ? (
                             <Autocomplete
+                              fullWidth
                               isOptionEqualToValue={(option, value) => option.label === value}
-                              sx={{ mx: 2 }}
                               id="name"
                               name="name"
                               onChange={(event, newValue) => (newValue !== null ? setName(newValue) : setName())}
@@ -400,6 +404,13 @@ export default function ProductPage() {
                               required
                               fullWidth
                               name={column.id}
+                              /* eslint-disable */
+                              onInput={(e) => {
+                                column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3'
+                                  ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 3))
+                                  : null;
+                              }}
+                              /* eslint-disable */
                               type="number"
                               onChange={(event) => setAddProduct(event.target)}
                               InputProps={{ disableUnderline: true }}

@@ -42,7 +42,10 @@ export const listProductStore = create((set, get) => ({
     price_3: '',
     stock: '',
     lastInput: '',
+    timeStamp: '',
   },
+  helperCode: '',
+  helperCodeName: '',
   addProductMode: false,
   addProductIcon: false,
   editMode: false,
@@ -101,28 +104,45 @@ export const listProductStore = create((set, get) => ({
       ? set((state) => ({ merk: merkChoose, loading: !state.loading }))
       : set((state) => ({ merk: '', loading: !state.loading })),
   setName: (nameChoose) => {
-    console.log(nameChoose);
+    const categorieses = get().categories;
+    const merks = get().merk.toUpperCase();
     if (nameChoose !== undefined || null || '') {
-      set(() => ({ name: nameChoose.label, codeNew: nameChoose.code }));
+      set((state) => ({
+        name: nameChoose.label,
+        codeNew: nameChoose.code,
+        addProduct: {
+          ...state.addProduct,
+          name: nameChoose.label,
+          code: nameChoose.code,
+          categories: categorieses,
+          merk: merks,
+        },
+      }));
     } else {
       set(() => ({ name: '' }));
     }
   },
   setAddProduct: (event) => {
     set((state) => ({ addProduct: { ...state.addProduct, [event.name]: event.value } }));
+    console.log(get().addProduct);
     set((state) =>
-      state.addProduct.code === '' || state.addProduct.name === ''
-        ? { addProductIcon: false }
-        : state.addProduct.name.toString().toLowerCase().includes(state.merk.toString().toLowerCase()) &&
-          state.addProduct.name.toString().toLowerCase().includes(state.categories.toString().toLowerCase())
-        ? {
-            addProductIcon: true,
-            addProduct: { ...state.addProduct, merk: state.merk.toUpperCase(), categories: state.categories },
-          }
+      state.addProduct.code !== '' &&
+      state.addProduct.categories !== '' &&
+      state.addProduct.merk !== '' &&
+      state.addProduct.name !== '' &&
+      state.addProduct.price_1 !== '' &&
+      state.addProduct.price_2 !== '' &&
+      state.addProduct.price_3 !== '' &&
+      state.addProduct.stock !== ''
+        ? { addProductIcon: true }
         : { addProductIcon: false }
     );
   },
   setFinalAddProduct: async () => {
+    set((state) => ({
+      addProduct: { ...state.addProduct, timeStamp: serverTimestamp(), lastInput: getAuth().currentUser.email },
+      loading: !state.loading,
+    }));
     const productAddFinal = get().addProduct;
     const listProduct = get().listProducts;
     const getOpenSnackbar = get().setOpenSnackbar;
@@ -135,35 +155,33 @@ export const listProductStore = create((set, get) => ({
         set(() => ({ helperCode: product.code + ' Sudah Ada !' }));
       } else if (product.name === productAddFinal.name) {
         set(() => ({ helperCodeName: product.name + ' Sudah Ada !' }));
-      } else {
-        async () => {
-          set((state) => ({
-            addProduct: { ...state.addProduct, timeStamp: serverTimestamp() },
-            loading: !state.loading,
-          }));
-          await addDoc(collection(db, 'listProducts'), productAddFinal);
-          set(() => ({ snackbarMessage: `${productAddFinal.name} Berhasil Ditambahkan !` }));
-          set((state) => ({
-            addProduct: {
-              id: '',
-              code: '',
-              categories: '',
-              merk: '',
-              name: '',
-              price_1: '',
-              price_2: '',
-              price_3: '',
-              stock: '',
-              lastInput: '',
-            },
-            addProductMode: !state.addProductMode,
-            loading: !state.loading,
-          }));
-          getOpenSnackbar();
-        };
       }
-      /* eslint-disable */
     });
+    /* eslint-disable */
+    const helperCodeName = get().helperCodeName;
+    const helperCode = get().helperCode;
+    if (helperCode === '' || helperCodeName === '' || (helperCode === '' && helperCodeName === '')) {
+      await addDoc(collection(db, 'listProducts'), productAddFinal);
+      set(() => ({ snackbarMessage: `${productAddFinal.name} Berhasil Ditambahkan !` }));
+      set((state) => ({
+        addProduct: {
+          id: '',
+          code: '',
+          categories: '',
+          merk: '',
+          name: '',
+          price_1: '',
+          price_2: '',
+          price_3: '',
+          stock: '',
+          timeStamp: '',
+          lastInput: '',
+        },
+        addProductMode: !state.addProductMode,
+        loading: !state.loading,
+      }));
+      getOpenSnackbar();
+    }
   },
   setProductId: (id) =>
     set((state) => ({
@@ -192,6 +210,7 @@ export const listProductStore = create((set, get) => ({
           price_2: state.addProduct.price_2,
           price_3: state.addProduct.price_3,
           stock: state.addProduct.stock,
+          timeStamp: state.addProduct.timeStamp,
           lastInput: state.addProduct.lastInput,
         },
       ],
@@ -310,8 +329,16 @@ export const listProductStore = create((set, get) => ({
                   price_2: productData.data().price_2,
                   price_3: productData.data().price_3,
                   stock: productData.data().stock,
-                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000)}' By '${
-                    productData.data().lastInput
+                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })} Pada Jam ${new Date(productData.data().timeStamp.seconds * 1000).toLocaleTimeString(
+                    'in-in'
+                  )} Oleh ${
+                    productData.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                    productData.data().lastInput.split('@', 1)[0].slice(1)
                   }`,
                 },
               ],
@@ -331,8 +358,16 @@ export const listProductStore = create((set, get) => ({
                   price_2: productData.data().price_2,
                   price_3: productData.data().price_3,
                   stock: productData.data().stock,
-                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000)}' By '${
-                    productData.data().lastInput
+                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })} Pada Jam ${new Date(productData.data().timeStamp.seconds * 1000).toLocaleTimeString(
+                    'in-in'
+                  )} Oleh ${
+                    productData.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                    productData.data().lastInput.split('@', 1)[0].slice(1)
                   }`,
                 },
               ],
@@ -352,8 +387,16 @@ export const listProductStore = create((set, get) => ({
                   price_2: productData.data().price_2,
                   price_3: productData.data().price_3,
                   stock: productData.data().stock,
-                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000)}' By '${
-                    productData.data().lastInput
+                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })} Pada Jam ${new Date(productData.data().timeStamp.seconds * 1000).toLocaleTimeString(
+                    'in-in'
+                  )} Oleh ${
+                    productData.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                    productData.data().lastInput.split('@', 1)[0].slice(1)
                   }`,
                 },
               ],
@@ -373,8 +416,16 @@ export const listProductStore = create((set, get) => ({
                   price_2: productData.data().price_2,
                   price_3: productData.data().price_3,
                   stock: productData.data().stock,
-                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000)}' By '${
-                    productData.data().lastInput
+                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })} Pada Jam ${new Date(productData.data().timeStamp.seconds * 1000).toLocaleTimeString(
+                    'in-in'
+                  )} Oleh ${
+                    productData.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                    productData.data().lastInput.split('@', 1)[0].slice(1)
                   }`,
                 },
               ],

@@ -400,7 +400,7 @@ export default function ProductPage() {
                                     <ModeEditRounded sx={{ color: '#737373' }} />
                                   </Tooltip>
                                 </IconButton>
-                                <IconButton onClick={() => setDeleteCodeProduct(row.id)}>
+                                <IconButton onClick={() => setDeleteCodeProduct(row.id, row.code)}>
                                   <Tooltip title="Delete Code Product">
                                     <DeleteForeverRounded sx={{ color: '#737373' }} />
                                   </Tooltip>

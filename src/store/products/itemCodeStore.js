@@ -8,8 +8,11 @@ import {
   serverTimestamp,
   deleteDoc,
   query,
+  where,
   arrayUnion,
   orderBy,
+  getDocs,
+  limit,
 } from 'firebase/firestore';
 import { db } from 'config/firebaseConfig';
 import { useTableHelper } from 'store/index';
@@ -158,6 +161,10 @@ export const itemCodeStore = create((set, get) => ({
     );
   },
   setFinalAddCodeProduct: async () => {
+    set((state) => ({
+      addCodeProduct: { ...state.addCodeProduct, timeStamp: serverTimestamp() },
+      loading: !state.loading,
+    }));
     const codeProductAddFinal = get().addCodeProduct;
     const getOpenSnackbar = get().setOpenSnackbar;
     const getCodeProduct = get().codeProducts;
@@ -170,29 +177,27 @@ export const itemCodeStore = create((set, get) => ({
         set(() => ({ helperCodeName: codes.name + ' Sudah Ada !' }));
       } else {
         set(() => ({ helperCodeName: '', helperCode: '' }));
-        async () => {
-          delete codeProductAddFinal.id;
-          set((state) => ({
-            addCodeProduct: { ...state.addCodeProduct, timeStamp: serverTimestamp() },
-            loading: !state.loading,
-          }));
-          await addDoc(collection(db, 'codeProducts'), codeProductAddFinal);
-          set((state) => ({ snackbarMessage: `${codeProductAddFinal.name} Berhasil Ditambahkan !` }));
-          set((state) => ({
-            addCodeProduct: {
-              id: '',
-              merk: '',
-              categories: '',
-              code: '',
-              name: '',
-            },
-            addCodeProductMode: !state.addCodeProductMode,
-            loading: !state.loading,
-          }));
-          getOpenSnackbar();
-        };
       }
     });
+    const helperCodeName = get().helperCodeName;
+    const helperCode = get().helperCode;
+    if (helperCode === '' || helperCodeName === '' || (helperCode === '' && helperCodeName === '')) {
+      delete codeProductAddFinal.id;
+      await addDoc(collection(db, 'codeProducts'), codeProductAddFinal);
+      set((state) => ({ snackbarMessage: `${codeProductAddFinal.name} Berhasil Ditambahkan !` }));
+      set((state) => ({
+        addCodeProduct: {
+          id: '',
+          merk: '',
+          categories: '',
+          code: '',
+          name: '',
+        },
+        addCodeProductMode: !state.addCodeProductMode,
+        loading: !state.loading,
+      }));
+      getOpenSnackbar();
+    }
   },
   setCodeProductId: (id) =>
     set((state) => ({
@@ -221,10 +226,19 @@ export const itemCodeStore = create((set, get) => ({
       ],
     }));
   },
-  setDeleteCodeProduct: async (id) => {
+  setDeleteCodeProduct: async (id, code) => {
+    const deleteProd = await getDocs(query(collection(db, 'listProducts'), where('code', '==', code), limit(1)));
     const getOpenSnackbar = get().setOpenSnackbar;
-    await deleteDoc(doc(db, 'codeProducts', id));
-    set((state) => ({ snackbarMessage: `Code Barang dengan id ${id} Berhasil Dihapus !` }));
+    if (!deleteProd.empty) {
+      deleteProd.forEach(async (prod) => {
+        await deleteDoc(doc(db, 'codeProducts', id));
+        await deleteDoc(doc(db, 'listProducts', prod.id));
+      });
+      set((state) => ({ snackbarMessage: `Code Barang dan Barang dengan id ${id} Berhasil Dihapus !` }));
+    } else {
+      await deleteDoc(doc(db, 'codeProducts', id));
+      set((state) => ({ snackbarMessage: `Code Barang dengan id ${id} Berhasil Dihapus !` }));
+    }
     getOpenSnackbar();
   },
   getField: async () => {
