@@ -10,6 +10,7 @@ import Page404 from 'pages/Page404';
 import CodeProductsPage from 'pages/ProductCodePage';
 import DashboardAppPage from 'pages/DashboardAppPage';
 import ProductList from 'pages/listProducts';
+import AddProductPage from 'pages/addProductPage';
 import { useAuth } from 'store/index';
 
 // ----------------------------------------------------------------------
@@ -28,6 +29,7 @@ export default function Router() {
             { path: 'app', element: <DashboardAppPage /> },
             { path: 'user', element: <UserPage /> },
             { path: 'products/code', element: <CodeProductsPage /> },
+            { path: 'products/add', element: <AddProductPage /> },
             { path: 'products', element: <ProductList /> },
             { path: 'blog', element: <BlogPage /> },
           ],

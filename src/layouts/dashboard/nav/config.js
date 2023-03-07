@@ -7,6 +7,7 @@ import {
   FormatListBulletedRounded,
   DashboardRounded,
   ListRounded,
+  PostAddRounded,
 } from '@mui/icons-material';
 import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
 // Import Router
@@ -73,6 +74,13 @@ export const NavSection = (onCloseNav) => {
             selected: 4,
             icon: <FormatListBulletedRounded />,
             links: '/dashboard/products',
+          },
+          {
+            id: 'P3',
+            name: 'Tambah Barang',
+            selected: 5,
+            icon: <PostAddRounded />,
+            links: '/dashboard/products/add',
           },
         ],
       },
