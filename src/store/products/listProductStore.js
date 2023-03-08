@@ -206,6 +206,10 @@ export const listProductStore = create((set, get) => ({
             }));
           }
           if (merks === '' && categorieses === '') {
+            // get Month
+            // new Intl.DateTimeFormat('in-in', { month: 'long' }).format(productData.data().timeStamp.toDate()),
+            // get Year
+            // new Intl.DateTimeFormat('in-in', { year: 'numeric' }).format(productData.data().timeStamp.toDate())
             set((state) => ({
               listProducts: [
                 ...state.listProducts,
