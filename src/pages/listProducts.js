@@ -129,7 +129,7 @@ export default function ProductPage() {
       { id: 'price_2', label: 'Harga 2', minWidth: 150, align: 'left' },
       { id: 'price_3', label: 'Harga 3', minWidth: 150, align: 'left' },
       { id: 'stock', label: 'Stok', minWidth: 150, align: 'left' },
-      { id: 'lastInput', label: '', minWidth: 350, align: 'left' },
+      { id: 'lastInput', label: 'Terakhir Diubah', minWidth: 350, align: 'left' },
     ];
   }
 
