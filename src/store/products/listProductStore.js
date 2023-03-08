@@ -1,15 +1,5 @@
 import { create } from 'zustand';
-import {
-  collection,
-  onSnapshot,
-  updateDoc,
-  doc,
-  addDoc,
-  serverTimestamp,
-  deleteDoc,
-  query,
-  orderBy,
-} from 'firebase/firestore';
+import { collection, onSnapshot, updateDoc, doc, serverTimestamp, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { db } from 'config/firebaseConfig';
 
@@ -22,8 +12,6 @@ export const listProductStore = create((set, get) => ({
   listCategories: [],
   listMerk: [],
   listName: [],
-  codeNew: '',
-  name: '',
   merk: '',
   categories: '',
   editProductId: '',
@@ -31,23 +19,8 @@ export const listProductStore = create((set, get) => ({
   configs: {},
   search: '',
   editProduct: {},
-  addProduct: {
-    id: '',
-    code: '',
-    categories: '',
-    merk: '',
-    name: '',
-    price_1: '',
-    price_2: '',
-    price_3: '',
-    stock: '',
-    lastInput: '',
-    timeStamp: '',
-  },
   helperCode: '',
   helperCodeName: '',
-  addProductMode: false,
-  addProductIcon: false,
   editMode: false,
   editProductIcon: false,
   showSearch: false,
@@ -103,119 +76,12 @@ export const listProductStore = create((set, get) => ({
     merkChoose !== undefined || null || ''
       ? set((state) => ({ merk: merkChoose, loading: !state.loading }))
       : set((state) => ({ merk: '', loading: !state.loading })),
-  setName: (nameChoose) => {
-    const categorieses = get().categories;
-    const merks = get().merk.toUpperCase();
-    if (nameChoose !== undefined || null || '') {
-      set((state) => ({
-        name: nameChoose.label,
-        codeNew: nameChoose.code,
-        addProduct: {
-          ...state.addProduct,
-          name: nameChoose.label,
-          code: nameChoose.code,
-          categories: categorieses,
-          merk: merks,
-        },
-      }));
-    } else {
-      set(() => ({ name: '' }));
-    }
-  },
-  setAddProduct: (event) => {
-    set((state) => ({ addProduct: { ...state.addProduct, [event.name]: event.value } }));
-    console.log(get().addProduct);
-    set((state) =>
-      state.addProduct.code !== '' &&
-      state.addProduct.categories !== '' &&
-      state.addProduct.merk !== '' &&
-      state.addProduct.name !== '' &&
-      state.addProduct.price_1 !== '' &&
-      state.addProduct.price_2 !== '' &&
-      state.addProduct.price_3 !== '' &&
-      state.addProduct.stock !== ''
-        ? { addProductIcon: true }
-        : { addProductIcon: false }
-    );
-  },
-  setFinalAddProduct: async () => {
-    set((state) => ({
-      addProduct: { ...state.addProduct, timeStamp: serverTimestamp(), lastInput: getAuth().currentUser.email },
-      loading: !state.loading,
-    }));
-    const productAddFinal = get().addProduct;
-    const listProduct = get().listProducts;
-    const getOpenSnackbar = get().setOpenSnackbar;
-    delete productAddFinal.id;
-    listProduct.forEach((product) => {
-      /* eslint-disable */
-      if (product.name === productAddFinal.name && product.code === productAddFinal.code) {
-        set(() => ({ helperCodeName: product.name + ' Sudah Ada !', helperCode: product.code + ' Sudah Ada !' }));
-      } else if (product.code === productAddFinal.code) {
-        set(() => ({ helperCode: product.code + ' Sudah Ada !' }));
-      } else if (product.name === productAddFinal.name) {
-        set(() => ({ helperCodeName: product.name + ' Sudah Ada !' }));
-      }
-    });
-    /* eslint-disable */
-    const helperCodeName = get().helperCodeName;
-    const helperCode = get().helperCode;
-    if (helperCode === '' || helperCodeName === '' || (helperCode === '' && helperCodeName === '')) {
-      await addDoc(collection(db, 'listProducts'), productAddFinal);
-      set(() => ({ snackbarMessage: `${productAddFinal.name} Berhasil Ditambahkan !` }));
-      set((state) => ({
-        addProduct: {
-          id: '',
-          code: '',
-          categories: '',
-          merk: '',
-          name: '',
-          price_1: '',
-          price_2: '',
-          price_3: '',
-          stock: '',
-          timeStamp: '',
-          lastInput: '',
-        },
-        addProductMode: !state.addProductMode,
-        loading: !state.loading,
-      }));
-      getOpenSnackbar();
-    }
-  },
   setProductId: (id) =>
     set((state) => ({
       editProductId: id,
       editProductMode: !state.editProductMode,
       editMode: !state.editMode,
     })),
-  deleteAddProductNew: () => {
-    const productDelete = get().listProduct;
-    productDelete.pop();
-    set((state) => ({ addCodeProductMode: !state.addCodeProductMode }));
-  },
-  setAddProductMode: () => {
-    set((state) => ({
-      addProductMode: !state.addProductMode,
-      editProductId: state.addProduct.id,
-      listProducts: [
-        ...state.listProducts,
-        {
-          id: state.addProduct.id,
-          code: state.addProduct.code,
-          categories: state.addProduct.categories,
-          merk: state.addProduct.merk,
-          name: state.addProduct.name,
-          price_1: state.addProduct.price_1,
-          price_2: state.addProduct.price_2,
-          price_3: state.addProduct.price_3,
-          stock: state.addProduct.stock,
-          timeStamp: state.addProduct.timeStamp,
-          lastInput: state.addProduct.lastInput,
-        },
-      ],
-    }));
-  },
   setDeleteProduct: async (id) => {
     const getOpenSnackbar = get().setOpenSnackbar;
     await deleteDoc(doc(db, 'listProducts', id));
@@ -223,8 +89,6 @@ export const listProductStore = create((set, get) => ({
     getOpenSnackbar();
   },
   getField: async () => {
-    const merks = get().merk.toUpperCase();
-    const categorieses = get().categories;
     await onSnapshot(collection(db, 'configs'), (configsData) => {
       configsData.forEach((config) => {
         if (config.id === 'ProductCode') {
@@ -237,67 +101,6 @@ export const listProductStore = create((set, get) => ({
           set(() => ({
             listCategories: dataCategories,
             listMerk: dataMerk,
-          }));
-        }
-      });
-    });
-  },
-  getProductName: async () => {
-    const merks = get().merk.toUpperCase();
-    const categorieses = get().categories;
-    const codename = get().name;
-    await delay(2000);
-    let listProducts = get().listProducts;
-    let listCodeProduct = [];
-    await onSnapshot(query(collection(db, 'codeProducts'), orderBy('categories')), (codeProducts) => {
-      codeProducts.forEach((codeProduct) => {
-        listCodeProduct.push(codeProduct.data());
-      });
-      const CodeProductFinal = listCodeProduct.filter((code) => listProducts.every((list) => list.code !== code.code));
-      set((state) => ({ listName: [] }));
-      CodeProductFinal.forEach((codes) => {
-        if (merks !== '' && categorieses !== '' && merks === codes.merk && categorieses === codes.categories) {
-          set((state) => ({
-            listName: [
-              ...state.listName,
-              {
-                code: codes.code,
-                label: codes.name,
-              },
-            ],
-          }));
-        }
-        if (categorieses !== '' && categorieses === codes.categories && merks === '') {
-          set((state) => ({
-            listName: [
-              ...state.listName,
-              {
-                code: codes.code,
-                label: codes.name,
-              },
-            ],
-          }));
-        }
-        if (merks !== '' && merks === codes.merk && categorieses === '') {
-          set((state) => ({
-            listName: [
-              ...state.listName,
-              {
-                code: codes.code,
-                label: codes.name,
-              },
-            ],
-          }));
-        }
-        if (merks === '' && categorieses === '') {
-          set((state) => ({
-            listName: [
-              ...state.listName,
-              {
-                code: codes.code,
-                label: codes.name,
-              },
-            ],
           }));
         }
       });
@@ -434,8 +237,7 @@ export const listProductStore = create((set, get) => ({
         }
       });
     });
-    get().getProductName();
     await delay(1000);
-    set((state) => ({ loading: !state.loading }));
+    set(() => ({ loading: false }));
   },
 }));

@@ -7,7 +7,6 @@ import {
   TextField,
   InputAdornment,
   ClickAwayListener,
-  Button,
   Box,
   Paper,
   Table,
@@ -30,13 +29,7 @@ import {
   Skeleton,
   Snackbar,
 } from '@mui/material';
-import {
-  ModeEditRounded,
-  FilterAltRounded,
-  CheckCircleOutlineRounded,
-  DoDisturbRounded,
-  AddRounded,
-} from '@mui/icons-material';
+import { ModeEditRounded, FilterAltRounded, CheckCircleOutlineRounded, DoDisturbRounded } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 
 // store
@@ -83,36 +76,26 @@ export default function ProductPage() {
   // End Helper Table
 
   // Start ListProduct Initialization
-  const code = useListProductStore((state) => state.codeNew);
   const loading = useListProductStore((state) => state.loading);
   const listCategory = useListProductStore((state) => state.listCategories);
   const listMerk = useListProductStore((state) => state.listMerk);
   const categories = useListProductStore((state) => state.categories);
-  const name = useListProductStore((state) => state.name);
-  const setName = useListProductStore((state) => state.setName);
   const merk = useListProductStore((state) => state.merk);
   const setCategories = useListProductStore((state) => state.setCategories);
   const setMerk = useListProductStore((state) => state.setMerk);
   const editMode = useListProductStore((state) => state.editMode);
-  const addProductMode = useListProductStore((state) => state.addProductMode);
-  const setAddProductMode = useListProductStore((state) => state.setAddProductMode);
-  const deleteAddProductNew = useListProductStore((state) => state.deleteAddProductNew);
   const productId = useListProductStore((state) => state.editProductId);
   const setProductId = useListProductStore((state) => state.setProductId);
   const setEditProduct = useListProductStore((state) => state.setEditProduct);
   const setEdit = useListProductStore((state) => state.setEdit);
   const editProduct = useListProductStore((state) => state.editProduct);
   const editProductIcon = useListProductStore((state) => state.editProductIcon);
-  const setAddProduct = useListProductStore((state) => state.setAddProduct);
-  const addProductIcon = useListProductStore((state) => state.addProductIcon);
-  const setFinalAddProduct = useListProductStore((state) => state.setFinalAddProduct);
   const getField = useListProductStore((state) => state.getField);
   const openSnackbar = useListProductStore((state) => state.openSnackbar);
   const snackbarMessage = useListProductStore((state) => state.snackbarMessage);
   const setOpenSnackbar = useListProductStore((state) => state.setOpenSnackbar);
   const getProducts = useListProductStore((state) => state.getProducts);
   const listProducts = useListProductStore((state) => state.listProducts);
-  const listName = useListProductStore((state) => state.listName);
   const rows = listProducts;
   // End ListProduct Initialization
 
@@ -128,7 +111,7 @@ export default function ProductPage() {
       { id: 'price_2', label: 'Harga 2', minWidth: 150, align: 'left' },
       { id: 'price_3', label: 'Harga 3', minWidth: 150, align: 'left' },
       { id: 'stock', label: 'Stok', minWidth: 150, align: 'left' },
-      { id: 'lastInput', label: '', minWidth: 350, align: 'left' },
+      { id: 'lastInput', label: 'Terakhir Diubah', minWidth: 350, align: 'left' },
       {
         id: 'action',
         label: 'Action',
@@ -252,24 +235,14 @@ export default function ProductPage() {
         <TableContainer>
           <Table aria-label="Sticky Table">
             <caption>
-              {(categories !== '' || null || undefined) && (merk !== '' || null || undefined) ? (
-                <Button
-                  disabled={addProductMode}
-                  variant="text"
-                  fullWidth
-                  startIcon={<AddRounded />}
-                  onClick={setAddProductMode}
-                >
-                  Tambah Produk
-                </Button>
-              ) : (
+              {categories === '' && merk === '' ? (
                 <Alert severity="warning">
-                  Jika Ingin Menambahkan, Mengubah, atau Menghapus Code Product Baru Maka{' '}
+                  Jika Ingin Mengubah atau Menghapus Product Maka{' '}
                   {categories === '' || undefined || null ? 'Kategori' : null}{' '}
                   {(categories === '' || undefined || null) && (merk === '' || null || undefined) ? 'dan ' : null}
                   {merk === '' || undefined || null ? 'Merk' : null} Harap Diisi
                 </Alert>
-              )}
+              ) : null}
             </caption>
             <TableHead>
               <TableRow>
@@ -358,8 +331,8 @@ export default function ProductPage() {
                             ) : (
                               value
                             )
-                          ) : column.id === 'action' && editMode === false && addProductMode === false ? (
-                            (categories !== '' || null || undefined) && (merk !== '' || null || undefined) ? (
+                          ) : column.id === 'action' && editMode === false ? (
+                            categories !== '' && merk !== '' ? (
                               <ButtonGroup variant="outlined">
                                 <IconButton onClick={() => handleEdit(row.id)}>
                                   <Tooltip title="Edit Code Product">
@@ -369,90 +342,18 @@ export default function ProductPage() {
                               </ButtonGroup>
                             ) : null
                           ) : (column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3') &&
-                            editMode === false &&
-                            addProductMode === false ? (
+                            editMode === false ? (
                             `Rp.${value}.000,-`
                           ) : (
                             value
                           )}
                           {/* End Edit Rows and Display Rows */}
-                          {/* Start Add Rows */}
-                          {addProductMode === true && value === '' && row.id === '' && column.id === 'name' ? (
-                            <Autocomplete
-                              fullWidth
-                              isOptionEqualToValue={(option, value) => option.label === value}
-                              id="name"
-                              name="name"
-                              onChange={(event, newValue) => (newValue !== null ? setName(newValue) : setName())}
-                              options={listName}
-                              value={name}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  sx={{ my: 4, minWidth: 100 }}
-                                  InputProps={{ ...params.InputProps, disableUnderline: true }}
-                                  variant="standard"
-                                  placeholder="Nama Produk"
-                                />
-                              )}
-                            />
-                          ) : (addProductMode === true && row.id === '' && value === '' && column.id === 'stock') ||
-                            (addProductMode === true && row.id === '' && value === '' && column.id === 'price_1') ||
-                            (addProductMode === true && row.id === '' && value === '' && column.id === 'price_2') ||
-                            (addProductMode === true && row.id === '' && value === '' && column.id === 'price_3') ? (
-                            <TextField
-                              required
-                              fullWidth
-                              name={column.id}
-                              /* eslint-disable */
-                              onInput={(e) => {
-                                column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3'
-                                  ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 3))
-                                  : null;
-                              }}
-                              /* eslint-disable */
-                              type="number"
-                              onChange={(event) => setAddProduct(event.target)}
-                              InputProps={{ disableUnderline: true }}
-                              variant="standard"
-                              placeholder={column.label}
-                              sx={{ minWidth: column.minWidth }}
-                            />
-                          ) : addProductMode === true && row.id === '' && column.id === 'categories' ? (
-                            categories
-                          ) : addProductMode === true && row.id === '' && column.id === 'merk' ? (
-                            merk
-                          ) : addProductMode === true && row.id === '' && column.id === 'code' ? (
-                            code
-                          ) : addProductMode === true && row.id === '' && column.id === 'action' && row.id === '' ? (
-                            <ButtonGroup variant="outlined">
-                              {addProductIcon ? (
-                                <IconButton onClick={setFinalAddProduct}>
-                                  <Tooltip title="Confirm">
-                                    <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
-                                  </Tooltip>
-                                  <Backdrop
-                                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                                    open={loading}
-                                  >
-                                    <CircularProgress color="inherit" />
-                                  </Backdrop>
-                                </IconButton>
-                              ) : null}
-                              <IconButton onClick={deleteAddProductNew}>
-                                <Tooltip title="Cancel">
-                                  <DoDisturbRounded sx={{ color: '#737373' }} />
-                                </Tooltip>
-                              </IconButton>
-                            </ButtonGroup>
-                          ) : null}
                         </TableCell>
                       );
                     })}
                   </TableRow>
                 ))}
               {/* End Add Rows */}
-              {/* End Define Rows */}
             </TableBody>
           </Table>
         </TableContainer>

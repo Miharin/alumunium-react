@@ -8,8 +8,6 @@ import {
   orderBy,
   getDocs,
   updateDoc,
-  where,
-  limit,
   doc,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
@@ -67,21 +65,20 @@ export const addProductStore = create((set, get) => ({
     const getProduct = get().listProducts;
     set(() => ({ listProducts: [] }));
     getProduct.forEach((product) => {
+      const productRules =
+        product.code !== '' &&
+        product.categories !== '' &&
+        product.merk !== '' &&
+        product.name !== '' &&
+        product.stock !== '' &&
+        product.stock.length >= 2;
       if (product.id === id) {
         product[event.name] = event.value;
         set(() =>
-          product.code !== '' &&
-          product.categories !== '' &&
-          product.merk !== '' &&
-          product.name !== '' &&
-          product.price_1 !== '' &&
-          product.price_1.length >= 2 &&
-          product.price_2 !== '' &&
-          product.price_2.length >= 2 &&
-          product.price_3 !== '' &&
-          product.price_3.length >= 2 &&
-          product.stock !== '' &&
-          product.stock.length >= 2
+          productRules ||
+          (productRules && event.name === 'price_1' && product.price_1 !== '' && product.price_1.length >= 2) ||
+          (productRules && event.name === 'price_1' && product.price_2 !== '' && product.price_2.length >= 2) ||
+          (productRules && event.name === 'price_1' && product.price_3 !== '' && product.price_3.length >= 2)
             ? { addProductIcon: true }
             : { addProductIcon: false }
         );
@@ -101,67 +98,72 @@ export const addProductStore = create((set, get) => ({
       product.lastInput = getAuth().currentUser.email;
     });
     const getOpenSnackbar = get().setOpenSnackbar;
-    await onSnapshot(collection(db, 'listProducts'), (docId) => {
-      const docIdEdit = [];
-      docId.forEach((item) => {
-        docIdEdit.push({ id: item.id, code: item.data().code, stock: item.data().stock });
-      });
-      const filter = productAddFinal.filter((product) =>
-        // eslint-disable-next-line
-        docIdEdit.some((Id) =>
-          product.code === Id.code ? (product.stock = (Number(product.stock) + Number(Id.stock)).toString()) : null
-        )
-      );
-      const filterAddData = productAddFinal.filter((product) => docIdEdit.every((Id) => product.code !== Id.code));
-      if (filter.length > 0) {
-        filter.forEach((product) => {
-          const filterData = {
-            price_1: product.price_1,
-            price_2: product.price_2,
-            price_3: product.price_3,
-            stock: product.stock,
-            lastInput: product.lastInput,
-            timeStamp: product.timeStamp,
-          };
-          console.log(filterData);
-        });
-      }
-      if (filterAddData.length > 0) {
-        filterAddData.forEach((product) => {
-          const filterAddDataNew = {
-            code: product.code,
-            categories: product.categories,
-            merk: product.merk,
-            name: product.name,
-            price_1: product.price_1,
-            price_2: product.price_2,
-            price_3: product.price_3,
-            stock: product.stock,
-            lastInput: product.lastInput,
-            timeStamp: product.timeStamp,
-          };
-          console.log(filterAddDataNew);
-        });
-      }
+    const docIdEdit = [];
+    const docId = await getDocs(collection(db, 'listProducts'));
+    docId.forEach((item) => {
+      docIdEdit.push({ id: item.id, code: item.data().code, stock: item.data().stock });
     });
-
-    // await addDoc(collection(db, 'listProducts'), {
-    //   code: product.code,
-    //   merk: product.merk,
-    //   categories: product.categories,
-    //   name: product.name,
-    //   price_1: product.price_1,
-    //   price_2: product.price_2,
-    //   price_3: product.price_3,
-    //   stock: product.stock,
-    //   timeStamp: product.timeStamp,
-    //   lastInput: product.lastInput,
-    // });
+    const filter = productAddFinal.filter((product) =>
+      // eslint-disable-next-line
+      docIdEdit.some((Id) =>
+        product.code === Id.code
+          ? ((product.stock = (Number(product.stock) + Number(Id.stock)).toString()), (product.id = Id.id))
+          : null
+      )
+    );
+    const filterAddData = productAddFinal.filter((product) => docIdEdit.every((Id) => product.code !== Id.code));
+    if (filter.length > 0) {
+      filter.forEach(async (product) => {
+        const updateDocument = doc(db, 'listProducts', product.id);
+        let filterData = {};
+        filterData = {
+          ...filterData,
+          stock: product.stock,
+          lastInput: product.lastInput,
+          timeStamp: product.timeStamp,
+        };
+        if (product.price_1 !== '' && product.price_1 !== '0') {
+          filterData = {
+            ...filterData,
+            price_1: product.price_1,
+          };
+        }
+        if (product.price_2 !== '' && product.price_2 !== '0') {
+          filterData = {
+            ...filterData,
+            price_2: product.price_2,
+          };
+        }
+        if (product.price_3 !== '' && product.price_3 !== '0') {
+          filterData = {
+            ...filterData,
+            price_3: product.price_3,
+          };
+        }
+        await updateDoc(updateDocument, filterData);
+      });
+    }
+    if (filterAddData.length > 0) {
+      filterAddData.forEach(async (product) => {
+        const filterAddDataNew = {
+          code: product.code,
+          categories: product.categories,
+          merk: product.merk,
+          name: product.name,
+          price_1: product.price_1,
+          price_2: product.price_2,
+          price_3: product.price_3,
+          stock: product.stock,
+          lastInput: product.lastInput,
+          timeStamp: product.timeStamp,
+        };
+        await addDoc(collection(db, 'listProducts'), filterAddDataNew);
+      });
+    }
+    await delay(1000);
     set(() => ({ snackbarMessage: `${productAddFinal.length} Produk Berhasil Ditambahkan !` }));
     getOpenSnackbar();
-    set((state) => ({
-      loading: !state.loading,
-    }));
+    get().getProducts();
   },
   deleteAddProductNew: (id) => {
     const getProduct = get().listProducts;
@@ -210,7 +212,6 @@ export const addProductStore = create((set, get) => ({
     }));
   },
   getProductName: async () => {
-    await delay(2000);
     // eslint-disable-next-line
     const listProducts = get().listProducts;
     const listCodeProduct = [];
@@ -243,7 +244,6 @@ export const addProductStore = create((set, get) => ({
       addProductMode: true,
       loading: false,
       listProducts: [
-        ...state.listProducts,
         {
           id: state.editProductId,
           code: state.addProduct.code,
