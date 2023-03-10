@@ -204,7 +204,7 @@ export default function HistoryProductPage() {
                       sx={{ my: 4, width: 300 }}
                       InputProps={{ ...params.InputProps, disableUnderline: true }}
                       variant="standard"
-                      placeholder="Kategori"
+                      placeholder="Nama Barang"
                     />
                   )}
                 />
