@@ -109,7 +109,7 @@ export const listProductStore = create((set, get) => ({
   getProducts: async () => {
     const merks = get().merk.toUpperCase();
     const categorieses = get().categories;
-    await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (listProduct) => {
+    await onSnapshot(query(collection(db, 'listProducts'), orderBy('stock')), (listProduct) => {
       set(() => ({ listProducts: [] }));
       listProduct.forEach(async (productData) => {
         if (productData.data().timeStamp !== null) {

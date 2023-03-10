@@ -8,6 +8,7 @@ import {
   DashboardRounded,
   ListRounded,
   PostAddRounded,
+  EventNoteRounded,
 } from '@mui/icons-material';
 import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
 // Import Router
@@ -81,6 +82,13 @@ export const NavSection = (onCloseNav) => {
             selected: 5,
             icon: <PostAddRounded />,
             links: '/dashboard/products/add',
+          },
+          {
+            id: 'P4',
+            name: 'Histori Barang',
+            selected: 6,
+            icon: <EventNoteRounded />,
+            links: '/dashboard/products/history',
           },
         ],
       },

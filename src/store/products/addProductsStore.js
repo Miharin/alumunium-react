@@ -3,11 +3,12 @@ import {
   collection,
   onSnapshot,
   addDoc,
-  serverTimestamp,
   query,
   orderBy,
   getDocs,
   updateDoc,
+  Timestamp,
+  arrayUnion,
   doc,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
@@ -91,10 +92,11 @@ export const addProductStore = create((set, get) => ({
     set((state) => ({
       loading: !state.loading,
     }));
+    const timestamp = Timestamp.now();
     const productAddFinal = get().listProducts;
     // eslint-disable-next-line
     productAddFinal.forEach((product) => {
-      product.timeStamp = serverTimestamp();
+      product.timeStamp = timestamp;
       product.lastInput = getAuth().currentUser.email;
     });
     const getOpenSnackbar = get().setOpenSnackbar;
@@ -107,7 +109,16 @@ export const addProductStore = create((set, get) => ({
       // eslint-disable-next-line
       docIdEdit.some((Id) =>
         product.code === Id.code
-          ? ((product.stock = (Number(product.stock) + Number(Id.stock)).toString()), (product.id = Id.id))
+          ? ((product.history = {
+              detail: 'Item Masuk',
+              in: product.stock,
+              stock: (Number(product.stock) + Number(Id.stock)).toString(),
+              out: '0',
+              lastInput: product.lastInput,
+              timeStamp: product.timeStamp,
+            }),
+            (product.stock = (Number(product.stock) + Number(Id.stock)).toString()),
+            (product.id = Id.id))
           : null
       )
     );
@@ -121,6 +132,7 @@ export const addProductStore = create((set, get) => ({
           stock: product.stock,
           lastInput: product.lastInput,
           timeStamp: product.timeStamp,
+          history: arrayUnion(product.history),
         };
         if (product.price_1 !== '' && product.price_1 !== '0') {
           filterData = {
@@ -156,6 +168,16 @@ export const addProductStore = create((set, get) => ({
           stock: product.stock,
           lastInput: product.lastInput,
           timeStamp: product.timeStamp,
+          history: [
+            {
+              in: product.stock,
+              lastInput: product.lastInput,
+              timeStamp: product.timeStamp,
+              out: '0',
+              stock: product.stock,
+              detail: 'Item Masuk',
+            },
+          ],
         };
         await addDoc(collection(db, 'listProducts'), filterAddDataNew);
       });

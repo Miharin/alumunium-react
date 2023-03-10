@@ -30,6 +30,13 @@ export const tableHelper = create((set) => ({
     row.role.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.status.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.shift.toString().toLowerCase().includes(search.toString().toLowerCase()),
+  filteredDetail: (row, search) =>
+    row.code.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.name.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.detail.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.in.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.out.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.lastInput.toString().toLowerCase().includes(search.toString().toLowerCase()),
   setShowSearch: () => set((state) => ({ showSearch: !state.showSearch })),
   setSearch: (event) => set(() => ({ search: event })),
   setPage: (newPage) => set(() => ({ page: newPage })),
