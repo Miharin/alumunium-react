@@ -153,7 +153,7 @@ export default function ProductPage() {
   ) : (
     <>
       <Helmet>
-        <title> Product Code | Alu Jaya </title>
+        <title> List Produk | Alu Jaya </title>
       </Helmet>
       <Paper sx={{ mx: 5, alignItems: 'center' }} elevation={5}>
         {/* Start Function Showing Search and Filter */}
