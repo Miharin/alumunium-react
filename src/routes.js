@@ -58,6 +58,8 @@ export default function Router() {
             { element: <Navigate to="/dashboard/app" />, index: true },
             { path: 'app', element: <DashboardAppPage /> },
             { path: 'products/code', element: <CodeProductsPage /> },
+            { path: 'products/add', element: <AddProductPage /> },
+            { path: 'products/history', element: <HistoryProductPage /> },
             { path: 'products', element: <ProductList /> },
             { path: 'blog', element: <BlogPage /> },
           ],
