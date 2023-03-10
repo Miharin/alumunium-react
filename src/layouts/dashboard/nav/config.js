@@ -125,6 +125,20 @@ export const NavSection = (onCloseNav) => {
             icon: <FormatListBulletedRounded />,
             links: '/dashboard/products',
           },
+          {
+            id: 'P3',
+            name: 'Tambah Barang',
+            selected: 5,
+            icon: <PostAddRounded />,
+            links: '/dashboard/products/add',
+          },
+          {
+            id: 'P4',
+            name: 'Histori Barang',
+            selected: 6,
+            icon: <EventNoteRounded />,
+            links: '/dashboard/products/history',
+          },
         ],
       },
     ];
