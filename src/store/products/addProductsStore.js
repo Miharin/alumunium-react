@@ -34,6 +34,7 @@ export const addProductStore = create((set, get) => ({
     price_2: '',
     price_3: '',
     stock: '',
+    stockWarning: '',
     lastInput: '',
     timeStamp: '',
   },
@@ -66,25 +67,24 @@ export const addProductStore = create((set, get) => ({
     const getProduct = get().listProducts;
     set(() => ({ listProducts: [] }));
     getProduct.forEach((product) => {
-      const productRules =
-        product.code !== '' &&
-        product.categories !== '' &&
-        product.merk !== '' &&
-        product.name !== '' &&
-        product.stock !== '' &&
-        product.stock.length >= 2;
       if (product.id === id) {
         product[event.name] = event.value;
+        const productRules =
+          product.code !== '' &&
+          product.categories !== '' &&
+          product.merk !== '' &&
+          product.name !== '' &&
+          product.stock !== '';
         set(() =>
           productRules ||
-          (productRules && event.name === 'price_1' && product.price_1 !== '' && product.price_1.length >= 2) ||
-          (productRules && event.name === 'price_1' && product.price_2 !== '' && product.price_2.length >= 2) ||
-          (productRules && event.name === 'price_1' && product.price_3 !== '' && product.price_3.length >= 2)
+          (productRules && product.price_1 !== '' && product.price_1.length >= 2) ||
+          (productRules && product.price_2 !== '' && product.price_2.length >= 2) ||
+          (productRules && product.price_3 !== '' && product.price_3.length >= 2)
             ? { addProductIcon: true }
             : { addProductIcon: false }
         );
+        set((state) => ({ listProducts: [...state.listProducts, product] }));
       }
-      set((state) => ({ listProducts: [...state.listProducts, product] }));
     });
     get().getProductName();
   },
@@ -123,6 +123,7 @@ export const addProductStore = create((set, get) => ({
       )
     );
     const filterAddData = productAddFinal.filter((product) => docIdEdit.every((Id) => product.code !== Id.code));
+    let TotalProduct = 0;
     if (filter.length > 0) {
       filter.forEach(async (product) => {
         const updateDocument = doc(db, 'listProducts', product.id);
@@ -130,6 +131,7 @@ export const addProductStore = create((set, get) => ({
         filterData = {
           ...filterData,
           stock: product.stock,
+          stockWarning: product.stockWarning,
           lastInput: product.lastInput,
           timeStamp: product.timeStamp,
           history: arrayUnion(product.history),
@@ -153,37 +155,44 @@ export const addProductStore = create((set, get) => ({
           };
         }
         await updateDoc(updateDocument, filterData);
+        TotalProduct += 1;
       });
     }
     if (filterAddData.length > 0) {
       filterAddData.forEach(async (product) => {
-        const filterAddDataNew = {
-          code: product.code,
-          categories: product.categories,
-          merk: product.merk,
-          name: product.name,
-          price_1: product.price_1,
-          price_2: product.price_2,
-          price_3: product.price_3,
-          stock: product.stock,
-          lastInput: product.lastInput,
-          timeStamp: product.timeStamp,
-          history: [
-            {
-              in: product.stock,
-              lastInput: product.lastInput,
-              timeStamp: product.timeStamp,
-              out: '0',
-              stock: product.stock,
-              detail: 'Item Masuk',
-            },
-          ],
-        };
-        await addDoc(collection(db, 'listProducts'), filterAddDataNew);
+        if (product.stockWarning !== '') {
+          const filterAddDataNew = {
+            code: product.code,
+            categories: product.categories,
+            merk: product.merk,
+            name: product.name,
+            price_1: product.price_1,
+            price_2: product.price_2,
+            price_3: product.price_3,
+            stock: product.stock,
+            stockWarning: product.stockWarning,
+            lastInput: product.lastInput,
+            timeStamp: product.timeStamp,
+            history: [
+              {
+                in: product.stock,
+                lastInput: product.lastInput,
+                timeStamp: product.timeStamp,
+                out: '0',
+                stock: product.stock,
+                detail: 'Item Masuk',
+              },
+            ],
+          };
+          await addDoc(collection(db, 'listProducts'), filterAddDataNew);
+          TotalProduct += 1;
+        } else {
+          alert(`Harap isi Peringatan Stock pada ${product.name}`);
+        }
       });
     }
     await delay(1000);
-    set(() => ({ snackbarMessage: `${productAddFinal.length} Produk Berhasil Ditambahkan !` }));
+    set(() => ({ snackbarMessage: `${TotalProduct} Produk Berhasil Ditambahkan !` }));
     getOpenSnackbar();
     get().getProducts();
   },
@@ -210,6 +219,7 @@ export const addProductStore = create((set, get) => ({
         price_2: '',
         price_3: '',
         stock: '',
+        stockWarning: '',
         timeStamp: '',
         lastInput: '',
       },
@@ -227,6 +237,7 @@ export const addProductStore = create((set, get) => ({
           price_2: state.addProduct.price_2,
           price_3: state.addProduct.price_3,
           stock: state.addProduct.stock,
+          stockWarning: state.addProduct.stockWarning,
           timeStamp: state.addProduct.timeStamp,
           lastInput: state.addProduct.lastInput,
         },
@@ -276,6 +287,7 @@ export const addProductStore = create((set, get) => ({
           price_2: state.addProduct.price_2,
           price_3: state.addProduct.price_3,
           stock: state.addProduct.stock,
+          stockWarning: state.addProduct.stockWarning,
         },
       ],
     }));

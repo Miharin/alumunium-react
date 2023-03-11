@@ -95,6 +95,7 @@ export default function AddProductPage() {
     { id: 'price_2', label: 'Harga 2', minWidth: 150, align: 'left' },
     { id: 'price_3', label: 'Harga 3', minWidth: 150, align: 'left' },
     { id: 'stock', label: 'Stok', minWidth: 150, align: 'left' },
+    { id: 'stockWarning', label: 'Peringatan Stok', minWidth: 200, align: 'left' },
     {
       id: 'action',
       label: 'Action',
@@ -221,7 +222,8 @@ export default function AddProductPage() {
                             (column.id === 'price_1' ||
                               column.id === 'price_2' ||
                               column.id === 'price_3' ||
-                              column.id === 'stock') ? (
+                              column.id === 'stock' ||
+                              column.id === 'stockWarning') ? (
                             <TextField
                               required
                               fullWidth

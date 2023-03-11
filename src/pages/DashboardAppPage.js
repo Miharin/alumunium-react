@@ -328,6 +328,18 @@ export default function DashboardAppPage() {
                           ) : (column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3') &&
                             editMode === false ? (
                             `Rp.${value}.000,-`
+                          ) : column.id === 'stock' ? (
+                            <Alert
+                              severity={
+                                Number(value) < row.stockWarning
+                                  ? Number(value) < 10
+                                    ? 'error'
+                                    : 'warning'
+                                  : 'success'
+                              }
+                            >
+                              {value}
+                            </Alert>
                           ) : (
                             value
                           )}
