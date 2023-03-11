@@ -132,6 +132,7 @@ export const listProductStore = create((set, get) => ({
                   price_2: productData.data().price_2,
                   price_3: productData.data().price_3,
                   stock: productData.data().stock,
+                  stockWarning: productData.data().stockWarning,
                   lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
                     weekday: 'long',
                     year: 'numeric',
@@ -161,6 +162,7 @@ export const listProductStore = create((set, get) => ({
                   price_2: productData.data().price_2,
                   price_3: productData.data().price_3,
                   stock: productData.data().stock,
+                  stockWarning: productData.data().stockWarning,
                   lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
                     weekday: 'long',
                     year: 'numeric',
@@ -190,6 +192,7 @@ export const listProductStore = create((set, get) => ({
                   price_2: productData.data().price_2,
                   price_3: productData.data().price_3,
                   stock: productData.data().stock,
+                  stockWarning: productData.data().stockWarning,
                   lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
                     weekday: 'long',
                     year: 'numeric',
@@ -223,6 +226,7 @@ export const listProductStore = create((set, get) => ({
                   price_2: productData.data().price_2,
                   price_3: productData.data().price_3,
                   stock: productData.data().stock,
+                  stockWarning: productData.data().stockWarning,
                   lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
                     weekday: 'long',
                     year: 'numeric',

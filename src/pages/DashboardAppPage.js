@@ -264,88 +264,92 @@ export default function DashboardAppPage() {
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                     {columns.map((column) => {
                       const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} id={index} align={column.align}>
-                          {/* Start Edit Rows and Display Rows */}
-                          {editMode === true ? (
-                            column.id === 'action' && productId === row.id ? (
-                              <ButtonGroup variant="outlined">
-                                {editProductIcon ? (
-                                  <IconButton onClick={() => setEditProduct(row.id)}>
-                                    <Tooltip title="Confirm">
-                                      <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
+                      if (Number(row.stock) < row.stockWarning) {
+                        return (
+                          <TableCell key={column.id} id={index} align={column.align}>
+                            {/* Start Edit Rows and Display Rows */}
+                            {editMode === true ? (
+                              column.id === 'action' && productId === row.id ? (
+                                <ButtonGroup variant="outlined">
+                                  {editProductIcon ? (
+                                    <IconButton onClick={() => setEditProduct(row.id)}>
+                                      <Tooltip title="Confirm">
+                                        <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
+                                      </Tooltip>
+                                    </IconButton>
+                                  ) : null}
+                                  <Backdrop
+                                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                    open={loading}
+                                  >
+                                    <CircularProgress color="inherit" />
+                                  </Backdrop>
+                                  <IconButton onClick={() => handleEdit()}>
+                                    <Tooltip title="Cancel">
+                                      <DoDisturbRounded sx={{ color: '#737373' }} />
                                     </Tooltip>
                                   </IconButton>
-                                ) : null}
-                                <Backdrop
-                                  sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                                  open={loading}
-                                >
-                                  <CircularProgress color="inherit" />
-                                </Backdrop>
-                                <IconButton onClick={() => handleEdit()}>
-                                  <Tooltip title="Cancel">
-                                    <DoDisturbRounded sx={{ color: '#737373' }} />
-                                  </Tooltip>
-                                </IconButton>
-                              </ButtonGroup>
-                            ) : productId === row.id &&
-                              column.id !== 'lastInput' &&
-                              column.id !== 'code' &&
-                              column.id !== 'name' &&
-                              column.id !== 'categories' &&
-                              column.id !== 'merk' ? (
-                              <TextField
-                                fullWidth
-                                onChange={(event) => setEdit(event.target)}
-                                /* eslint-disable */
-                                onInput={(e) => {
-                                  column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3'
-                                    ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 3))
-                                    : null;
-                                }}
-                                /* eslint-disable */
-                                InputProps={{ disableUnderline: true }}
-                                type={column.id === 'code' ? 'number' : 'text'}
-                                name={column.id}
-                                placeholder={value}
-                                variant="standard"
-                                value={editProduct[column.id] !== undefined ? editProduct[column.id] : ''}
-                              />
+                                </ButtonGroup>
+                              ) : productId === row.id &&
+                                column.id !== 'lastInput' &&
+                                column.id !== 'code' &&
+                                column.id !== 'name' &&
+                                column.id !== 'categories' &&
+                                column.id !== 'merk' ? (
+                                <TextField
+                                  fullWidth
+                                  onChange={(event) => setEdit(event.target)}
+                                  /* eslint-disable */
+                                  onInput={(e) => {
+                                    column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3'
+                                      ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 3))
+                                      : null;
+                                  }}
+                                  /* eslint-disable */
+                                  InputProps={{ disableUnderline: true }}
+                                  type={column.id === 'code' ? 'number' : 'text'}
+                                  name={column.id}
+                                  placeholder={value}
+                                  variant="standard"
+                                  value={editProduct[column.id] !== undefined ? editProduct[column.id] : ''}
+                                />
+                              ) : (
+                                value
+                              )
+                            ) : column.id === 'action' && editMode === false ? (
+                              categories !== '' && merk !== '' ? (
+                                <ButtonGroup variant="outlined">
+                                  <IconButton onClick={() => handleEdit(row.id)}>
+                                    <Tooltip title="Edit Code Product">
+                                      <ModeEditRounded sx={{ color: '#737373' }} />
+                                    </Tooltip>
+                                  </IconButton>
+                                </ButtonGroup>
+                              ) : null
+                            ) : (column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3') &&
+                              editMode === false ? (
+                              `Rp.${value}.000,-`
+                            ) : column.id === 'stock' ? (
+                              <Alert
+                                severity={
+                                  Number(value) < row.stockWarning
+                                    ? Number(value) < 10
+                                      ? 'error'
+                                      : 'warning'
+                                    : 'success'
+                                }
+                              >
+                                {value}
+                              </Alert>
                             ) : (
                               value
-                            )
-                          ) : column.id === 'action' && editMode === false ? (
-                            categories !== '' && merk !== '' ? (
-                              <ButtonGroup variant="outlined">
-                                <IconButton onClick={() => handleEdit(row.id)}>
-                                  <Tooltip title="Edit Code Product">
-                                    <ModeEditRounded sx={{ color: '#737373' }} />
-                                  </Tooltip>
-                                </IconButton>
-                              </ButtonGroup>
-                            ) : null
-                          ) : (column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3') &&
-                            editMode === false ? (
-                            `Rp.${value}.000,-`
-                          ) : column.id === 'stock' ? (
-                            <Alert
-                              severity={
-                                Number(value) < row.stockWarning
-                                  ? Number(value) < 10
-                                    ? 'error'
-                                    : 'warning'
-                                  : 'success'
-                              }
-                            >
-                              {value}
-                            </Alert>
-                          ) : (
-                            value
-                          )}
-                          {/* End Edit Rows and Display Rows */}
-                        </TableCell>
-                      );
+                            )}
+                            {/* End Edit Rows and Display Rows */}
+                          </TableCell>
+                        );
+                      } else {
+                        return null;
+                      }
                     })}
                   </TableRow>
                 ))}

@@ -65,7 +65,6 @@ export const addProductStore = create((set, get) => ({
   },
   setAddProduct: (event, id) => {
     const getProduct = get().listProducts;
-    set(() => ({ listProducts: [] }));
     getProduct.forEach((product) => {
       if (product.id === id) {
         product[event.name] = event.value;
@@ -83,10 +82,9 @@ export const addProductStore = create((set, get) => ({
             ? { addProductIcon: true }
             : { addProductIcon: false }
         );
-        set((state) => ({ listProducts: [...state.listProducts, product] }));
       }
     });
-    get().getProductName();
+    set(() => ({ listProducts: getProduct }));
   },
   setFinalAddProduct: async () => {
     set((state) => ({
@@ -200,8 +198,23 @@ export const addProductStore = create((set, get) => ({
     const getProduct = get().listProducts;
     set(() => ({ listProducts: [] }));
     const deleteProduct = getProduct.filter((product) => product.id !== id);
+    deleteProduct.forEach((product) => {
+      const productRules =
+        product.code !== '' &&
+        product.categories !== '' &&
+        product.merk !== '' &&
+        product.name !== '' &&
+        product.stock !== '';
+      set(() =>
+        productRules ||
+        (productRules && product.price_1 !== '' && product.price_1.length >= 2) ||
+        (productRules && product.price_2 !== '' && product.price_2.length >= 2) ||
+        (productRules && product.price_3 !== '' && product.price_3.length >= 2)
+          ? { addProductIcon: true }
+          : { addProductIcon: false }
+      );
+    });
     set(() => ({ listProducts: deleteProduct }));
-    get().getProductName();
   },
   setAddProductMode: () => {
     set((state) => ({
