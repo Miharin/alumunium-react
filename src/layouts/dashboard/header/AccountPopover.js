@@ -5,7 +5,6 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover 
 // mocks_
 import account from '_mock/account';
 import { useAuth } from 'store/index';
-import { getAuth } from 'firebase/auth';
 
 // ----------------------------------------------------------------------
 

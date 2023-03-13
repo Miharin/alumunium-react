@@ -11,7 +11,6 @@ import useResponsive from 'hooks/useResponsive';
 import Logo from 'components/logo';
 import Scrollbar from 'components/scrollbar';
 // Navigate Section
-import { getAuth } from 'firebase/auth';
 import { useAuth } from 'store/index';
 import { NavSection } from './config';
 // ----------------------------------------------------------------------
