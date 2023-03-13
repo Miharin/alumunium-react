@@ -3,7 +3,7 @@ import { forwardRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Box, Link } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -79,8 +79,9 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
   }
 
   return (
-    <Link to="/" component={RouterLink} sx={{ display: 'contents' }}>
+    <Link to="/dashboard" component={RouterLink} sx={{ display: 'contents' }}>
       {logo}
+      <Typography sx={{ ml: 2, color: 'black' }}>Alu Jaya</Typography>
     </Link>
   );
 });

@@ -147,7 +147,7 @@ export default function DashboardAppPage() {
   ) : (
     <>
       <Helmet>
-        <title> Daftar Harga | Alu Jaya </title>
+        <title> Dashboard | Alu Jaya </title>
       </Helmet>
       <Paper sx={{ mx: 5, alignItems: 'center' }} elevation={5}>
         {/* Start Function Showing Search and Filter */}
