@@ -31,7 +31,6 @@ const StyledSection = styled('div')(({ theme }) => ({
   maxWidth: 480,
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'center',
   boxShadow: theme.customShadows.card,
   backgroundColor: theme.palette.background.default,
 }));
@@ -44,6 +43,15 @@ const StyledContent = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   flexDirection: 'column',
   padding: theme.spacing(12, 0),
+}));
+const StyledLogo = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: theme.spacing(2, 2.5),
+  marginBottom: window.screen.height * 0.2,
+  width: '100%',
+  borderRadius: Number(theme.shape.borderRadius) * 1.5,
 }));
 
 // ----------------------------------------------------------------------
@@ -58,17 +66,12 @@ export default function LoginPage() {
       </Helmet>
 
       <StyledRoot>
-        <Logo
-          sx={{
-            position: 'absolute',
-            top: { xs: 16, sm: 24, md: 40 },
-            left: { xs: 16, sm: 24, md: 40 },
-          }}
-        />
-
         {mdUp && (
           <StyledSection>
-            <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
+            <StyledLogo>
+              <Logo />
+            </StyledLogo>
+            <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5, justifyContent: 'center' }}>
               Hi, Selamat Datang
             </Typography>
             <img src="/assets/illustrations/illustration_login.png" alt="login" />
