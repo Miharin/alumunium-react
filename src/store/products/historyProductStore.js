@@ -160,6 +160,8 @@ export const historyProductStore = create((set, get) => ({
                   detail: item.detail,
                   in: item.in,
                   out: item.out,
+                  total: item.out !== '0' ? item.total : '',
+                  nameCustomer: item.out !== '0' ? item.nameCustomer : '',
                   lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
                     weekday: 'long',
                     year: 'numeric',
@@ -183,6 +185,8 @@ export const historyProductStore = create((set, get) => ({
                   detail: item.detail,
                   in: item.in,
                   out: item.out,
+                  total: item.out !== '0' ? item.total : '',
+                  nameCustomer: item.out !== '0' ? item.nameCustomer : '',
                   stock: item.stock,
                   lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
                     weekday: 'long',

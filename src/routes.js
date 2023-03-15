@@ -12,6 +12,7 @@ import DashboardAppPage from 'pages/DashboardAppPage';
 import ProductList from 'pages/listProducts';
 import AddProductPage from 'pages/addProductPage';
 import HistoryProductPage from 'pages/HistoryProductPage';
+import Transaction from 'pages/Transaction';
 import { useAuth } from 'store/index';
 
 // ----------------------------------------------------------------------
@@ -31,6 +32,7 @@ export default function Router() {
             { path: 'user', element: <UserPage /> },
             { path: 'products/code', element: <CodeProductsPage /> },
             { path: 'products/add', element: <AddProductPage /> },
+            { path: 'products/transaction', element: <Transaction /> },
             { path: 'products/history', element: <HistoryProductPage /> },
             { path: 'products', element: <ProductList /> },
             { path: 'blog', element: <BlogPage /> },
@@ -59,6 +61,7 @@ export default function Router() {
             { path: 'app', element: <DashboardAppPage /> },
             { path: 'products/code', element: <CodeProductsPage /> },
             { path: 'products/add', element: <AddProductPage /> },
+            { path: 'products/transaction', element: <Transaction /> },
             { path: 'products/history', element: <HistoryProductPage /> },
             { path: 'products', element: <ProductList /> },
             { path: 'blog', element: <BlogPage /> },

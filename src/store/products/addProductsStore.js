@@ -137,19 +137,19 @@ export const addProductStore = create((set, get) => ({
         if (product.price_1 !== '' && product.price_1 !== '0') {
           filterData = {
             ...filterData,
-            price_1: product.price_1,
+            price_1: `${product.price_1}000`,
           };
         }
         if (product.price_2 !== '' && product.price_2 !== '0') {
           filterData = {
             ...filterData,
-            price_2: product.price_2,
+            price_2: `${product.price_2}000`,
           };
         }
         if (product.price_3 !== '' && product.price_3 !== '0') {
           filterData = {
             ...filterData,
-            price_3: product.price_3,
+            price_3: `${product.price_3}000`,
           };
         }
         await updateDoc(updateDocument, filterData);
@@ -164,9 +164,9 @@ export const addProductStore = create((set, get) => ({
             categories: product.categories,
             merk: product.merk,
             name: product.name,
-            price_1: product.price_1,
-            price_2: product.price_2,
-            price_3: product.price_3,
+            price_1: `${product.price_1}000`,
+            price_2: `${product.price_2}000`,
+            price_3: `${product.price_3}000`,
             stock: product.stock,
             stockWarning: product.stockWarning,
             lastInput: product.lastInput,

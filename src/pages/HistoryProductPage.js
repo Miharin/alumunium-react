@@ -7,7 +7,6 @@ import {
   TextField,
   InputAdornment,
   ClickAwayListener,
-  Button,
   Box,
   Paper,
   Table,
@@ -18,11 +17,6 @@ import {
   TablePagination,
   TableRow,
   TableSortLabel,
-  ButtonGroup,
-  IconButton,
-  Tooltip,
-  Backdrop,
-  CircularProgress,
   Autocomplete,
   Stack,
   Divider,
@@ -30,7 +24,7 @@ import {
   Skeleton,
   Snackbar,
 } from '@mui/material';
-import { FilterAltRounded, CheckCircleOutlineRounded, DoDisturbRounded, AddRounded } from '@mui/icons-material';
+import { FilterAltRounded } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 
 // store
@@ -82,17 +76,9 @@ export default function HistoryProductPage() {
   const nameSelect = useHistoryProductStore((state) => state.nameSelect);
   const setNameSelect = useHistoryProductStore((state) => state.setNameSelect);
   const products = useHistoryProductStore((state) => state.products);
-  const removeProductMode = useHistoryProductStore((state) => state.removeProductMode);
-  const setRemoveProductMode = useHistoryProductStore((state) => state.setRemoveProductMode);
-  const deleteRemoveProductNew = useHistoryProductStore((state) => state.deleteRemoveProductNew);
-  const setRemoveProduct = useHistoryProductStore((state) => state.setRemoveProduct);
-  const removeProductIcon = useHistoryProductStore((state) => state.removeProductIcon);
-  const setFinalRemoveProduct = useHistoryProductStore((state) => state.setFinalRemoveProduct);
   const openSnackbar = useHistoryProductStore((state) => state.openSnackbar);
   const snackbarMessage = useHistoryProductStore((state) => state.snackbarMessage);
   const setOpenSnackbar = useHistoryProductStore((state) => state.setOpenSnackbar);
-  const helperCode = useHistoryProductStore((state) => state.helperCode);
-  const helperCodeName = useHistoryProductStore((state) => state.helperCodeName);
   const getProducts = useHistoryProductStore((state) => state.getProducts);
   const getName = useHistoryProductStore((state) => state.getField);
   const snackbarType = useHistoryProductStore((state) => state.snackbarType);
@@ -100,46 +86,17 @@ export default function HistoryProductPage() {
   // End ProductCode Initialization
 
   // Declaration for Column of Table
-  let columns = [];
-  if (nameSelect !== '' || null || undefined) {
-    columns = [
-      { id: 'code', label: 'Code', minWidth: 100, align: 'left' },
-      { id: 'name', label: 'Nama', minWidth: 200, align: 'left' },
-      { id: 'detail', label: 'Detail', minWidth: 150, align: 'left' },
-      { id: 'in', label: 'Masuk', minWidth: 50, align: 'left' },
-      { id: 'out', label: 'Keluar', minWidth: 50, align: 'left' },
-      { id: 'stock', label: 'Stok Total', minWidth: 150, align: 'left' },
-      { id: 'lastInput', label: 'Oleh', minWidth: 150, align: 'left' },
-    ];
-  }
-  if (removeProductMode === true) {
-    columns = [
-      { id: 'code', label: 'Code', minWidth: 100, align: 'left' },
-      { id: 'name', label: 'Nama', minWidth: 200, align: 'left' },
-      { id: 'detail', label: 'Detail', minWidth: 150, align: 'left' },
-      { id: 'in', label: 'Masuk', minWidth: 50, align: 'left' },
-      { id: 'out', label: 'Keluar', minWidth: 50, align: 'left' },
-      { id: 'stock', label: 'Stok Total', minWidth: 150, align: 'left' },
-      { id: 'lastInput', label: 'Oleh', minWidth: 150, align: 'left' },
-      {
-        id: 'action',
-        label: 'Action',
-        minWidth: 150,
-        align: 'left',
-      },
-    ];
-  }
-  if (nameSelect === '' || null || undefined) {
-    columns = [
-      { id: 'code', label: 'Code', minWidth: 100, align: 'left' },
-      { id: 'name', label: 'Nama', minWidth: 200, align: 'left' },
-      { id: 'detail', label: 'Detail', minWidth: 150, align: 'left' },
-      { id: 'in', label: 'Masuk', minWidth: 50, align: 'left' },
-      { id: 'out', label: 'Keluar', minWidth: 50, align: 'left' },
-      { id: 'stock', label: 'Stok Total', minWidth: 150, align: 'left' },
-      { id: 'lastInput', label: 'Oleh', minWidth: 150, align: 'left' },
-    ];
-  }
+  const columns = [
+    { id: 'code', label: 'Code', minWidth: 100, align: 'left' },
+    { id: 'name', label: 'Nama', minWidth: 200, align: 'left' },
+    { id: 'detail', label: 'Detail', minWidth: 150, align: 'left' },
+    { id: 'in', label: 'Masuk', minWidth: 50, align: 'left' },
+    { id: 'out', label: 'Keluar', minWidth: 50, align: 'left' },
+    { id: 'total', label: 'Total Harga', minWidth: 50, align: 'left' },
+    { id: 'nameCustomer', label: 'Nama Pembeli', minWidth: 100, align: 'left' },
+    { id: 'stock', label: 'Stok Total', minWidth: 150, align: 'left' },
+    { id: 'lastInput', label: 'Oleh', minWidth: 300, align: 'left' },
+  ];
 
   // Function for Getting Code Product Data from Database
   useEffect(() => {
@@ -220,7 +177,7 @@ export default function HistoryProductPage() {
         <TableContainer>
           <Table aria-label="Sticky Table">
             <caption>
-              {nameSelect !== '' || null || undefined ? (
+              {/* {nameSelect !== '' || null || undefined ? (
                 <Button
                   disabled={removeProductMode}
                   variant="text"
@@ -235,7 +192,7 @@ export default function HistoryProductPage() {
                   Jika Ingin Menambahkan History Produk Maka{' '}
                   {nameSelect === '' || undefined || null ? 'Nama Barang' : null} Harap Diisi
                 </Alert>
-              )}
+              )} */}
             </caption>
             <TableHead>
               <TableRow>
@@ -276,44 +233,11 @@ export default function HistoryProductPage() {
                       return (
                         <TableCell key={column.id} id={index} align={column.align}>
                           {/* Start Edit Rows and Display Rows */}
-                          {value}
+                          {column.id === 'total' && row.out !== '0'
+                            ? new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(value)
+                            : value}
                           {/* End Edit Rows and Display Rows */}
                           {/* Start Add Rows */}
-                          {removeProductMode === true && value === '' ? (
-                            <TextField
-                              required
-                              fullWidth
-                              name={column.id}
-                              type={column.id === 'in' || column.id === 'out' ? 'number' : 'text'}
-                              onChange={(event) => setRemoveProduct(event.target)}
-                              InputProps={{ disableUnderline: true }}
-                              helperText={column.id === 'code' ? helperCode : helperCodeName}
-                              variant="standard"
-                              placeholder={column.label}
-                              sx={{ width: column.minWidth }}
-                            />
-                          ) : removeProductMode === true && column.id === 'action' && row.id === '' ? (
-                            <ButtonGroup variant="outlined">
-                              {removeProductIcon ? (
-                                <IconButton onClick={setFinalRemoveProduct}>
-                                  <Tooltip title="Confirm">
-                                    <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
-                                  </Tooltip>
-                                  <Backdrop
-                                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                                    open={loading}
-                                  >
-                                    <CircularProgress color="inherit" />
-                                  </Backdrop>
-                                </IconButton>
-                              ) : null}
-                              <IconButton onClick={deleteRemoveProductNew}>
-                                <Tooltip title="Cancel">
-                                  <DoDisturbRounded sx={{ color: '#737373' }} />
-                                </Tooltip>
-                              </IconButton>
-                            </ButtonGroup>
-                          ) : null}
                         </TableCell>
                       );
                     })}

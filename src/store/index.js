@@ -6,3 +6,4 @@ export { tableHelper as useTableHelper } from 'store/helpers/table';
 export { listProductStore as useListProductStore } from 'store/products/listProductStore';
 export { addProductStore as useAddProductStore } from 'store/products/addProductsStore';
 export { historyProductStore as useHistoryProductStore } from 'store/products/historyProductStore';
+export { transactionStore as useTransactionStore } from 'store/products/transactionStore';
