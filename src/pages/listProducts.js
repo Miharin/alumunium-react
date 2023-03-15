@@ -317,7 +317,7 @@ export default function ProductPage() {
                                 /* eslint-disable */
                                 onInput={(e) => {
                                   column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3'
-                                    ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 3))
+                                    ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 7))
                                     : null;
                                 }}
                                 /* eslint-disable */
@@ -343,7 +343,7 @@ export default function ProductPage() {
                             ) : null
                           ) : (column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3') &&
                             editMode === false ? (
-                            `Rp.${value}.000,-`
+                            new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(value)
                           ) : (
                             value
                           )}
