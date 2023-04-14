@@ -215,9 +215,9 @@ export const historyProductStore = create((set, get) => ({
                   detail: item.detail,
                   in: item.in,
                   out: item.out,
-                  total: item.out !== '0' ? item.total : '',
-                  disc: (item.disc !== undefined || null || '') && item.out !== '0' ? item.disc : '',
-                  nameCustomer: item.out !== '0' ? item.nameCustomer : '',
+                  total: item.out !== '0' && item.detail !== 'Stok Opname' ? item.total : '-',
+                  disc: (item.disc !== undefined || null || '') && item.out !== '0' ? item.disc : '-',
+                  nameCustomer: item.out !== '0' && item.detail !== 'Stok Opname' ? item.nameCustomer : '-',
                   stock: item.stock,
                   lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
                     weekday: 'long',

@@ -281,7 +281,12 @@ export default function ProductPage() {
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
-                        <TableCell key={column.id} id={index} align={column.align}>
+                        <TableCell
+                          key={column.id}
+                          id={index}
+                          align={column.align}
+                          sx={{ borderBottom: '1px solid #000' }}
+                        >
                           {/* Start Edit Rows and Display Rows */}
                           {editMode === true ? (
                             column.id === 'action' && productId === row.id ? (

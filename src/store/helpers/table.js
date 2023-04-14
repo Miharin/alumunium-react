@@ -34,8 +34,10 @@ export const tableHelper = create((set) => ({
     row.code.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.name.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.detail.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.stock.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.in.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.out.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+    row.disc.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.total.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.nameCustomer.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
     row.lastInput.toString().toLowerCase().includes(search.toString().toLowerCase()),

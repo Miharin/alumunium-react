@@ -223,7 +223,12 @@ export default function Transaction() {
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
-                        <TableCell key={column.id} id={index} align={column.align}>
+                        <TableCell
+                          key={column.id}
+                          id={index}
+                          align={column.align}
+                          sx={{ borderBottom: '1px solid #000' }}
+                        >
                           {/* Start Add Rows */}
                           {nameCus !== '' && transactionMode === true && column.id === 'name' ? (
                             <Autocomplete
@@ -304,7 +309,9 @@ export default function Transaction() {
                               placeholder={column.label}
                               sx={{ minWidth: column.minWidth }}
                             />
-                          ) : null}
+                          ) : (
+                            value
+                          )}
                         </TableCell>
                       );
                     })}
@@ -313,9 +320,11 @@ export default function Transaction() {
               {/* End Add Rows */}
               {/* End Define Rows */}
               <TableRow>
-                <TableCell colSpan={3} />
-                <TableCell colSpan={3}>Total</TableCell>
-                <TableCell>
+                <TableCell colSpan={3} sx={{ borderBottom: '1px solid #000' }} />
+                <TableCell colSpan={3} sx={{ borderBottom: '1px solid #000' }}>
+                  Total
+                </TableCell>
+                <TableCell sx={{ borderBottom: '1px solid #000' }}>
                   {total === 0
                     ? 'Rp.0.000,00'
                     : new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(total)}

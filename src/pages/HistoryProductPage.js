@@ -269,7 +269,12 @@ export default function HistoryProductPage() {
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
-                        <TableCell key={column.id} id={index} align={column.align}>
+                        <TableCell
+                          key={column.id}
+                          id={index}
+                          align={column.align}
+                          sx={{ borderBottom: '1px solid #000' }}
+                        >
                           {/* Start Edit Rows and Display Rows */}
                           {(column.id === 'total' && row.detail !== 'Stok Opname' && row.out !== '0') ||
                           (column.id === 'disc' && row.detail !== 'Stok Opname' && row.out !== '0')

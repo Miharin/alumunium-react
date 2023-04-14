@@ -59,14 +59,14 @@ export const transactionStore = create((set, get) => ({
           product.code = nameChoose.code;
           product.categories = nameChoose.categories;
           product.merk = nameChoose.merk;
-        }
-        await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (listProducts) => {
-          listProducts.forEach((priceValue) => {
-            if (product.code === priceValue.data().code) {
-              product.price = priceValue.data()[selectedPriceValue];
-            }
+          await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (listProducts) => {
+            listProducts.forEach((priceValue) => {
+              if (product.code === priceValue.data().code) {
+                product.price = priceValue.data()[selectedPriceValue];
+              }
+            });
           });
-        });
+        }
         set((state) => ({ listProducts: [...state.listProducts, product] }));
         get().getProductName();
       });
@@ -168,7 +168,7 @@ export const transactionStore = create((set, get) => ({
     getOpenSnackbar();
     get().getProducts();
   },
-  deletetransactionNew: (id) => {
+  deleteTransactionNew: (id) => {
     const getProduct = get().listProducts;
     set(() => ({ listProducts: [] }));
     const deleteProduct = getProduct.filter((product) => product.id !== id);
