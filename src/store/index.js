@@ -7,3 +7,5 @@ export { listProductStore as useListProductStore } from 'store/products/listProd
 export { addProductStore as useAddProductStore } from 'store/products/addProductsStore';
 export { historyProductStore as useHistoryProductStore } from 'store/products/historyProductStore';
 export { transactionStore as useTransactionStore } from 'store/products/transactionStore';
+export { stockOpnameStore as useStockOpnameStore } from 'store/products/stockOpnameStore';
+export { returnStore as useReturnStore } from 'store/products/returnStore';

@@ -30,7 +30,7 @@ import { CheckCircleOutlineRounded, DoDisturbRounded, AddRounded } from '@mui/ic
 import { visuallyHidden } from '@mui/utils';
 
 // store
-import { useTableHelper, useAddProductStore } from 'store/index';
+import { useTableHelper, useReturnStore } from 'store/index';
 // End Import
 
 // Start Function of Filtered
@@ -55,7 +55,7 @@ const stableSort = (array, comparator) => {
 };
 // End Function of Filtered
 
-export default function AddProductPage() {
+export default function ReturnPage() {
   // Start Helper Table
   const page = useTableHelper((state) => state.page);
   const rowsPerPage = useTableHelper((state) => state.rowsPerPage);
@@ -68,21 +68,27 @@ export default function AddProductPage() {
   // End Helper Table
 
   // Start ListProduct Initialization
-  const loading = useAddProductStore((state) => state.loading);
-  const setName = useAddProductStore((state) => state.setName);
-  const addProductMode = useAddProductStore((state) => state.addProductMode);
-  const setAddProductMode = useAddProductStore((state) => state.setAddProductMode);
-  const deleteAddProductNew = useAddProductStore((state) => state.deleteAddProductNew);
-  const setAddProduct = useAddProductStore((state) => state.setAddProduct);
-  const addProductIcon = useAddProductStore((state) => state.addProductIcon);
-  const setFinalAddProduct = useAddProductStore((state) => state.setFinalAddProduct);
-  const openSnackbar = useAddProductStore((state) => state.openSnackbar);
-  const snackbarMessage = useAddProductStore((state) => state.snackbarMessage);
-  const setOpenSnackbar = useAddProductStore((state) => state.setOpenSnackbar);
-  const getProducts = useAddProductStore((state) => state.getProducts);
-  const listProducts = useAddProductStore((state) => state.listProducts);
-  const listName = useAddProductStore((state) => state.listName);
-  const nameValue = useAddProductStore((state) => state.nameValue);
+  const loading = useReturnStore((state) => state.loading);
+  const setName = useReturnStore((state) => state.setName);
+  const transactionMode = useReturnStore((state) => state.transactionMode);
+  const setTransactionMode = useReturnStore((state) => state.setTransactionMode);
+  const deleteTransactionNew = useReturnStore((state) => state.deleteTransactionNew);
+  const setTransaction = useReturnStore((state) => state.setTransaction);
+  const transactionIcon = useReturnStore((state) => state.transactionIcon);
+  const setFinalTransaction = useReturnStore((state) => state.setFinalTransaction);
+  const openSnackbar = useReturnStore((state) => state.openSnackbar);
+  const snackbarMessage = useReturnStore((state) => state.snackbarMessage);
+  const setOpenSnackbar = useReturnStore((state) => state.setOpenSnackbar);
+  const getProducts = useReturnStore((state) => state.getProducts);
+  const listProducts = useReturnStore((state) => state.listProducts);
+  const listName = useReturnStore((state) => state.listName);
+  const listNameCustomer = useReturnStore((state) => state.listNameCustomer);
+  const listTimeCustomer = useReturnStore((state) => state.listTimeCustomer);
+  const setPriceSelection = useReturnStore((state) => state.setPriceSelection);
+  const selectedName = useReturnStore((state) => state.selectedName);
+  const selectedTime = useReturnStore((state) => state.selectedTime);
+  const setTimeSelection = useReturnStore((state) => state.setTimeSelection);
+  //   const total = useReturnStore((state) => state.total);
   const rows = listProducts;
   // End ListProduct Initialization
 
@@ -92,11 +98,10 @@ export default function AddProductPage() {
     { id: 'categories', label: 'Kategori', minWidth: 150, align: 'left' },
     { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
     { id: 'name', label: 'Nama', minWidth: 300, align: 'left' },
-    { id: 'price_1', label: 'Harga 1', minWidth: 150, align: 'left' },
-    { id: 'price_2', label: 'Harga 2', minWidth: 150, align: 'left' },
-    { id: 'price_3', label: 'Harga 3', minWidth: 150, align: 'left' },
-    { id: 'stock', label: 'Stok', minWidth: 150, align: 'left' },
-    { id: 'stockWarning', label: 'Peringatan Stok', minWidth: 200, align: 'left' },
+    { id: 'qty', label: 'Jumlah', minWidth: 150, align: 'left' },
+    { id: 'price', label: 'Total Harga', minWidth: 150, align: 'left' },
+    { id: 'disc', label: 'Biaya Retur', minWidth: 150, align: 'left' },
+    { id: 'subtotal', label: 'Sub Total Biaya Retur', minWidth: 150, align: 'left' },
     {
       id: 'action',
       label: 'Action',
@@ -121,9 +126,45 @@ export default function AddProductPage() {
   ) : (
     <>
       <Helmet>
-        <title> Tambah Produk | Alu Jaya </title>
+        <title> Retur | Alu Jaya </title>
       </Helmet>
-      <Paper sx={{ mx: 5, alignItems: 'center' }} elevation={5}>
+      <Paper sx={{ mx: 5, alignItems: 'center', pt: 1 }} elevation={5}>
+        <Stack direction="row" spacing={2} sx={{ m: 2 }}>
+          <Autocomplete
+            freeSolo
+            fullWidth
+            id="name"
+            name="name"
+            onChange={(event, newValue) => (newValue ? setPriceSelection(newValue) : setPriceSelection(newValue))}
+            options={listNameCustomer}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                sx={{ minWidth: 100 }}
+                InputProps={{ ...params.InputProps, disableUnderline: true }}
+                variant="standard"
+                placeholder="Nama Pembeli"
+              />
+            )}
+          />
+          <Autocomplete
+            freeSolo
+            fullWidth
+            id="price"
+            name="price"
+            onChange={(event, newValue) => (newValue ? setTimeSelection(newValue) : setTimeSelection(newValue))}
+            options={listTimeCustomer}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                sx={{ minWidth: 100 }}
+                InputProps={{ ...params.InputProps, disableUnderline: true }}
+                variant="standard"
+                placeholder="Waktu"
+              />
+            )}
+          />
+        </Stack>
         {/* Start Function Showing Search and Filter */}
         <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={setOpenSnackbar}>
           <Alert onClose={setOpenSnackbar} severity="success" sx={{ width: '100%' }}>
@@ -135,15 +176,15 @@ export default function AddProductPage() {
           <Table aria-label="Sticky Table">
             <caption>
               <Stack direction="row" spacing={2}>
-                <Button variant="text" fullWidth startIcon={<AddRounded />} onClick={setAddProductMode}>
+                <Button variant="text" fullWidth startIcon={<AddRounded />} onClick={setTransactionMode}>
                   Tambah Produk
                 </Button>
-                {addProductIcon ? (
+                {transactionIcon ? (
                   <Button
                     variant="text"
                     fullWidth
                     startIcon={<CheckCircleOutlineRounded />}
-                    onClick={setFinalAddProduct}
+                    onClick={setFinalTransaction}
                   >
                     Selesai
                     <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
@@ -191,13 +232,16 @@ export default function AddProductPage() {
                       return (
                         <TableCell key={column.id} id={index} align={column.align}>
                           {/* Start Add Rows */}
-                          {addProductMode === true && column.id === 'name' ? (
+                          {selectedName !== '' &&
+                          selectedTime !== '' &&
+                          transactionMode === true &&
+                          column.id === 'name' ? (
                             <Autocomplete
                               fullWidth
                               freeSolo
                               id="name"
                               name="name"
-                              value={nameValue}
+                              value={value}
                               onChange={(event, newValue) =>
                                 newValue ? setName(newValue, row.id) : setName(newValue, row.id)
                               }
@@ -212,43 +256,82 @@ export default function AddProductPage() {
                                 />
                               )}
                             />
-                          ) : addProductMode === true && column.id === 'action' ? (
+                          ) : selectedName !== '' &&
+                            selectedTime !== '' &&
+                            transactionMode === true &&
+                            column.id === 'action' ? (
                             <ButtonGroup variant="outlined">
-                              <IconButton onClick={() => deleteAddProductNew(row.id)}>
+                              <IconButton onClick={() => deleteTransactionNew(row.id)}>
                                 <Tooltip title="Cancel">
                                   <DoDisturbRounded sx={{ color: '#737373' }} />
                                 </Tooltip>
                               </IconButton>
                             </ButtonGroup>
-                          ) : addProductMode === true &&
-                            (column.id === 'price_1' ||
-                              column.id === 'price_2' ||
-                              column.id === 'price_3' ||
-                              column.id === 'stock' ||
-                              column.id === 'stockWarning') ? (
+                          ) : selectedName !== '' &&
+                            selectedTime !== '' &&
+                            transactionMode === true &&
+                            column.id === 'qty' ? (
                             <TextField
                               required
                               fullWidth
                               name={column.id}
                               /* eslint-disable */
                               onInput={(e) => {
-                                e.target.name === 'price_1' ||
-                                e.target.name === 'price_2' ||
-                                e.target.name === 'price_3'
-                                  ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 7))
+                                e.target.name === 'qty'
+                                  ? (e.target.value = Math.min(row.qtyMax, Math.max(0, Number(e.target.value)))
+                                      .toString()
+                                      .slice(0, 3))
                                   : (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 5));
                               }}
                               /* eslint-disable */
                               type="number"
-                              onChange={(event) => setAddProduct(event.target, row.id)}
+                              onChange={(event) => setTransaction(event.target, row.id)}
                               InputProps={{ disableUnderline: true }}
                               variant="standard"
                               placeholder={column.label}
                               sx={{ minWidth: column.minWidth }}
                             />
-                          ) : (
-                            value
-                          )}
+                          ) : selectedName !== '' &&
+                            selectedTime !== '' &&
+                            transactionMode === true &&
+                            column.id === 'subtotal' ? (
+                            value !== '0' ? (
+                              new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(value)
+                            ) : (
+                              'Rp.0'
+                            )
+                          ) : selectedName !== '' &&
+                            selectedTime !== '' &&
+                            transactionMode === true &&
+                            column.id === 'price' ? (
+                            value !== '' ? (
+                              new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(value)
+                            ) : (
+                              'Rp.0'
+                            )
+                          ) : selectedName !== '' &&
+                            selectedTime !== '' &&
+                            transactionMode === true &&
+                            column.id === 'disc' ? (
+                            <TextField
+                              required
+                              fullWidth
+                              name={column.id}
+                              /* eslint-disable */
+                              onInput={(e) => {
+                                e.target.name === 'qty'
+                                  ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 3))
+                                  : (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 5));
+                              }}
+                              /* eslint-disable */
+                              type="number"
+                              onChange={(event) => setTransaction(event.target, row.id)}
+                              InputProps={{ disableUnderline: true }}
+                              variant="standard"
+                              placeholder="10%"
+                              sx={{ minWidth: column.minWidth }}
+                            />
+                          ) : null}
                         </TableCell>
                       );
                     })}
@@ -256,6 +339,15 @@ export default function AddProductPage() {
                 ))}
               {/* End Add Rows */}
               {/* End Define Rows */}
+              {/* <TableRow>
+                <TableCell colSpan={3} />
+                <TableCell colSpan={3}>Total</TableCell>
+                <TableCell>
+                  {total === 0
+                    ? 'Rp.0.000,00'
+                    : new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(total)}
+                </TableCell>
+              </TableRow> */}
             </TableBody>
           </Table>
         </TableContainer>

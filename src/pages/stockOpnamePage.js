@@ -30,7 +30,7 @@ import { CheckCircleOutlineRounded, DoDisturbRounded, AddRounded } from '@mui/ic
 import { visuallyHidden } from '@mui/utils';
 
 // store
-import { useTableHelper, useAddProductStore } from 'store/index';
+import { useTableHelper, useStockOpnameStore } from 'store/index';
 // End Import
 
 // Start Function of Filtered
@@ -55,7 +55,7 @@ const stableSort = (array, comparator) => {
 };
 // End Function of Filtered
 
-export default function AddProductPage() {
+export default function StockOpnamePage() {
   // Start Helper Table
   const page = useTableHelper((state) => state.page);
   const rowsPerPage = useTableHelper((state) => state.rowsPerPage);
@@ -68,21 +68,21 @@ export default function AddProductPage() {
   // End Helper Table
 
   // Start ListProduct Initialization
-  const loading = useAddProductStore((state) => state.loading);
-  const setName = useAddProductStore((state) => state.setName);
-  const addProductMode = useAddProductStore((state) => state.addProductMode);
-  const setAddProductMode = useAddProductStore((state) => state.setAddProductMode);
-  const deleteAddProductNew = useAddProductStore((state) => state.deleteAddProductNew);
-  const setAddProduct = useAddProductStore((state) => state.setAddProduct);
-  const addProductIcon = useAddProductStore((state) => state.addProductIcon);
-  const setFinalAddProduct = useAddProductStore((state) => state.setFinalAddProduct);
-  const openSnackbar = useAddProductStore((state) => state.openSnackbar);
-  const snackbarMessage = useAddProductStore((state) => state.snackbarMessage);
-  const setOpenSnackbar = useAddProductStore((state) => state.setOpenSnackbar);
-  const getProducts = useAddProductStore((state) => state.getProducts);
-  const listProducts = useAddProductStore((state) => state.listProducts);
-  const listName = useAddProductStore((state) => state.listName);
-  const nameValue = useAddProductStore((state) => state.nameValue);
+  const loading = useStockOpnameStore((state) => state.loading);
+  const setName = useStockOpnameStore((state) => state.setName);
+  const addProductMode = useStockOpnameStore((state) => state.addProductMode);
+  const setAddProductMode = useStockOpnameStore((state) => state.setAddProductMode);
+  const deleteAddProductNew = useStockOpnameStore((state) => state.deleteAddProductNew);
+  const setAddProduct = useStockOpnameStore((state) => state.setAddProduct);
+  const addProductIcon = useStockOpnameStore((state) => state.addProductIcon);
+  const setFinalAddProduct = useStockOpnameStore((state) => state.setFinalAddProduct);
+  const openSnackbar = useStockOpnameStore((state) => state.openSnackbar);
+  const snackbarMessage = useStockOpnameStore((state) => state.snackbarMessage);
+  const setOpenSnackbar = useStockOpnameStore((state) => state.setOpenSnackbar);
+  const getProducts = useStockOpnameStore((state) => state.getProducts);
+  const listProducts = useStockOpnameStore((state) => state.listProducts);
+  const listName = useStockOpnameStore((state) => state.listName);
+  const nameValue = useStockOpnameStore((state) => state.nameValue);
   const rows = listProducts;
   // End ListProduct Initialization
 
@@ -92,11 +92,9 @@ export default function AddProductPage() {
     { id: 'categories', label: 'Kategori', minWidth: 150, align: 'left' },
     { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
     { id: 'name', label: 'Nama', minWidth: 300, align: 'left' },
-    { id: 'price_1', label: 'Harga 1', minWidth: 150, align: 'left' },
-    { id: 'price_2', label: 'Harga 2', minWidth: 150, align: 'left' },
-    { id: 'price_3', label: 'Harga 3', minWidth: 150, align: 'left' },
     { id: 'stock', label: 'Stok', minWidth: 150, align: 'left' },
-    { id: 'stockWarning', label: 'Peringatan Stok', minWidth: 200, align: 'left' },
+    { id: 'stockWarning', label: 'Stok Baru', minWidth: 200, align: 'left' },
+    { id: 'diff', label: 'Selisih', minWidth: 200, align: 'left' },
     {
       id: 'action',
       label: 'Action',
@@ -121,7 +119,7 @@ export default function AddProductPage() {
   ) : (
     <>
       <Helmet>
-        <title> Tambah Produk | Alu Jaya </title>
+        <title> Stok Opname | Alu Jaya </title>
       </Helmet>
       <Paper sx={{ mx: 5, alignItems: 'center' }} elevation={5}>
         {/* Start Function Showing Search and Filter */}
@@ -224,7 +222,6 @@ export default function AddProductPage() {
                             (column.id === 'price_1' ||
                               column.id === 'price_2' ||
                               column.id === 'price_3' ||
-                              column.id === 'stock' ||
                               column.id === 'stockWarning') ? (
                             <TextField
                               required

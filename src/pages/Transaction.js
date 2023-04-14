@@ -96,6 +96,7 @@ export default function Transaction() {
     { id: 'name', label: 'Nama', minWidth: 300, align: 'left' },
     { id: 'qty', label: 'Jumlah', minWidth: 150, align: 'left' },
     { id: 'price', label: 'Harga', minWidth: 150, align: 'left' },
+    { id: 'disc', label: 'Diskon', minWidth: 150, align: 'left' },
     { id: 'subtotal', label: 'Sub Total', minWidth: 150, align: 'left' },
     {
       id: 'action',
@@ -284,6 +285,25 @@ export default function Transaction() {
                             ) : (
                               'Rp.0'
                             )
+                          ) : nameCus !== '' && transactionMode === true && column.id === 'disc' ? (
+                            <TextField
+                              required
+                              fullWidth
+                              name={column.id}
+                              /* eslint-disable */
+                              onInput={(e) => {
+                                e.target.name === 'qty'
+                                  ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 3))
+                                  : (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 5));
+                              }}
+                              /* eslint-disable */
+                              type="number"
+                              onChange={(event) => setTransaction(event.target, row.id)}
+                              InputProps={{ disableUnderline: true }}
+                              variant="standard"
+                              placeholder={column.label}
+                              sx={{ minWidth: column.minWidth }}
+                            />
                           ) : null}
                         </TableCell>
                       );

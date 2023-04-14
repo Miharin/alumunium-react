@@ -23,6 +23,7 @@ export const addProductStore = create((set, get) => ({
   listName: [],
   editProductId: '',
   listProducts: [],
+  nameValue: '',
   configs: {},
   addProduct: {
     id: '',
@@ -45,11 +46,11 @@ export const addProductStore = create((set, get) => ({
   setOpenSnackbar: () => set((state) => ({ openSnackbar: !state.openSnackbar })),
   setName: (nameChoose, id) => {
     const getProduct = get().listProducts;
-    set(() => ({ listProducts: [] }));
+    set(() => ({ listProducts: [], nameValue: nameChoose.name }));
     if (nameChoose) {
       getProduct.forEach((product) => {
         if (product.id === id) {
-          product.name = nameChoose.label;
+          product.name = nameChoose.name;
           product.code = nameChoose.code;
           product.categories = nameChoose.categories;
           product.merk = nameChoose.merk;
@@ -214,7 +215,7 @@ export const addProductStore = create((set, get) => ({
           : { addProductIcon: false }
       );
     });
-    set(() => ({ listProducts: deleteProduct }));
+    set(() => ({ listProducts: deleteProduct, nameValue: '' }));
   },
   setAddProductMode: () => {
     set((state) => ({
@@ -273,7 +274,8 @@ export const addProductStore = create((set, get) => ({
             ...state.listName,
             {
               code: codes.code,
-              label: codes.name,
+              name: codes.name,
+              label: `${codes.code} - ${codes.name}`,
               merk: codes.merk,
               categories: codes.categories,
             },

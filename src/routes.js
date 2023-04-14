@@ -13,6 +13,8 @@ import ProductList from 'pages/listProducts';
 import AddProductPage from 'pages/addProductPage';
 import HistoryProductPage from 'pages/HistoryProductPage';
 import Transaction from 'pages/Transaction';
+import StockOpnamePage from 'pages/stockOpnamePage';
+import ReturnPage from 'pages/returnPages';
 import { useAuth } from 'store/index';
 
 // ----------------------------------------------------------------------
@@ -34,6 +36,8 @@ export default function Router() {
             { path: 'products/add', element: <AddProductPage /> },
             { path: 'products/transaction', element: <Transaction /> },
             { path: 'products/history', element: <HistoryProductPage /> },
+            { path: 'products/stockOpname', element: <StockOpnamePage /> },
+            { path: 'products/return', element: <ReturnPage /> },
             { path: 'products', element: <ProductList /> },
             { path: 'blog', element: <BlogPage /> },
           ],
@@ -63,6 +67,8 @@ export default function Router() {
             { path: 'products/add', element: <AddProductPage /> },
             { path: 'products/transaction', element: <Transaction /> },
             { path: 'products/history', element: <HistoryProductPage /> },
+            { path: 'products/stockOpname', element: <StockOpnamePage /> },
+            { path: 'products/return', element: <ReturnPage /> },
             { path: 'products', element: <ProductList /> },
             { path: 'blog', element: <BlogPage /> },
           ],

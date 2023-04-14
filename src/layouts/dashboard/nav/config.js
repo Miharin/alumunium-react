@@ -10,6 +10,8 @@ import {
   PostAddRounded,
   EventNoteRounded,
   ReceiptRounded,
+  KeyboardReturnRounded,
+  PublishedWithChangesRounded,
 } from '@mui/icons-material';
 import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
 // Import Router
@@ -98,6 +100,20 @@ export const NavSection = (onCloseNav) => {
             icon: <ReceiptRounded />,
             links: '/dashboard/products/transaction',
           },
+          {
+            id: 'P6',
+            name: 'Retur Barang',
+            selected: 8,
+            icon: <KeyboardReturnRounded />,
+            links: '/dashboard/products/return',
+          },
+          {
+            id: 'P7',
+            name: 'Stok Opname',
+            selected: 9,
+            icon: <PublishedWithChangesRounded />,
+            links: '/dashboard/products/stockOpname',
+          },
         ],
       },
     ];
@@ -146,6 +162,27 @@ export const NavSection = (onCloseNav) => {
             selected: 6,
             icon: <EventNoteRounded />,
             links: '/dashboard/products/history',
+          },
+          {
+            id: 'P5',
+            name: 'Transaksi Barang',
+            selected: 7,
+            icon: <ReceiptRounded />,
+            links: '/dashboard/products/transaction',
+          },
+          {
+            id: 'P6',
+            name: 'Retur Barang',
+            selected: 8,
+            icon: <KeyboardReturnRounded />,
+            links: '/dashboard/products/return',
+          },
+          {
+            id: 'P7',
+            name: 'Stok Opname',
+            selected: 9,
+            icon: <PublishedWithChangesRounded />,
+            links: '/dashboard/products/stockOpname',
           },
         ],
       },

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import {
   collection,
   onSnapshot,
+  //   addDoc,
   query,
   orderBy,
   getDocs,
@@ -15,101 +16,79 @@ import { db } from 'config/firebaseConfig';
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-export const transactionStore = create((set, get) => ({
+export const stockOpnameStore = create((set, get) => ({
   loading: true,
   openSnackbar: false,
   snackbarMessage: '',
   listName: [],
   editProductId: '',
-  nameCus: '',
   listProducts: [],
-  selectedPrice: '',
+  nameValue: '',
   configs: {},
-  total: 0,
-  transaction: {
+  addProduct: {
     id: '',
-    nameCustomer: '',
     code: '',
     categories: '',
     merk: '',
-    disc: '0',
     name: '',
-    qty: '',
-    price: '',
-    subtotal: '0',
+    stock: '',
+    stockWarning: '',
+    lastInput: '',
+    timeStamp: '',
   },
   helperCode: '',
   helperCodeName: '',
-  transactionMode: false,
-  transactionIcon: false,
-  setPriceSelection: async (priceSelect) => {
-    if (priceSelect.id !== '' || null || undefined) {
-      set(() => ({ selectedPrice: priceSelect.id }));
-    }
-  },
+  addProductMode: false,
+  addProductIcon: false,
   setOpenSnackbar: () => set((state) => ({ openSnackbar: !state.openSnackbar })),
   setName: (nameChoose, id) => {
     const getProduct = get().listProducts;
-    const selectedPriceValue = get().selectedPrice;
-    set(() => ({ listProducts: [] }));
-    if (nameChoose && selectedPriceValue) {
-      getProduct.forEach(async (product) => {
+    set(() => ({ listProducts: [], nameValue: nameChoose.name }));
+    if (nameChoose) {
+      getProduct.forEach((product) => {
         if (product.id === id) {
-          product.name = nameChoose.label;
+          product.name = nameChoose.name;
           product.code = nameChoose.code;
           product.categories = nameChoose.categories;
+          product.stock = nameChoose.stock;
           product.merk = nameChoose.merk;
         }
-        await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (listProducts) => {
-          listProducts.forEach((priceValue) => {
-            if (product.code === priceValue.data().code) {
-              product.price = priceValue.data()[selectedPriceValue];
-            }
-          });
-        });
         set((state) => ({ listProducts: [...state.listProducts, product] }));
-        get().getProductName();
       });
+      get().getProductName();
     } else {
       const productFinal = getProduct.filter((product) => product.id !== id);
       set(() => ({ listProducts: productFinal }));
       get().getProducts();
-      if (selectedPriceValue === '') {
-        alert('Harga harap diisi !');
-      }
     }
   },
-  setTransaction: (event, id) => {
-    set(() => ({ total: 0 }));
+  setAddProduct: (event, id) => {
     const getProduct = get().listProducts;
-    let totalPrice = get().total;
     set(() => ({ listProducts: [] }));
     getProduct.forEach((product) => {
-      if (event.name === 'nameCustomer') {
-        product[event.name] = event.value;
-        set(() => ({ nameCus: event.value }));
-      }
       if (product.id === id) {
         product[event.name] = event.value;
-        if (event.name === 'qty' || event.name === 'disc') {
-          product.subtotal =
-            (event.name === 'qty' ? event.value : product.qty) * (product.price - Number(product.disc));
-          totalPrice += product.subtotal;
-        }
+        const diff = product.stock - product.stockWarning;
+        product.diff = diff < 0 ? diff : `+${diff}`;
+        const productRules =
+          product.code !== '' &&
+          product.categories !== '' &&
+          product.merk !== '' &&
+          product.name !== '' &&
+          product.stock !== '';
+        set(() =>
+          productRules ||
+          (productRules && product.price_1 !== '' && product.price_1.length >= 2) ||
+          (productRules && product.price_2 !== '' && product.price_2.length >= 2) ||
+          (productRules && product.price_3 !== '' && product.price_3.length >= 2)
+            ? { addProductIcon: true }
+            : { addProductIcon: false }
+        );
       }
-      const productRules =
-        product.nameCustomer !== '' &&
-        product.code !== '' &&
-        product.categories !== '' &&
-        product.merk !== '' &&
-        product.name !== '' &&
-        product.qty !== '';
-      set(() => (productRules ? { transactionIcon: true } : { transactionIcon: false }));
       set((state) => ({ listProducts: [...state.listProducts, product] }));
     });
-    set(() => ({ total: totalPrice }));
   },
-  setFinalTransaction: async () => {
+  setFinalAddProduct: async () => {
     set((state) => ({
       loading: !state.loading,
     }));
@@ -131,18 +110,14 @@ export const transactionStore = create((set, get) => ({
       docIdEdit.some((Id) =>
         product.code === Id.code
           ? ((product.history = {
-              detail: 'Penjualan Kasir',
-              nameCustomer: product.nameCustomer,
-              total: product.subtotal,
-              out: product.qty,
-              stock: (Number(Id.stock) - Number(product.qty)).toString(),
-              in: '0',
-              disc: product.disc,
-              priceSelect: get().selectedPrice,
+              detail: 'Stok Opname',
+              in: product.diff < 0 ? product.diff.toString().split('-')[1] : '0',
+              out: product.diff < 0 ? '0' : product.diff.split('+')[1],
+              stock: product.stockWarning,
               lastInput: product.lastInput,
               timeStamp: product.timeStamp,
             }),
-            (product.stock = (Number(Id.stock) - Number(product.qty)).toString()),
+            (product.stock = product.stockWarning),
             (product.id = Id.id))
           : null
       )
@@ -153,6 +128,7 @@ export const transactionStore = create((set, get) => ({
         const updateDocument = doc(db, 'listProducts', product.id);
         let filterData = {};
         filterData = {
+          ...filterData,
           stock: product.stock,
           lastInput: product.lastInput,
           timeStamp: product.timeStamp,
@@ -164,43 +140,52 @@ export const transactionStore = create((set, get) => ({
       });
     }
     await delay(1000);
-    set(() => ({ snackbarMessage: `${TotalProduct} Produk Berhasil Ditambahkan !` }));
+    set(() => ({
+      snackbarMessage: `${TotalProduct} Produk Berhasil Ditambahkan !`,
+      nameValue: '',
+      addProductIcon: false,
+    }));
     getOpenSnackbar();
     get().getProducts();
   },
-  deletetransactionNew: (id) => {
+  deleteAddProductNew: (id) => {
     const getProduct = get().listProducts;
     set(() => ({ listProducts: [] }));
     const deleteProduct = getProduct.filter((product) => product.id !== id);
     deleteProduct.forEach((product) => {
       const productRules =
-        product.nameCustomer !== '' &&
         product.code !== '' &&
         product.categories !== '' &&
         product.merk !== '' &&
         product.name !== '' &&
         product.stock !== '';
-      set(() => (productRules ? { transactionIcon: true } : { transactionIcon: false }));
+      set(() =>
+        productRules ||
+        (productRules && product.price_1 !== '' && product.price_1.length >= 2) ||
+        (productRules && product.price_2 !== '' && product.price_2.length >= 2) ||
+        (productRules && product.price_3 !== '' && product.price_3.length >= 2)
+          ? { addProductIcon: true }
+          : { addProductIcon: false }
+      );
     });
-    set(() => ({ listProducts: deleteProduct }));
+    set(() => ({ listProducts: deleteProduct, nameValue: '' }));
   },
-  setTransactionMode: () => {
+  setAddProductMode: () => {
     set((state) => ({
       editProductId: state.listProducts.length,
-      transactionIcon: false,
+      addProductIcon: false,
     }));
     set(() => ({
-      transaction: {
+      addProduct: {
         id: '',
-        nameCustomer: '',
         code: '',
         categories: '',
         merk: '',
         name: '',
-        qty: '',
-        disc: '0',
-        price: '',
-        subtotal: '0',
+        stock: '',
+        stockWarning: '',
+        timeStamp: '',
+        lastInput: '',
       },
     }));
     set((state) => ({
@@ -208,28 +193,27 @@ export const transactionStore = create((set, get) => ({
         ...state.listProducts,
         {
           id: state.editProductId,
-          nameCustomer: state.transaction.nameCustomer,
-          code: state.transaction.code,
-          categories: state.transaction.categories,
-          merk: state.transaction.merk,
-          name: state.transaction.name,
-          qty: state.transaction.qty,
-          disc: state.transaction.disc,
-          price: state.transaction.price,
-          subtotal: state.transaction.subtotal,
+          code: state.addProduct.code,
+          categories: state.addProduct.categories,
+          merk: state.addProduct.merk,
+          name: state.addProduct.name,
+          stock: state.addProduct.stock,
+          stockWarning: state.addProduct.stockWarning,
+          timeStamp: state.addProduct.timeStamp,
+          lastInput: state.addProduct.lastInput,
         },
       ],
     }));
   },
   getProductName: async () => {
     // eslint-disable-next-line
-    const listProduct = get().listProducts;
+    const listProducts = get().listProducts;
     const listCodeProduct = [];
     await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (codeProducts) => {
       codeProducts.forEach((codeProduct) => {
         listCodeProduct.push(codeProduct.data());
       });
-      const CodeProductFinal = listCodeProduct.filter((codes) => listProduct.every((list) => list.code !== codes.code));
+      const CodeProductFinal = listCodeProduct.filter((code) => listProducts.every((list) => list.code !== code.code));
       set(() => ({ listName: [] }));
       CodeProductFinal.forEach((codes) => {
         set((state) => ({
@@ -237,9 +221,11 @@ export const transactionStore = create((set, get) => ({
             ...state.listName,
             {
               code: codes.code,
-              label: codes.name,
+              name: codes.name,
+              label: `${codes.code} - ${codes.name}`,
               merk: codes.merk,
               categories: codes.categories,
+              stock: codes.stock,
             },
           ],
         }));
@@ -251,20 +237,17 @@ export const transactionStore = create((set, get) => ({
       editProductId: state.listProducts.length,
     }));
     set((state) => ({
-      transactionMode: true,
+      addProductMode: true,
       loading: false,
       listProducts: [
         {
           id: state.editProductId,
-          nameCustomer: state.transaction.name,
-          code: state.transaction.code,
-          categories: state.transaction.categories,
-          merk: state.transaction.merk,
-          name: state.transaction.name,
-          qty: state.transaction.qty,
-          disc: state.transaction.disc,
-          price: state.transaction.price,
-          subtotal: state.transaction.subtotal,
+          code: state.addProduct.code,
+          categories: state.addProduct.categories,
+          merk: state.addProduct.merk,
+          name: state.addProduct.name,
+          stock: state.addProduct.stock,
+          stockWarning: state.addProduct.stockWarning,
         },
       ],
     }));

@@ -15,14 +15,18 @@ import { db } from 'config/firebaseConfig';
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-export const transactionStore = create((set, get) => ({
+export const returnStore = create((set, get) => ({
   loading: true,
   openSnackbar: false,
   snackbarMessage: '',
   listName: [],
   editProductId: '',
+  selectedName: '',
+  selectedTime: '',
   nameCus: '',
   listProducts: [],
+  listNameCustomer: [],
+  listTimeCustomer: [],
   selectedPrice: '',
   configs: {},
   total: 0,
@@ -32,7 +36,7 @@ export const transactionStore = create((set, get) => ({
     code: '',
     categories: '',
     merk: '',
-    disc: '0',
+    disc: '10',
     name: '',
     qty: '',
     price: '',
@@ -42,17 +46,24 @@ export const transactionStore = create((set, get) => ({
   helperCodeName: '',
   transactionMode: false,
   transactionIcon: false,
-  setPriceSelection: async (priceSelect) => {
-    if (priceSelect.id !== '' || null || undefined) {
-      set(() => ({ selectedPrice: priceSelect.id }));
+  setPriceSelection: async (nameSelect) => {
+    if (nameSelect !== '' || null || undefined) {
+      set(() => ({ selectedName: nameSelect.label }));
     }
+    get().getProductName();
+  },
+  setTimeSelection: async (timeSelect) => {
+    if (timeSelect !== '' || null || undefined) {
+      set(() => ({ selectedTime: timeSelect.label }));
+    }
+    get().getProductName();
   },
   setOpenSnackbar: () => set((state) => ({ openSnackbar: !state.openSnackbar })),
   setName: (nameChoose, id) => {
     const getProduct = get().listProducts;
-    const selectedPriceValue = get().selectedPrice;
+    // const selectedPriceValue = get().selectedPrice;
     set(() => ({ listProducts: [] }));
-    if (nameChoose && selectedPriceValue) {
+    if (nameChoose) {
       getProduct.forEach(async (product) => {
         if (product.id === id) {
           product.name = nameChoose.label;
@@ -60,10 +71,30 @@ export const transactionStore = create((set, get) => ({
           product.categories = nameChoose.categories;
           product.merk = nameChoose.merk;
         }
+        get().listName.forEach((list) => {
+          if (product.code === list.code) {
+            product.priceSelect = list.priceSelect;
+          }
+        });
         await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (listProducts) => {
           listProducts.forEach((priceValue) => {
             if (product.code === priceValue.data().code) {
-              product.price = priceValue.data()[selectedPriceValue];
+              priceValue.data().history.forEach((history) => {
+                const time = `${new Date(history.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })} Pada Jam ${new Date(history.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+                  history.lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                  history.lastInput.split('@', 1)[0].slice(1)
+                }`;
+                if (history.nameCustomer === get().selectedName && time === get().selectedTime) {
+                  product.price = priceValue.data()[product.priceSelect] * history.out;
+                  product.discPrice = priceValue.data()[product.priceSelect];
+                  product.qtyMax = history.out;
+                }
+              });
             }
           });
         });
@@ -74,9 +105,6 @@ export const transactionStore = create((set, get) => ({
       const productFinal = getProduct.filter((product) => product.id !== id);
       set(() => ({ listProducts: productFinal }));
       get().getProducts();
-      if (selectedPriceValue === '') {
-        alert('Harga harap diisi !');
-      }
     }
   },
   setTransaction: (event, id) => {
@@ -90,10 +118,16 @@ export const transactionStore = create((set, get) => ({
         set(() => ({ nameCus: event.value }));
       }
       if (product.id === id) {
+        product.nameCustomer = get().selectedName;
         product[event.name] = event.value;
         if (event.name === 'qty' || event.name === 'disc') {
+          if (event.name === 'qty' && event.value > product.qtyMax) {
+            product.qty = product.qtyMax;
+          } else {
+            product.qty = event.value;
+          }
           product.subtotal =
-            (event.name === 'qty' ? event.value : product.qty) * (product.price - Number(product.disc));
+            product.qty * product.discPrice * (product.disc === '0' ? 0.1 : Number(product.disc) / 100);
           totalPrice += product.subtotal;
         }
       }
@@ -131,18 +165,17 @@ export const transactionStore = create((set, get) => ({
       docIdEdit.some((Id) =>
         product.code === Id.code
           ? ((product.history = {
-              detail: 'Penjualan Kasir',
+              detail: 'Retur',
               nameCustomer: product.nameCustomer,
               total: product.subtotal,
-              out: product.qty,
-              stock: (Number(Id.stock) - Number(product.qty)).toString(),
-              in: '0',
-              disc: product.disc,
-              priceSelect: get().selectedPrice,
+              out: '0',
+              stock: (Number(Id.stock) + Number(product.qty)).toString(),
+              in: product.qty,
+              return: `${product.disc}%`,
               lastInput: product.lastInput,
               timeStamp: product.timeStamp,
             }),
-            (product.stock = (Number(Id.stock) - Number(product.qty)).toString()),
+            (product.stock = (Number(Id.stock) + Number(product.qty)).toString()),
             (product.id = Id.id))
           : null
       )
@@ -158,7 +191,6 @@ export const transactionStore = create((set, get) => ({
           timeStamp: product.timeStamp,
           history: arrayUnion(product.history),
         };
-        console.log(filterData);
         await updateDoc(updateDocument, filterData);
         TotalProduct += 1;
       });
@@ -198,7 +230,7 @@ export const transactionStore = create((set, get) => ({
         merk: '',
         name: '',
         qty: '',
-        disc: '0',
+        disc: '10',
         price: '',
         subtotal: '0',
       },
@@ -222,27 +254,83 @@ export const transactionStore = create((set, get) => ({
     }));
   },
   getProductName: async () => {
-    // eslint-disable-next-line
+    /* eslint-disable */
+    const selectedTime = get().selectedTime;
+    const selectedName = get().selectedName;
     const listProduct = get().listProducts;
+    /* eslint-disable */
     const listCodeProduct = [];
     await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (codeProducts) => {
       codeProducts.forEach((codeProduct) => {
         listCodeProduct.push(codeProduct.data());
       });
       const CodeProductFinal = listCodeProduct.filter((codes) => listProduct.every((list) => list.code !== codes.code));
-      set(() => ({ listName: [] }));
+      set(() => ({ listName: [], listNameCustomer: [], listTimeCustomer: [] }));
       CodeProductFinal.forEach((codes) => {
-        set((state) => ({
-          listName: [
-            ...state.listName,
-            {
-              code: codes.code,
-              label: codes.name,
-              merk: codes.merk,
-              categories: codes.categories,
-            },
-          ],
-        }));
+        codes.history.forEach((code) => {
+          if (code.detail === 'Penjualan Kasir') {
+            if (get().listNameCustomer.length > 0) {
+              get().listNameCustomer.forEach((list) => {
+                if (list.label !== code.nameCustomer) {
+                  set((state) => ({
+                    listNameCustomer: [
+                      ...state.listNameCustomer,
+                      { key: codes.code + code.timeStamp.seconds, label: code.nameCustomer },
+                    ],
+                  }));
+                }
+              });
+            } else {
+              set((state) => ({
+                listNameCustomer: [
+                  ...state.listNameCustomer,
+                  { key: codes.code + code.timeStamp.seconds, label: code.nameCustomer },
+                ],
+              }));
+            }
+            if (selectedTime !== '' && selectedName !== '') {
+              const time = `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })} Pada Jam ${new Date(code.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+                code.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + code.lastInput.split('@', 1)[0].slice(1)
+              }`;
+              if (time === selectedTime && code.nameCustomer === selectedName) {
+                set((state) => ({
+                  listName: [
+                    ...state.listName,
+                    {
+                      code: codes.code,
+                      label: codes.name,
+                      merk: codes.merk,
+                      categories: codes.categories,
+                      priceSelect: code.priceSelect,
+                      total: code.total,
+                    },
+                  ],
+                }));
+              }
+            }
+            set((state) => ({
+              listTimeCustomer: [
+                ...state.listTimeCustomer,
+                {
+                  key: codes.code + code.timeStamp.seconds,
+                  label: `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })} Pada Jam ${new Date(code.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+                    code.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + code.lastInput.split('@', 1)[0].slice(1)
+                  }`,
+                },
+              ],
+            }));
+          }
+        });
       });
     });
   },

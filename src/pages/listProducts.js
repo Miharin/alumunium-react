@@ -235,7 +235,7 @@ export default function ProductPage() {
         <TableContainer>
           <Table aria-label="Sticky Table">
             <caption>
-              {categories === '' && merk === '' ? (
+              {(categories === '' && merk === '') || categories === '' || merk === '' ? (
                 <Alert severity="warning">
                   Jika Ingin Mengubah atau Menghapus Product Maka{' '}
                   {categories === '' || undefined || null ? 'Kategori' : null}{' '}
@@ -310,7 +310,8 @@ export default function ProductPage() {
                               column.id !== 'code' &&
                               column.id !== 'name' &&
                               column.id !== 'categories' &&
-                              column.id !== 'merk' ? (
+                              column.id !== 'merk' &&
+                              column.id !== 'stock' ? (
                               <TextField
                                 fullWidth
                                 onChange={(event) => setEdit(event.target)}

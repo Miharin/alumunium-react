@@ -82,6 +82,8 @@ export default function HistoryProductPage() {
   const getProducts = useHistoryProductStore((state) => state.getProducts);
   const getName = useHistoryProductStore((state) => state.getField);
   const snackbarType = useHistoryProductStore((state) => state.snackbarType);
+  const monthSelect = useHistoryProductStore((state) => state.monthSelect);
+  const setMonthSelect = useHistoryProductStore((state) => state.setMonthSelect);
   const rows = products;
   // End ProductCode Initialization
 
@@ -93,6 +95,7 @@ export default function HistoryProductPage() {
     { id: 'in', label: 'Masuk', minWidth: 50, align: 'left' },
     { id: 'out', label: 'Keluar', minWidth: 50, align: 'left' },
     { id: 'total', label: 'Total Harga', minWidth: 50, align: 'left' },
+    { id: 'disc', label: 'Diskon', minWidth: 50, align: 'left' },
     { id: 'nameCustomer', label: 'Nama Pembeli', minWidth: 100, align: 'left' },
     { id: 'stock', label: 'Stok Total', minWidth: 150, align: 'left' },
     { id: 'lastInput', label: 'Oleh', minWidth: 300, align: 'left' },
@@ -165,6 +168,41 @@ export default function HistoryProductPage() {
                     />
                   )}
                 />
+                <Divider orientation="vertical" variant="middle" flexItem />
+                <Autocomplete
+                  freeSolo
+                  isOptionEqualToValue={(option, value) => option.label === value.value}
+                  sx={{ mx: 2 }}
+                  id="category"
+                  name="categories"
+                  onChange={(event, newValue) =>
+                    newValue !== null ? (setMonthSelect(newValue), getProducts()) : (setMonthSelect(), getProducts())
+                  }
+                  options={[
+                    'Januari',
+                    'Februari',
+                    'Maret',
+                    'April',
+                    'Mei',
+                    'Juni',
+                    'Juli',
+                    'Agustus',
+                    'September',
+                    'Oktober',
+                    'November',
+                    'Desember',
+                  ]}
+                  value={monthSelect}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      sx={{ my: 4, width: 300 }}
+                      InputProps={{ ...params.InputProps, disableUnderline: true }}
+                      variant="standard"
+                      placeholder="Bulan"
+                    />
+                  )}
+                />
               </Stack>
             </Slide>
           </ClickAwayListener>
@@ -233,7 +271,8 @@ export default function HistoryProductPage() {
                       return (
                         <TableCell key={column.id} id={index} align={column.align}>
                           {/* Start Edit Rows and Display Rows */}
-                          {column.id === 'total' && row.out !== '0'
+                          {(column.id === 'total' && row.detail !== 'Stok Opname' && row.out !== '0') ||
+                          (column.id === 'disc' && row.detail !== 'Stok Opname' && row.out !== '0')
                             ? new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(value)
                             : value}
                           {/* End Edit Rows and Display Rows */}

@@ -27,6 +27,7 @@ export const historyProductStore = create((set, get) => ({
   helperCodeName: '',
   listName: [],
   nameSelect: '',
+  monthSelect: '',
   helperAddCategory: '',
   products: [],
   search: '',
@@ -46,6 +47,13 @@ export const historyProductStore = create((set, get) => ({
       ? set((state) => ({
           nameSelect: name.label,
           removeProduct: { ...state.removeProduct, code: name.code, name: name.label },
+          loading: !state.loading,
+        }))
+      : (set((state) => ({ nameSelect: '', loading: !state.loading })), get().deleteRemoveProductNew()),
+  setMonthSelect: (month) =>
+    month !== undefined || null || ''
+      ? set((state) => ({
+          monthSelect: month,
           loading: !state.loading,
         }))
       : (set((state) => ({ nameSelect: '', loading: !state.loading })), get().deleteRemoveProductNew()),
@@ -144,11 +152,32 @@ export const historyProductStore = create((set, get) => ({
   },
   getProducts: async () => {
     const name = get().nameSelect;
+    const month = get().monthSelect;
+    const year = new Date().getFullYear();
+    const yearPrev = new Date().getFullYear() - 1;
     await onSnapshot(query(collection(db, 'listProducts'), orderBy('stock')), (codeProduct) => {
       set(() => ({ products: [] }));
       codeProduct.forEach(async (product) => {
         product.data().history.forEach((item) => {
-          if (name !== '' && name === product.data().name) {
+          const date = `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+            item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
+          }`;
+          console.log(date.toString().toLowerCase().includes(month.toString().toLowerCase()));
+          if (
+            (name !== '' && name === product.data().name) ||
+            (name === '' &&
+              month !== '' &&
+              date.toString().toLowerCase().includes(month.toString().toLowerCase()) &&
+              date
+                .toString()
+                .toLowerCase()
+                .includes(year || yearPrev))
+          ) {
             set((state) => ({
               products: [
                 ...state.products,
@@ -160,6 +189,7 @@ export const historyProductStore = create((set, get) => ({
                   detail: item.detail,
                   in: item.in,
                   out: item.out,
+                  disc: (item.disc !== undefined || null || '') && item.out !== '0' ? item.disc : '',
                   total: item.out !== '0' ? item.total : '',
                   nameCustomer: item.out !== '0' ? item.nameCustomer : '',
                   lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
@@ -174,7 +204,7 @@ export const historyProductStore = create((set, get) => ({
               ],
             }));
           }
-          if (name === '') {
+          if (name === '' && month === '') {
             set((state) => ({
               products: [
                 ...state.products,
@@ -186,6 +216,7 @@ export const historyProductStore = create((set, get) => ({
                   in: item.in,
                   out: item.out,
                   total: item.out !== '0' ? item.total : '',
+                  disc: (item.disc !== undefined || null || '') && item.out !== '0' ? item.disc : '',
                   nameCustomer: item.out !== '0' ? item.nameCustomer : '',
                   stock: item.stock,
                   lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
