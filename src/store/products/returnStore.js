@@ -121,7 +121,7 @@ export const returnStore = create((set, get) => ({
         product.nameCustomer = get().selectedName;
         product[event.name] = event.value;
         if (event.name === 'qty' || event.name === 'disc') {
-          if (event.name === 'qty' && event.value > product.qtyMax) {
+          if (event.name === 'qty' && Number(event.value) > Number(product.qtyMax)) {
             product.qty = product.qtyMax;
           } else {
             product.qty = event.value;
