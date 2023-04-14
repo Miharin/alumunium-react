@@ -135,24 +135,24 @@ export const addProductStore = create((set, get) => ({
           timeStamp: product.timeStamp,
           history: arrayUnion(product.history),
         };
-        if (product.price_1 !== '' && product.price_1 !== '0') {
-          filterData = {
-            ...filterData,
-            price_1: `${product.price_1}000`,
-          };
-        }
-        if (product.price_2 !== '' && product.price_2 !== '0') {
-          filterData = {
-            ...filterData,
-            price_2: `${product.price_2}000`,
-          };
-        }
-        if (product.price_3 !== '' && product.price_3 !== '0') {
-          filterData = {
-            ...filterData,
-            price_3: `${product.price_3}000`,
-          };
-        }
+        // if (product.price_1 !== '' && product.price_1 !== '0') {
+        //   filterData = {
+        //     ...filterData,
+        //     price_1: `${product.price_1}000`,
+        //   };
+        // }
+        // if (product.price_2 !== '' && product.price_2 !== '0') {
+        //   filterData = {
+        //     ...filterData,
+        //     price_2: `${product.price_2}000`,
+        //   };
+        // }
+        // if (product.price_3 !== '' && product.price_3 !== '0') {
+        //   filterData = {
+        //     ...filterData,
+        //     price_3: `${product.price_3}000`,
+        //   };
+        // }
         await updateDoc(updateDocument, filterData);
         TotalProduct += 1;
       });

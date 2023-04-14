@@ -69,7 +69,7 @@ export const stockOpnameStore = create((set, get) => ({
       if (product.id === id) {
         product[event.name] = event.value;
         const diff = product.stock - product.stockWarning;
-        product.diff = diff < 0 ? diff : `+${diff}`;
+        product.diff = diff < 0 ? `+${Math.abs(diff)}` : `-${diff}`;
         const productRules =
           product.code !== '' &&
           product.categories !== '' &&
@@ -111,8 +111,8 @@ export const stockOpnameStore = create((set, get) => ({
         product.code === Id.code
           ? ((product.history = {
               detail: 'Stok Opname',
-              in: product.diff < 0 ? product.diff.toString().split('-')[1] : '0',
-              out: product.diff < 0 ? '0' : product.diff.split('+')[1],
+              out: product.diff < 0 ? product.diff.toString().split('-')[1] : '0',
+              in: product.diff < 0 ? '0' : product.diff.toString().split('+')[1],
               stock: product.stockWarning,
               lastInput: product.lastInput,
               timeStamp: product.timeStamp,

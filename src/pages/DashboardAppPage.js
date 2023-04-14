@@ -328,7 +328,7 @@ export default function DashboardAppPage() {
                               ) : null
                             ) : (column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3') &&
                               editMode === false ? (
-                              `Rp.${value}.000,-`
+                              `Rp.${value},-`
                             ) : column.id === 'stock' ? (
                               <Alert
                                 severity={
