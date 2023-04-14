@@ -270,24 +270,82 @@ export const returnStore = create((set, get) => ({
         codes.history.forEach((code) => {
           if (code.detail === 'Penjualan Kasir') {
             if (get().listNameCustomer.length > 0) {
-              get().listNameCustomer.forEach((list) => {
-                if (list.label !== code.nameCustomer) {
-                  set((state) => ({
-                    listNameCustomer: [
-                      ...state.listNameCustomer,
-                      { key: codes.code + code.timeStamp.seconds, label: code.nameCustomer },
-                    ],
-                  }));
-                }
+              const filterName = codes.history.filter((code) =>
+                get().listNameCustomer.every(
+                  (name) => name.label !== code.nameCustomer && code.detail === 'Penjualan Kasir'
+                )
+              );
+              filterName.forEach((name) => {
+                set((state) => ({
+                  listNameCustomer: [
+                    ...state.listNameCustomer,
+                    { key: name.code + name.timeStamp.seconds, label: name.nameCustomer },
+                  ],
+                }));
               });
             } else {
               set((state) => ({
                 listNameCustomer: [
                   ...state.listNameCustomer,
-                  { key: codes.code + code.timeStamp.seconds, label: code.nameCustomer },
+                  { key: code.code + code.timeStamp.seconds, label: code.nameCustomer },
                 ],
               }));
             }
+
+            if (get().listTimeCustomer.length > 0) {
+              const filterName = codes.history.filter((code) =>
+                get().listTimeCustomer.every(
+                  (name) =>
+                    name.label !==
+                      `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })} Pada Jam ${new Date(code.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+                        code.lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                        code.lastInput.split('@', 1)[0].slice(1)
+                      }` && code.detail === 'Penjualan Kasir'
+                )
+              );
+              filterName.forEach((name) => {
+                set((state) => ({
+                  listTimeCustomer: [
+                    ...state.listTimeCustomer,
+                    {
+                      key: name.code + name.timeStamp.seconds,
+                      label: `${new Date(name.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })} Pada Jam ${new Date(name.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+                        name.lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                        name.lastInput.split('@', 1)[0].slice(1)
+                      }`,
+                    },
+                  ],
+                }));
+              });
+            } else {
+              set((state) => ({
+                listTimeCustomer: [
+                  ...state.listTimeCustomer,
+                  {
+                    key: codes.code + code.timeStamp.seconds,
+                    label: `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })} Pada Jam ${new Date(code.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+                      code.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + code.lastInput.split('@', 1)[0].slice(1)
+                    }`,
+                  },
+                ],
+              }));
+            }
+
             if (selectedTime !== '' && selectedName !== '') {
               const time = `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
                 weekday: 'long',
@@ -311,24 +369,9 @@ export const returnStore = create((set, get) => ({
                     },
                   ],
                 }));
+                console.log(get().listName);
               }
             }
-            set((state) => ({
-              listTimeCustomer: [
-                ...state.listTimeCustomer,
-                {
-                  key: codes.code + code.timeStamp.seconds,
-                  label: `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })} Pada Jam ${new Date(code.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
-                    code.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + code.lastInput.split('@', 1)[0].slice(1)
-                  }`,
-                },
-              ],
-            }));
           }
         });
       });

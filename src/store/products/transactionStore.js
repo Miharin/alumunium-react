@@ -33,6 +33,7 @@ export const transactionStore = create((set, get) => ({
     categories: '',
     merk: '',
     disc: '0',
+    priceSelect: '',
     name: '',
     qty: '',
     price: '',
@@ -42,30 +43,33 @@ export const transactionStore = create((set, get) => ({
   helperCodeName: '',
   transactionMode: false,
   transactionIcon: false,
-  setPriceSelection: async (priceSelect) => {
-    if (priceSelect.id !== '' || null || undefined) {
-      set(() => ({ selectedPrice: priceSelect.id }));
-    }
+  setPriceSelection: (id, value) => {
+    const getProduct = get().listProducts;
+    set(() => ({ listProducts: [] }));
+    getProduct.forEach(async (product) => {
+      if (product.id === id) {
+        product.priceSelect = value.id;
+        product.labelPrice = value.label;
+        product.price = product[product.priceSelect];
+      }
+      set((state) => ({ listProducts: [...state.listProducts, product] }));
+    });
   },
   setOpenSnackbar: () => set((state) => ({ openSnackbar: !state.openSnackbar })),
   setName: (nameChoose, id) => {
     const getProduct = get().listProducts;
-    const selectedPriceValue = get().selectedPrice;
     set(() => ({ listProducts: [] }));
-    if (nameChoose && selectedPriceValue) {
+    if (nameChoose) {
       getProduct.forEach(async (product) => {
         if (product.id === id) {
+          product.nameCustomer = get().nameCus;
           product.name = nameChoose.label;
           product.code = nameChoose.code;
           product.categories = nameChoose.categories;
           product.merk = nameChoose.merk;
-          await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (listProducts) => {
-            listProducts.forEach((priceValue) => {
-              if (product.code === priceValue.data().code) {
-                product.price = priceValue.data()[selectedPriceValue];
-              }
-            });
-          });
+          product.price_1 = nameChoose.price_1;
+          product.price_2 = nameChoose.price_2;
+          product.price_3 = nameChoose.price_3;
         }
         set((state) => ({ listProducts: [...state.listProducts, product] }));
         get().getProductName();
@@ -74,17 +78,14 @@ export const transactionStore = create((set, get) => ({
       const productFinal = getProduct.filter((product) => product.id !== id);
       set(() => ({ listProducts: productFinal }));
       get().getProducts();
-      if (selectedPriceValue === '') {
-        alert('Harga harap diisi !');
-      }
     }
   },
   setTransaction: (event, id) => {
-    set(() => ({ total: 0 }));
+    // set(() => ({ total: 0 }));
     const getProduct = get().listProducts;
     let totalPrice = get().total;
     set(() => ({ listProducts: [] }));
-    getProduct.forEach((product) => {
+    getProduct.forEach(async (product) => {
       if (event.name === 'nameCustomer') {
         product[event.name] = event.value;
         set(() => ({ nameCus: event.value }));
@@ -94,8 +95,8 @@ export const transactionStore = create((set, get) => ({
         if (event.name === 'qty' || event.name === 'disc') {
           product.subtotal =
             (event.name === 'qty' ? event.value : product.qty) * (product.price - Number(product.disc));
-          totalPrice += product.subtotal;
         }
+        totalPrice += product.subtotal;
       }
       const productRules =
         product.nameCustomer !== '' &&
@@ -138,7 +139,7 @@ export const transactionStore = create((set, get) => ({
               stock: (Number(Id.stock) - Number(product.qty)).toString(),
               in: '0',
               disc: product.disc,
-              priceSelect: get().selectedPrice,
+              priceSelect: product.priceSelect,
               lastInput: product.lastInput,
               timeStamp: product.timeStamp,
             }),
@@ -158,13 +159,12 @@ export const transactionStore = create((set, get) => ({
           timeStamp: product.timeStamp,
           history: arrayUnion(product.history),
         };
-        console.log(filterData);
         await updateDoc(updateDocument, filterData);
         TotalProduct += 1;
       });
     }
     await delay(1000);
-    set(() => ({ snackbarMessage: `${TotalProduct} Produk Berhasil Ditambahkan !` }));
+    set(() => ({ snackbarMessage: `${TotalProduct} Produk Berhasil Transaksi !` }));
     getOpenSnackbar();
     get().getProducts();
   },
@@ -196,6 +196,7 @@ export const transactionStore = create((set, get) => ({
         code: '',
         categories: '',
         merk: '',
+        priceSelect: '',
         name: '',
         qty: '',
         disc: '0',
@@ -214,6 +215,7 @@ export const transactionStore = create((set, get) => ({
           merk: state.transaction.merk,
           name: state.transaction.name,
           qty: state.transaction.qty,
+          priceSelect: state.transaction.priceSelect,
           disc: state.transaction.disc,
           price: state.transaction.price,
           subtotal: state.transaction.subtotal,
@@ -240,6 +242,9 @@ export const transactionStore = create((set, get) => ({
               label: codes.name,
               merk: codes.merk,
               categories: codes.categories,
+              price_1: codes.price_1,
+              price_2: codes.price_2,
+              price_3: codes.price_3,
             },
           ],
         }));
@@ -262,6 +267,7 @@ export const transactionStore = create((set, get) => ({
           merk: state.transaction.merk,
           name: state.transaction.name,
           qty: state.transaction.qty,
+          priceSelect: state.transaction.priceSelect,
           disc: state.transaction.disc,
           price: state.transaction.price,
           subtotal: state.transaction.subtotal,

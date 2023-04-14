@@ -95,6 +95,7 @@ export default function Transaction() {
     { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
     { id: 'name', label: 'Nama', minWidth: 300, align: 'left' },
     { id: 'qty', label: 'Jumlah', minWidth: 150, align: 'left' },
+    { id: 'priceSelect', label: 'Pilihan Harga', minWidth: '150', align: 'left' },
     { id: 'price', label: 'Harga', minWidth: 150, align: 'left' },
     { id: 'disc', label: 'Diskon', minWidth: 150, align: 'left' },
     { id: 'subtotal', label: 'Sub Total', minWidth: 150, align: 'left' },
@@ -135,27 +136,6 @@ export default function Transaction() {
             InputProps={{ disableUnderline: true }}
             variant="standard"
             placeholder="Nama"
-          />
-          <Autocomplete
-            freeSolo
-            fullWidth
-            id="price"
-            name="price"
-            onChange={(event, newValue) => (newValue ? setPriceSelection(newValue) : setPriceSelection(newValue))}
-            options={[
-              { id: 'price_1', label: 'Harga 1' },
-              { id: 'price_2', label: 'Harga 2' },
-              { id: 'price_3', label: 'Harga 3' },
-            ]}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                sx={{ minWidth: 100 }}
-                InputProps={{ ...params.InputProps, disableUnderline: true }}
-                variant="standard"
-                placeholder="Harga"
-              />
-            )}
           />
         </Stack>
         {/* Start Function Showing Search and Filter */}
@@ -259,7 +239,10 @@ export default function Transaction() {
                                 </Tooltip>
                               </IconButton>
                             </ButtonGroup>
-                          ) : nameCus !== '' && transactionMode === true && column.id === 'qty' ? (
+                          ) : nameCus !== '' &&
+                            row.priceSelect !== '' &&
+                            transactionMode === true &&
+                            column.id === 'qty' ? (
                             <TextField
                               required
                               fullWidth
@@ -290,7 +273,10 @@ export default function Transaction() {
                             ) : (
                               'Rp.0'
                             )
-                          ) : nameCus !== '' && transactionMode === true && column.id === 'disc' ? (
+                          ) : nameCus !== '' &&
+                            row.priceSelect !== '' &&
+                            transactionMode === true &&
+                            column.id === 'disc' ? (
                             <TextField
                               required
                               fullWidth
@@ -308,6 +294,31 @@ export default function Transaction() {
                               variant="standard"
                               placeholder={column.label}
                               sx={{ minWidth: column.minWidth }}
+                            />
+                          ) : nameCus !== '' && transactionMode === true && column.id === 'priceSelect' ? (
+                            <Autocomplete
+                              freeSolo
+                              fullWidth
+                              id={column.id}
+                              name={column.id}
+                              value={row.labelPrice === '' ? '' : row.labelPrice}
+                              onChange={(event, newValue) =>
+                                newValue ? setPriceSelection(row.id, newValue) : setPriceSelection(row.id, newValue)
+                              }
+                              options={[
+                                { id: 'price_1', label: 'Harga 1' },
+                                { id: 'price_2', label: 'Harga 2' },
+                                { id: 'price_3', label: 'Harga 3' },
+                              ]}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  sx={{ minWidth: 100 }}
+                                  InputProps={{ ...params.InputProps, disableUnderline: true }}
+                                  variant="standard"
+                                  placeholder="Harga"
+                                />
+                              )}
                             />
                           ) : (
                             value
