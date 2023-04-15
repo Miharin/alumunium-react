@@ -61,7 +61,7 @@ export const dataUsers = create((set, get) => ({
         const updateDocument = doc(db, 'users', userId);
         set((state) => ({ loading: !state.loading }));
         await updateDoc(updateDocument, editUserFinal);
-        set(() => ({ snackbarMessage: `User dengan Id ${userId} Berhasil Di Update !` }));
+        set(() => ({ snackbarMessage: `User dengan Id "${userId}" Berhasil Di Update !` }));
         set((state) => ({ loading: !state.loading, editMode: !state.editMode, editUser: {} }));
         getOpenSnackbar();
       }
