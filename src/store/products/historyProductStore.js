@@ -167,7 +167,6 @@ export const historyProductStore = create((set, get) => ({
           })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
             item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
           }`;
-          console.log(date.toString().toLowerCase().includes(month.toString().toLowerCase()));
           if (
             (name !== '' && name === product.data().name) ||
             (name === '' &&

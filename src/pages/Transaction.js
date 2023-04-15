@@ -97,7 +97,7 @@ export default function Transaction() {
     { id: 'qty', label: 'Jumlah', minWidth: 150, align: 'left' },
     { id: 'priceSelect', label: 'Pilihan Harga', minWidth: '150', align: 'left' },
     { id: 'price', label: 'Harga', minWidth: 150, align: 'left' },
-    { id: 'disc', label: 'Diskon', minWidth: 150, align: 'left' },
+    { id: 'disc', label: 'Potongan Reject', minWidth: 150, align: 'left' },
     { id: 'subtotal', label: 'Sub Total', minWidth: 150, align: 'left' },
     {
       id: 'action',
@@ -146,7 +146,7 @@ export default function Transaction() {
         </Snackbar>
         {/* End Function Showing Search and Filter */}
         <TableContainer>
-          <Table aria-label="Sticky Table">
+          <Table aria-label="Sticky Table" size="small">
             <caption>
               <Stack direction="row" spacing={2}>
                 <Button variant="text" fullWidth startIcon={<AddRounded />} onClick={setTransactionMode}>

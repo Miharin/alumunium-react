@@ -227,7 +227,7 @@ export default function DashboardAppPage() {
         )}
         {/* End Function Showing Search and Filter */}
         <TableContainer>
-          <Table aria-label="Sticky Table">
+          <Table aria-label="Sticky Table" size="small">
             <TableHead>
               <TableRow>
                 {/* Start Define Column */}

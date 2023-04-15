@@ -132,7 +132,7 @@ export default function AddProductPage() {
         </Snackbar>
         {/* End Function Showing Search and Filter */}
         <TableContainer>
-          <Table aria-label="Sticky Table">
+          <Table aria-label="Sticky Table" size="small">
             <caption>
               <Stack direction="row" spacing={2}>
                 <Button variant="text" fullWidth startIcon={<AddRounded />} onClick={setAddProductMode}>

@@ -213,7 +213,7 @@ export default function HistoryProductPage() {
         )}
         {/* End Function Showing Search and Filter */}
         <TableContainer>
-          <Table aria-label="Sticky Table">
+          <Table aria-label="Sticky Table" size="small">
             <caption>
               {/* {nameSelect !== '' || null || undefined ? (
                 <Button
@@ -298,7 +298,7 @@ export default function HistoryProductPage() {
           count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={setPage}
+          onPageChange={(event, newPage) => setPage(newPage)}
           onRowsPerPageChange={(event) => setChangeRowsPerPage(event.target.value)}
         />
       </Paper>

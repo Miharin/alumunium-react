@@ -233,7 +233,7 @@ export default function ProductPage() {
         )}
         {/* End Function Showing Search and Filter */}
         <TableContainer>
-          <Table aria-label="Sticky Table">
+          <Table aria-label="Sticky Table" size="small">
             <caption>
               {(categories === '' && merk === '') || categories === '' || merk === '' ? (
                 <Alert severity="warning">

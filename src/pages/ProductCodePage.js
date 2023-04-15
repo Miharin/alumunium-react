@@ -296,7 +296,7 @@ export default function ProductPage() {
         </Dialog>
         {/* End Function Showing Search and Filter */}
         <TableContainer>
-          <Table aria-label="Sticky Table">
+          <Table aria-label="Sticky Table" size="small">
             <caption>
               {(categories !== '' || null || undefined) && (merk !== '' || null || undefined) ? (
                 <Button
