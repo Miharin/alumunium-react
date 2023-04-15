@@ -100,8 +100,8 @@ export default function ReturnPage() {
     { id: 'name', label: 'Nama', minWidth: 300, align: 'left' },
     { id: 'qty', label: 'Jumlah', minWidth: 150, align: 'left' },
     { id: 'price', label: 'Total Harga', minWidth: 150, align: 'left' },
-    { id: 'disc', label: 'Biaya Retur', minWidth: 150, align: 'left' },
-    { id: 'subtotal', label: 'Sub Total Biaya Retur', minWidth: 150, align: 'left' },
+    { id: 'disc', label: 'Potongan', minWidth: 150, align: 'left' },
+    { id: 'subtotal', label: 'Sub Total Potongan', minWidth: 150, align: 'left' },
     {
       id: 'action',
       label: 'Action',
@@ -301,7 +301,11 @@ export default function ReturnPage() {
                             transactionMode === true &&
                             column.id === 'subtotal' ? (
                             value !== '0' ? (
-                              new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(value)
+                              new Intl.NumberFormat('in-in', {
+                                style: 'currency',
+                                currency: 'idr',
+                                maximumSignificantDigits: 1,
+                              }).format(value)
                             ) : (
                               'Rp.0'
                             )
@@ -310,7 +314,11 @@ export default function ReturnPage() {
                             transactionMode === true &&
                             column.id === 'price' ? (
                             value !== '' ? (
-                              new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(value)
+                              new Intl.NumberFormat('in-in', {
+                                style: 'currency',
+                                currency: 'idr',
+                                maximumSignificantDigits: 1,
+                              }).format(value)
                             ) : (
                               'Rp.0'
                             )

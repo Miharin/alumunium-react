@@ -263,13 +263,21 @@ export default function Transaction() {
                             />
                           ) : nameCus !== '' && transactionMode === true && column.id === 'subtotal' ? (
                             value !== '0' ? (
-                              new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(value)
+                              new Intl.NumberFormat('in-in', {
+                                style: 'currency',
+                                currency: 'idr',
+                                maximumSignificantDigits: 1,
+                              }).format(value)
                             ) : (
                               'Rp.0'
                             )
                           ) : nameCus !== '' && transactionMode === true && column.id === 'price' ? (
                             value !== '' ? (
-                              new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(value)
+                              new Intl.NumberFormat('in-in', {
+                                style: 'currency',
+                                currency: 'idr',
+                                maximumSignificantDigits: 1,
+                              }).format(value)
                             ) : (
                               'Rp.0'
                             )

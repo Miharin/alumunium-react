@@ -278,7 +278,11 @@ export default function HistoryProductPage() {
                           {/* Start Edit Rows and Display Rows */}
                           {(column.id === 'total' && row.detail !== 'Stok Opname' && row.out !== '0') ||
                           (column.id === 'disc' && row.detail !== 'Stok Opname' && row.out !== '0')
-                            ? new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(value)
+                            ? new Intl.NumberFormat('in-in', {
+                                style: 'currency',
+                                currency: 'idr',
+                                maximumSignificantDigits: 1,
+                              }).format(value)
                             : value}
                           {/* End Edit Rows and Display Rows */}
                           {/* Start Add Rows */}

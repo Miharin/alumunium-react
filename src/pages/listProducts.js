@@ -349,7 +349,11 @@ export default function ProductPage() {
                             ) : null
                           ) : (column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3') &&
                             editMode === false ? (
-                            new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(value)
+                            new Intl.NumberFormat('in-in', {
+                              style: 'currency',
+                              currency: 'idr',
+                              maximumSignificantDigits: 1,
+                            }).format(value)
                           ) : (
                             value
                           )}

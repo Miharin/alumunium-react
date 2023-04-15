@@ -333,7 +333,11 @@ export default function DashboardAppPage() {
                               ) : null
                             ) : (column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3') &&
                               editMode === false ? (
-                              `Rp.${value},-`
+                              new Intl.NumberFormat('in-in', {
+                                style: 'currency',
+                                currency: 'idr',
+                                maximumSignificantDigits: 1,
+                              }).format(value)
                             ) : column.id === 'stock' ? (
                               <Alert
                                 severity={
