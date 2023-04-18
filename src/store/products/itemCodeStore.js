@@ -148,37 +148,44 @@ export const itemCodeStore = create((set, get) => ({
       : set((state) => ({ merk: '', loading: !state.loading })),
   setAddCodeProduct: (event) => {
     set((state) => ({ addCodeProduct: { ...state.addCodeProduct, [event.name]: event.value } }));
-    set((state) =>
-      state.addCodeProduct.code === '' || state.addCodeProduct.name === ''
-        ? { addCodeProductIcon: false }
-        : state.addCodeProduct.name.toString().toLowerCase().includes(state.merk.toString().toLowerCase()) &&
-          state.addCodeProduct.name.toString().toLowerCase().includes(state.categories.toString().toLowerCase())
-        ? {
-            addCodeProductIcon: true,
-            addCodeProduct: { ...state.addCodeProduct, merk: state.merk.toUpperCase(), categories: state.categories },
-          }
-        : { addCodeProductIcon: false }
-    );
+    // set((state) =>
+    //   state.addCodeProduct.code === '' || state.addCodeProduct.name === ''
+    //     ? { addCodeProductIcon: false }
+    //     : state.addCodeProduct.name.toString().toLowerCase().includes(state.merk.toString().toLowerCase()) &&
+    //       state.addCodeProduct.name.toString().toLowerCase().includes(state.categories.toString().toLowerCase())
+    //     ? {
+    //         addCodeProductIcon: true,
+    //         addCodeProduct: { ...state.addCodeProduct, merk: state.merk.toUpperCase(), categories: state.categories },
+    //       }
+    //     : { addCodeProductIcon: false }
+    // );
+    const codeProductAddFinal = get().addCodeProduct;
+    const getOpenSnackbar = get().setOpenSnackbar;
+    const getCodeProduct = get().codeProducts;
+    const filterCode = getCodeProduct.filter((code) => code.code === codeProductAddFinal.code);
+    const filterName = getCodeProduct.filter((code) => code.name === codeProductAddFinal.name);
+    if (filterCode.length > 0 && event.name === 'code') {
+      set(() => ({ helperCode: `${filterCode[0].code} Sudah Ada !`, addCodeProductIcon: false }));
+    }
+    if (
+      filterName.length > 0 &&
+      event.name === 'name' &&
+      codeProductAddFinal.name.toString().toLowerCase().includes(get().merk.toString().toLowerCase()) &&
+      codeProductAddFinal.name.toString().toLowerCase().includes(get().categories.toString().toLowerCase())
+    ) {
+      set(() => ({ helperCodeName: `${filterName[0].name} Sudah Ada !`, addCodeProductIcon: false }));
+    } else {
+      set(() => ({ helperCodeName: '', addCodeProductIcon: false }));
+    }
+    if (filterName.length === 0 && filterCode.length === 0) {
+      set(() => ({ helperCodeName: '', helperCode: '', addCodeProductIcon: true }));
+    }
   },
   setFinalAddCodeProduct: async () => {
     set((state) => ({
       addCodeProduct: { ...state.addCodeProduct, timeStamp: serverTimestamp() },
       loading: !state.loading,
     }));
-    const codeProductAddFinal = get().addCodeProduct;
-    const getOpenSnackbar = get().setOpenSnackbar;
-    const getCodeProduct = get().codeProducts;
-    getCodeProduct.forEach((codes) => {
-      if (codes.name === codeProductAddFinal.name && codes.code === codeProductAddFinal.code) {
-        set(() => ({ helperCodeName: codes.name + ' Sudah Ada !', helperCode: codes.code + ' Sudah Ada !' }));
-      } else if (codes.code === codeProductAddFinal.code) {
-        set(() => ({ helperCode: codes.code + ' Sudah Ada !' }));
-      } else if (codes.name === codeProductAddFinal.name) {
-        set(() => ({ helperCodeName: codes.name + ' Sudah Ada !' }));
-      } else {
-        set(() => ({ helperCodeName: '', helperCode: '' }));
-      }
-    });
     const helperCodeName = get().helperCodeName;
     const helperCode = get().helperCode;
     if (helperCode === '' || helperCodeName === '' || (helperCode === '' && helperCodeName === '')) {

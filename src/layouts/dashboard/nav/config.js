@@ -102,7 +102,7 @@ export const NavSection = (onCloseNav) => {
           },
           {
             id: 'P6',
-            name: 'Retur Barang',
+            name: 'Retur Penjualan',
             selected: 8,
             icon: <KeyboardReturnRounded />,
             links: '/dashboard/products/return',
@@ -172,7 +172,7 @@ export const NavSection = (onCloseNav) => {
           },
           {
             id: 'P6',
-            name: 'Retur Barang',
+            name: 'Retur Penjualan',
             selected: 8,
             icon: <KeyboardReturnRounded />,
             links: '/dashboard/products/return',

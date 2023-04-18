@@ -166,6 +166,8 @@ export default function ProductPage() {
 
   // Function Helper for Edit
   const handleEdit = (event) => setCodeProductId(event);
+  const code = React.useRef(null);
+  const name = React.useRef(null);
 
   // Return Display
   return loading ? (
@@ -424,6 +426,19 @@ export default function ProductPage() {
                               name={column.id}
                               type={column.id === 'code' ? 'number' : 'text'}
                               onChange={(event) => setAddCodeProduct(event.target)}
+                              inputRef={column.id === 'code' ? code : column.id === 'name' ? name : null}
+                              inputProps={{
+                                onKeyPress: (event) => {
+                                  const { key } = event;
+                                  if (key === 'Enter') {
+                                    /* eslint-disable */
+                                    if (event.target.name === 'code') {
+                                      name.current.focus();
+                                    }
+                                    /* eslint-disable */
+                                  }
+                                },
+                              }}
                               InputProps={{ disableUnderline: true }}
                               helperText={column.id === 'code' ? helperCode : helperCodeName}
                               variant="standard"

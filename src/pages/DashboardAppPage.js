@@ -336,7 +336,7 @@ export default function DashboardAppPage() {
                               new Intl.NumberFormat('in-in', {
                                 style: 'currency',
                                 currency: 'idr',
-                                maximumSignificantDigits: 1,
+                                maximumSignificantDigits: 3,
                               }).format(value)
                             ) : column.id === 'stock' ? (
                               <Alert

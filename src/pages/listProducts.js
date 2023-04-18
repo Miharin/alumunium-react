@@ -29,7 +29,13 @@ import {
   Skeleton,
   Snackbar,
 } from '@mui/material';
-import { ModeEditRounded, FilterAltRounded, CheckCircleOutlineRounded, DoDisturbRounded } from '@mui/icons-material';
+import {
+  ModeEditRounded,
+  FilterAltRounded,
+  CheckCircleOutlineRounded,
+  DoDisturbRounded,
+  DeleteForeverRounded,
+} from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 
 // store
@@ -96,6 +102,7 @@ export default function ProductPage() {
   const setOpenSnackbar = useListProductStore((state) => state.setOpenSnackbar);
   const getProducts = useListProductStore((state) => state.getProducts);
   const listProducts = useListProductStore((state) => state.listProducts);
+  const setDeleteProduct = useListProductStore((state) => state.setDeleteProduct);
   const rows = listProducts;
   // End ListProduct Initialization
 
@@ -146,6 +153,9 @@ export default function ProductPage() {
 
   // Function Helper for Edit
   const handleEdit = (event) => setProductId(event);
+  const price1 = React.useRef(null);
+  const price2 = React.useRef(null);
+  const price3 = React.useRef(null);
 
   // Return Display
   return loading ? (
@@ -292,11 +302,13 @@ export default function ProductPage() {
                             column.id === 'action' && productId === row.id ? (
                               <ButtonGroup variant="outlined">
                                 {editProductIcon ? (
-                                  <IconButton onClick={() => setEditProduct(row.id)}>
-                                    <Tooltip title="Confirm">
-                                      <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
-                                    </Tooltip>
-                                  </IconButton>
+                                  <>
+                                    <IconButton onClick={() => setEditProduct(row.id)}>
+                                      <Tooltip title="Confirm">
+                                        <CheckCircleOutlineRounded sx={{ color: '#737373' }} />
+                                      </Tooltip>
+                                    </IconButton>
+                                  </>
                                 ) : null}
                                 <Backdrop
                                   sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -320,6 +332,30 @@ export default function ProductPage() {
                               <TextField
                                 fullWidth
                                 onChange={(event) => setEdit(event.target)}
+                                inputRef={
+                                  column.id === 'price_1'
+                                    ? price1
+                                    : column.id === 'price_2'
+                                    ? price2
+                                    : column.id === 'price_3'
+                                    ? price3
+                                    : null
+                                }
+                                inputProps={{
+                                  onKeyPress: (event) => {
+                                    const { key } = event;
+                                    if (key === 'Enter') {
+                                      /* eslint-disable */
+                                      if (event.target.name === 'price_1') {
+                                        price2.current.focus();
+                                      }
+                                      if (event.target.name === 'price_2') {
+                                        price3.current.focus();
+                                      }
+                                      /* eslint-disable */
+                                    }
+                                  },
+                                }}
                                 /* eslint-disable */
                                 onInput={(e) => {
                                   column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3'
@@ -345,6 +381,11 @@ export default function ProductPage() {
                                     <ModeEditRounded sx={{ color: '#737373' }} />
                                   </Tooltip>
                                 </IconButton>
+                                <IconButton onClick={() => setDeleteProduct(row.id)}>
+                                  <Tooltip title="Delete">
+                                    <DeleteForeverRounded sx={{ color: '#737373' }} />
+                                  </Tooltip>
+                                </IconButton>
                               </ButtonGroup>
                             ) : null
                           ) : (column.id === 'price_1' || column.id === 'price_2' || column.id === 'price_3') &&
@@ -352,7 +393,7 @@ export default function ProductPage() {
                             new Intl.NumberFormat('in-in', {
                               style: 'currency',
                               currency: 'idr',
-                              maximumSignificantDigits: 1,
+                              maximumSignificantDigits: 3,
                             }).format(value)
                           ) : (
                             value

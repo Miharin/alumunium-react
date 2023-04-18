@@ -98,6 +98,7 @@ export default function Transaction() {
     { id: 'priceSelect', label: 'Pilihan Harga', minWidth: '150', align: 'left' },
     { id: 'price', label: 'Harga', minWidth: 150, align: 'left' },
     { id: 'disc', label: 'Potongan Reject', minWidth: 150, align: 'left' },
+    { id: 'disc2', label: 'Potongan Per Karung / Karton', minWidth: 150, align: 'left' },
     { id: 'subtotal', label: 'Sub Total', minWidth: 150, align: 'left' },
     {
       id: 'action',
@@ -117,6 +118,9 @@ export default function Transaction() {
     onRequestSort(event, property, order, orderBy);
   };
 
+  const qty = React.useRef(null);
+  const disc = React.useRef(null);
+  const disc2 = React.useRef(null);
   // Return Display
   return loading ? (
     <Skeleton sx={{ mx: 5, alignItems: 'center' }} animation="wave" height={300} variant="rectangular" />
@@ -246,6 +250,8 @@ export default function Transaction() {
                             <TextField
                               required
                               fullWidth
+                              // eslint-disable-next-line
+                              autoFocus={true}
                               name={column.id}
                               /* eslint-disable */
                               onInput={(e) => {
@@ -255,8 +261,19 @@ export default function Transaction() {
                               }}
                               /* eslint-disable */
                               type="number"
+                              inputRef={qty}
                               onChange={(event) => setTransaction(event.target, row.id)}
-                              InputProps={{ disableUnderline: true }}
+                              InputProps={{
+                                disableUnderline: true,
+                                onKeyPress: (event) => {
+                                  const { key } = event;
+                                  if (key === 'Enter') {
+                                    /* eslint-disable */
+                                    disc.current.focus();
+                                    /* eslint-disable */
+                                  }
+                                },
+                              }}
                               variant="standard"
                               placeholder={column.label}
                               sx={{ minWidth: column.minWidth }}
@@ -276,7 +293,7 @@ export default function Transaction() {
                               new Intl.NumberFormat('in-in', {
                                 style: 'currency',
                                 currency: 'idr',
-                                maximumSignificantDigits: 1,
+                                maximumSignificantDigits: 3,
                               }).format(value)
                             ) : (
                               'Rp.0'
@@ -284,10 +301,25 @@ export default function Transaction() {
                           ) : nameCus !== '' &&
                             row.priceSelect !== '' &&
                             transactionMode === true &&
-                            column.id === 'disc' ? (
+                            (column.id === 'disc' || column.id === 'disc2') ? (
                             <TextField
                               required
-                              fullWidth
+                              // eslint-disable-next-line
+                              autoFocus={true}
+                              inputRef={column.id === 'disc' ? disc : column.id === 'disc2' ? disc2 : null}
+                              inputProps={{
+                                onKeyPress: (event) => {
+                                  const { key } = event;
+                                  if (key === 'Enter') {
+                                    /* eslint-disable */
+
+                                    if (event.target.name === 'disc') {
+                                      disc2.current.focus();
+                                    }
+                                    /* eslint-disable */
+                                  }
+                                },
+                              }}
                               name={column.id}
                               /* eslint-disable */
                               onInput={(e) => {
@@ -309,7 +341,7 @@ export default function Transaction() {
                               fullWidth
                               id={column.id}
                               name={column.id}
-                              value={row.labelPrice === '' ? '' : row.labelPrice}
+                              value={value !== null || undefined ? row.labelPrice : value}
                               onChange={(event, newValue) =>
                                 newValue ? setPriceSelection(row.id, newValue) : setPriceSelection(row.id, newValue)
                               }

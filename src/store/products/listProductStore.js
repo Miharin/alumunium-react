@@ -46,15 +46,6 @@ export const listProductStore = create((set, get) => ({
         if (editProductFinal.name === '') {
           delete editProductFinal.name;
         }
-        if (product.price_1 !== '' && product.price_1 !== '0') {
-          editProductFinal.price_1 = `${editProductFinal.price_1}000`;
-        }
-        if (product.price_2 !== '' && product.price_2 !== '0') {
-          editProductFinal.price_2 = `${editProductFinal.price_2}000`;
-        }
-        if (product.price_3 !== '' && product.price_3 !== '0') {
-          editProductFinal.price_3 = `${editProductFinal.price_3}000`;
-        }
         const updateDocument = doc(db, 'listProducts', id);
         set((state) => ({ loading: !state.loading }));
         await updateDoc(updateDocument, editProductFinal);
