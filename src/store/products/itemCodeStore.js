@@ -182,11 +182,11 @@ export const itemCodeStore = create((set, get) => ({
     }
   },
   setFinalAddCodeProduct: async () => {
-    const codeProductAddFinal = get().addCodeProduct;
     set((state) => ({
       addCodeProduct: { ...state.addCodeProduct, timeStamp: serverTimestamp() },
       loading: !state.loading,
     }));
+    const codeProductAddFinal = get().addCodeProduct;
     const helperCodeName = get().helperCodeName;
     const helperCode = get().helperCode;
     if (helperCode === '' || helperCodeName === '' || (helperCode === '' && helperCodeName === '')) {
