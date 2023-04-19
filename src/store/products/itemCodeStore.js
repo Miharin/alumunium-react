@@ -182,6 +182,7 @@ export const itemCodeStore = create((set, get) => ({
     }
   },
   setFinalAddCodeProduct: async () => {
+    const codeProductAddFinal = get().addCodeProduct;
     set((state) => ({
       addCodeProduct: { ...state.addCodeProduct, timeStamp: serverTimestamp() },
       loading: !state.loading,
@@ -190,7 +191,13 @@ export const itemCodeStore = create((set, get) => ({
     const helperCode = get().helperCode;
     if (helperCode === '' || helperCodeName === '' || (helperCode === '' && helperCodeName === '')) {
       delete codeProductAddFinal.id;
-      await addDoc(collection(db, 'codeProducts'), codeProductAddFinal);
+      codeProductAddFinal.merk = get().merk;
+      codeProductAddFinal.categories = get().categories;
+      try {
+        await addDoc(collection(db, 'codeProducts'), codeProductAddFinal);
+      } catch (err) {
+        console.log(err);
+      }
       set((state) => ({ snackbarMessage: `${codeProductAddFinal.name} Berhasil Ditambahkan !` }));
       set((state) => ({
         addCodeProduct: {
@@ -203,7 +210,7 @@ export const itemCodeStore = create((set, get) => ({
         addCodeProductMode: !state.addCodeProductMode,
         loading: !state.loading,
       }));
-      getOpenSnackbar();
+      get().setOpenSnackbar();
     }
   },
   setCodeProductId: (id) =>
@@ -277,8 +284,8 @@ export const itemCodeStore = create((set, get) => ({
           if (
             merks !== '' &&
             categorieses !== '' &&
-            merks === codeData.data().merk &&
-            categorieses === codeData.data().categories
+            merks.toString().toLowerCase() === codeData.data().merk.toString().toLowerCase() &&
+            categorieses.toString().toLowerCase() === codeData.data().categories.toString().toLowerCase()
           ) {
             set((state) => ({
               codeProducts: [
@@ -293,7 +300,11 @@ export const itemCodeStore = create((set, get) => ({
               ],
             }));
           }
-          if (categorieses !== '' && categorieses === codeData.data().categories && merks === '') {
+          if (
+            categorieses !== '' &&
+            categorieses.toString().toLowerCase() === codeData.data().categories.toString().toLowerCase() &&
+            merks === ''
+          ) {
             set((state) => ({
               codeProducts: [
                 ...state.codeProducts,
@@ -307,7 +318,11 @@ export const itemCodeStore = create((set, get) => ({
               ],
             }));
           }
-          if (merks !== '' && merks === codeData.data().merk && categorieses === '') {
+          if (
+            merks !== '' &&
+            merks.toString().toLowerCase() === codeData.data().merk.toString().toLowerCase() &&
+            categorieses === ''
+          ) {
             set((state) => ({
               codeProducts: [
                 ...state.codeProducts,
