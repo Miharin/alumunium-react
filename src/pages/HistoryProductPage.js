@@ -89,6 +89,7 @@ export default function HistoryProductPage() {
 
   // Declaration for Column of Table
   const columns = [
+    { id: 'date', label: 'Tanggal', minWidth: 150, align: 'left' },
     { id: 'code', label: 'Code', minWidth: 100, align: 'left' },
     { id: 'name', label: 'Nama', minWidth: 200, align: 'left' },
     { id: 'detail', label: 'Detail', minWidth: 150, align: 'left' },

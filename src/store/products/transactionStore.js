@@ -26,6 +26,7 @@ export const transactionStore = create((set, get) => ({
   selectedPrice: '',
   configs: {},
   total: 0,
+  date: '',
   transaction: {
     id: '',
     nameCustomer: '',
@@ -43,6 +44,7 @@ export const transactionStore = create((set, get) => ({
   helperCodeName: '',
   transactionMode: false,
   transactionIcon: false,
+  setDate: (event) => set(() => ({ date: event.value })),
   setPriceSelection: (id, value) => {
     const getProduct = get().listProducts;
     set(() => ({ listProducts: [] }));
@@ -123,6 +125,7 @@ export const transactionStore = create((set, get) => ({
       product.lastInput = getAuth().currentUser.email;
     });
     const getOpenSnackbar = get().setOpenSnackbar;
+    const dateFinal = get().date;
     const docIdEdit = [];
     const docId = await getDocs(collection(db, 'listProducts'));
     docId.forEach((item) => {
@@ -133,7 +136,8 @@ export const transactionStore = create((set, get) => ({
       docIdEdit.some((Id) =>
         product.code === Id.code
           ? ((product.history = {
-              detail: 'Penjualan Kasir',
+              detail: 'Barang Keluar',
+              date: dateFinal,
               nameCustomer: product.nameCustomer,
               total: product.subtotal,
               out: product.qty,

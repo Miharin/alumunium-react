@@ -81,7 +81,7 @@ export const NavSection = (onCloseNav) => {
           },
           {
             id: 'P3',
-            name: 'Tambah Barang',
+            name: 'Barang Masuk',
             selected: 5,
             icon: <PostAddRounded />,
             links: '/dashboard/products/add',
@@ -151,7 +151,7 @@ export const NavSection = (onCloseNav) => {
           },
           {
             id: 'P3',
-            name: 'Tambah Barang',
+            name: 'Barang Masuk',
             selected: 5,
             icon: <PostAddRounded />,
             links: '/dashboard/products/add',

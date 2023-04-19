@@ -82,7 +82,7 @@ export default function AddProductPage() {
   const getProducts = useAddProductStore((state) => state.getProducts);
   const listProducts = useAddProductStore((state) => state.listProducts);
   const listName = useAddProductStore((state) => state.listName);
-  const nameValue = useAddProductStore((state) => state.nameValue);
+  const setDate = useAddProductStore((state) => state.setDate);
   const rows = listProducts;
   // End ListProduct Initialization
 
@@ -95,7 +95,7 @@ export default function AddProductPage() {
     { id: 'price_1', label: 'Harga 1', minWidth: 150, align: 'left' },
     { id: 'price_2', label: 'Harga 2', minWidth: 150, align: 'left' },
     { id: 'price_3', label: 'Harga 3', minWidth: 150, align: 'left' },
-    { id: 'stock', label: 'Stok', minWidth: 150, align: 'left' },
+    { id: 'stock', label: 'Jumlah', minWidth: 150, align: 'left' },
     { id: 'stockWarning', label: 'Peringatan Stok', minWidth: 200, align: 'left' },
     {
       id: 'action',
@@ -128,8 +128,57 @@ export default function AddProductPage() {
       <Helmet>
         <title> Tambah Produk | Alu Jaya </title>
       </Helmet>
-      <Paper sx={{ mx: 5, alignItems: 'center' }} elevation={5}>
+      <Paper sx={{ mx: 5, alignItems: 'center', pt: 1 }} elevation={5}>
         {/* Start Function Showing Search and Filter */}
+        <Stack direction="row" spacing={2} sx={{ m: 2 }}>
+          <TextField
+            required
+            fullWidth
+            // eslint-disable-next-line
+            autoFocus={true}
+            name="date"
+            // inputRef={
+            //   column.id === 'price_1'
+            //     ? price1
+            //     : column.id === 'price_2'
+            //     ? price2
+            //     : column.id === 'price_3'
+            //     ? price3
+            //     : column.id === 'stock'
+            //     ? stock
+            //     : column.id === 'stockWarning'
+            //     ? stockWarning
+            //     : null
+            // }
+            // inputProps={{
+            //   onKeyPress: (event) => {
+            //     const { key } = event;
+            //     console.log(event, price1.current);
+            //     if (key === 'Enter') {
+            //       /* eslint-disable */
+            //       if (event.target.name === 'price_1') {
+            //         price2.current.focus();
+            //       }
+            //       if (event.target.name === 'price_2') {
+            //         price3.current.focus();
+            //       }
+            //       if (event.target.name === 'price_3') {
+            //         stock.current.focus();
+            //       }
+            //       if (event.target.name === 'stock') {
+            //         stockWarning.current.focus();
+            //       }
+            //       /* eslint-disable */
+            //     }
+            //   },
+            // }}
+            type="text"
+            onChange={(event) => setDate(event.target)}
+            InputProps={{ disableUnderline: true }}
+            variant="standard"
+            placeholder="Tanggal Barang Masuk"
+          />
+        </Stack>
         <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={setOpenSnackbar}>
           <Alert onClose={setOpenSnackbar} severity="success" sx={{ width: '100%' }}>
             {snackbarMessage}
@@ -207,7 +256,7 @@ export default function AddProductPage() {
                               freeSolo
                               id="name"
                               name="name"
-                              value={nameValue}
+                              value={value}
                               onChange={(event, newValue) =>
                                 newValue ? setName(newValue, row.id) : setName(newValue, row.id)
                               }
@@ -258,7 +307,6 @@ export default function AddProductPage() {
                               inputProps={{
                                 onKeyPress: (event) => {
                                   const { key } = event;
-                                  console.log(event, price1.current);
                                   if (key === 'Enter') {
                                     /* eslint-disable */
                                     if (event.target.name === 'price_1') {

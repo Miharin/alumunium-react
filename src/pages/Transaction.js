@@ -85,6 +85,7 @@ export default function Transaction() {
   const listName = useTransactionStore((state) => state.listName);
   const setPriceSelection = useTransactionStore((state) => state.setPriceSelection);
   const total = useTransactionStore((state) => state.total);
+  const setDate = useTransactionStore((state) => state.setDate);
   const rows = listProducts;
   // End ListProduct Initialization
 
@@ -140,6 +141,16 @@ export default function Transaction() {
             InputProps={{ disableUnderline: true }}
             variant="standard"
             placeholder="Nama"
+          />
+          <TextField
+            required
+            fullWidth
+            name="date"
+            type="text"
+            onChange={(event) => setDate(event.target)}
+            InputProps={{ disableUnderline: true }}
+            variant="standard"
+            placeholder="Tanggal"
           />
         </Stack>
         {/* Start Function Showing Search and Filter */}

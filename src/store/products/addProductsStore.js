@@ -25,6 +25,7 @@ export const addProductStore = create((set, get) => ({
   listProducts: [],
   nameValue: '',
   configs: {},
+  date: '',
   addProduct: {
     id: '',
     code: '',
@@ -44,6 +45,7 @@ export const addProductStore = create((set, get) => ({
   addProductMode: false,
   addProductIcon: false,
   setOpenSnackbar: () => set((state) => ({ openSnackbar: !state.openSnackbar })),
+  setDate: (event) => set(() => ({ date: event.value })),
   setName: (nameChoose, id) => {
     const getProduct = get().listProducts;
     set(() => ({ listProducts: [], nameValue: nameChoose.name }));
@@ -100,6 +102,7 @@ export const addProductStore = create((set, get) => ({
     });
     const getOpenSnackbar = get().setOpenSnackbar;
     const docIdEdit = [];
+    const dateFinal = get().date;
     const docId = await getDocs(collection(db, 'listProducts'));
     docId.forEach((item) => {
       docIdEdit.push({ id: item.id, code: item.data().code, stock: item.data().stock });
@@ -110,6 +113,7 @@ export const addProductStore = create((set, get) => ({
         product.code === Id.code
           ? ((product.history = {
               detail: 'Item Masuk',
+              date: dateFinal,
               in: product.stock,
               stock: (Number(product.stock) + Number(Id.stock)).toString(),
               out: '0',
@@ -135,24 +139,6 @@ export const addProductStore = create((set, get) => ({
           timeStamp: product.timeStamp,
           history: arrayUnion(product.history),
         };
-        // if (product.price_1 !== '' && product.price_1 !== '0') {
-        //   filterData = {
-        //     ...filterData,
-        //     price_1: `${product.price_1}000`,
-        //   };
-        // }
-        // if (product.price_2 !== '' && product.price_2 !== '0') {
-        //   filterData = {
-        //     ...filterData,
-        //     price_2: `${product.price_2}000`,
-        //   };
-        // }
-        // if (product.price_3 !== '' && product.price_3 !== '0') {
-        //   filterData = {
-        //     ...filterData,
-        //     price_3: `${product.price_3}000`,
-        //   };
-        // }
         await updateDoc(updateDocument, filterData);
         TotalProduct += 1;
       });
@@ -176,6 +162,7 @@ export const addProductStore = create((set, get) => ({
               {
                 in: product.stock,
                 lastInput: product.lastInput,
+                date: dateFinal,
                 timeStamp: product.timeStamp,
                 out: '0',
                 stock: product.stock,
