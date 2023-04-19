@@ -167,17 +167,17 @@ export const itemCodeStore = create((set, get) => ({
     if (filterCode.length > 0 && event.name === 'code') {
       set(() => ({ helperCode: `${filterCode[0].code} Sudah Ada !`, addCodeProductIcon: false }));
     }
-    if (
-      filterName.length > 0 &&
-      event.name === 'name' &&
-      codeProductAddFinal.name.toString().toLowerCase().includes(get().merk.toString().toLowerCase()) &&
-      codeProductAddFinal.name.toString().toLowerCase().includes(get().categories.toString().toLowerCase())
-    ) {
+    if (filterName.length > 0 && event.name === 'name') {
       set(() => ({ helperCodeName: `${filterName[0].name} Sudah Ada !`, addCodeProductIcon: false }));
     } else {
       set(() => ({ helperCodeName: '', addCodeProductIcon: false }));
     }
-    if (filterName.length === 0 && filterCode.length === 0) {
+    if (
+      filterName.length === 0 &&
+      filterCode.length === 0 &&
+      codeProductAddFinal.name.toString().toLowerCase().includes(get().merk.toString().toLowerCase()) &&
+      codeProductAddFinal.name.toString().toLowerCase().includes(get().categories.toString().toLowerCase())
+    ) {
       set(() => ({ helperCodeName: '', helperCode: '', addCodeProductIcon: true }));
     }
   },
