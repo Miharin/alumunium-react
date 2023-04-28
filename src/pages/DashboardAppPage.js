@@ -372,7 +372,7 @@ export default function DashboardAppPage() {
           count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={setPage}
+          onPageChange={(event, newPage) => setPage(newPage)}
           onRowsPerPageChange={(event) => setChangeRowsPerPage(event.target.value)}
         />
       </Paper>
