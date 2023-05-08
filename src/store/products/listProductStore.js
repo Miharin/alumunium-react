@@ -116,8 +116,8 @@ export const listProductStore = create((set, get) => ({
           if (
             merks !== '' &&
             categorieses !== '' &&
-            merks === productData.data().merk &&
-            categorieses === productData.data().categories
+            merks.toUpperCase() === productData.data().merk.toUpperCase() &&
+            categorieses.toUpperCase() === productData.data().categories.toUpperCase()
           ) {
             set((state) => ({
               listProducts: [
@@ -148,7 +148,11 @@ export const listProductStore = create((set, get) => ({
               ],
             }));
           }
-          if (categorieses !== '' && categorieses === productData.data().categories && merks === '') {
+          if (
+            categorieses !== '' &&
+            categorieses.toUpperCase() === productData.data().categories.toUpperCase() &&
+            merks === ''
+          ) {
             set((state) => ({
               listProducts: [
                 ...state.listProducts,
@@ -178,7 +182,7 @@ export const listProductStore = create((set, get) => ({
               ],
             }));
           }
-          if (merks !== '' && merks === productData.data().merk && categorieses === '') {
+          if (merks !== '' && merks.toUpperCase() === productData.data().merk.toUpperCase() && categorieses === '') {
             set((state) => ({
               listProducts: [
                 ...state.listProducts,

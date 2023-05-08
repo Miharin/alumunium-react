@@ -15,6 +15,7 @@ import HistoryProductPage from 'pages/HistoryProductPage';
 import Transaction from 'pages/Transaction';
 import StockOpnamePage from 'pages/stockOpnamePage';
 import ReturnPage from 'pages/returnPages';
+import HistoryPage from 'pages/historyPage';
 import { useAuth } from 'store/index';
 
 // ----------------------------------------------------------------------
@@ -39,6 +40,7 @@ export default function Router() {
             { path: 'products/stockOpname', element: <StockOpnamePage /> },
             { path: 'products/return', element: <ReturnPage /> },
             { path: 'products', element: <ProductList /> },
+            { path: 'history', element: <HistoryPage /> },
             { path: 'blog', element: <BlogPage /> },
           ],
         },
