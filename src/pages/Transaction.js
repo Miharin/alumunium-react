@@ -294,7 +294,7 @@ export default function Transaction() {
                               new Intl.NumberFormat('in-in', {
                                 style: 'currency',
                                 currency: 'idr',
-                                maximumSignificantDigits: 1,
+                                maximumSignificantDigits: 3,
                               }).format(value)
                             ) : (
                               'Rp.0'

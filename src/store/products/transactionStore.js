@@ -65,7 +65,7 @@ export const transactionStore = create((set, get) => ({
       getProduct.forEach(async (product) => {
         if (product.id === id) {
           product.nameCustomer = get().nameCus;
-          product.name = nameChoose.label;
+          product.name = nameChoose.label.split(' - ')[1];
           product.code = nameChoose.code;
           product.categories = nameChoose.categories;
           product.merk = nameChoose.merk;
@@ -83,9 +83,9 @@ export const transactionStore = create((set, get) => ({
     }
   },
   setTransaction: (event, id) => {
+    let totalPrice = get().total;
     set(() => ({ total: 0 }));
     const getProduct = get().listProducts;
-    let totalPrice = get().total;
     set(() => ({ listProducts: [] }));
     getProduct.forEach(async (product) => {
       if (event.name === 'nameCustomer') {
@@ -100,6 +100,7 @@ export const transactionStore = create((set, get) => ({
         }
         totalPrice +=
           event.name === 'disc2' && event.value !== '' ? product.subtotal - Number(event.value) : product.subtotal;
+        console.log(totalPrice);
       }
       const productRules =
         product.nameCustomer !== '' &&
@@ -244,7 +245,7 @@ export const transactionStore = create((set, get) => ({
             ...state.listName,
             {
               code: codes.code,
-              label: codes.name,
+              label: `${codes.code} - ${codes.name}`,
               merk: codes.merk,
               categories: codes.categories,
               price_1: codes.price_1,
