@@ -282,7 +282,7 @@ export default function HistoryProductPage() {
                             ? new Intl.NumberFormat('in-in', {
                                 style: 'currency',
                                 currency: 'idr',
-                                maximumSignificantDigits: 3,
+                                maximumSignificantDigits: 4,
                               }).format(value)
                             : value}
                           {/* End Edit Rows and Display Rows */}

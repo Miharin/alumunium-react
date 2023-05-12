@@ -143,7 +143,7 @@ export const historyProductStore = create((set, get) => ({
             ...state.listName,
             {
               code: config.data().code,
-              label: config.data().name,
+              label: `${config.data().code} - ${config.data().name}`,
             },
           ],
         }));

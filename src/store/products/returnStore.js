@@ -95,10 +95,10 @@ export const returnStore = create((set, get) => ({
                   product.qtyMax = history.out;
                 }
               });
+              set((state) => ({ listProducts: [...state.listProducts, product] }));
             }
           });
         });
-        set((state) => ({ listProducts: [...state.listProducts, product] }));
         get().getProductName();
       });
     } else {
@@ -118,6 +118,7 @@ export const returnStore = create((set, get) => ({
         set(() => ({ nameCus: event.value }));
       }
       if (product.id === id) {
+        console.log(product);
         product.nameCustomer = get().selectedName;
         product[event.name] = event.value;
         if (event.name === 'qty' || event.name === 'disc') {
@@ -127,7 +128,7 @@ export const returnStore = create((set, get) => ({
             product.qty = event.value;
           }
           product.subtotal =
-            product.qty * product.discPrice * (product.disc === '0' ? 0.1 : Number(product.disc) / 100);
+            product.qty * product.discPrice * (product.disc === '10' ? 0.1 : Number(product.disc) / 100);
           totalPrice += product.subtotal;
         }
       }
@@ -268,7 +269,7 @@ export const returnStore = create((set, get) => ({
       set(() => ({ listName: [], listNameCustomer: [], listTimeCustomer: [] }));
       CodeProductFinal.forEach((codes) => {
         codes.history.forEach((code) => {
-          if (code.detail === 'Penjualan Kasir') {
+          if (code.detail === 'Barang Keluar') {
             if (get().listNameCustomer.length > 0) {
               const filterName = codes.history.filter((code) =>
                 get().listNameCustomer.every(
@@ -345,7 +346,6 @@ export const returnStore = create((set, get) => ({
                 ],
               }));
             }
-
             if (selectedTime !== '' && selectedName !== '') {
               const time = `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
                 weekday: 'long',
@@ -369,7 +369,6 @@ export const returnStore = create((set, get) => ({
                     },
                   ],
                 }));
-                console.log(get().listName);
               }
             }
           }

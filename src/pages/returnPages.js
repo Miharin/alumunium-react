@@ -80,6 +80,7 @@ export default function ReturnPage() {
   const snackbarMessage = useReturnStore((state) => state.snackbarMessage);
   const setOpenSnackbar = useReturnStore((state) => state.setOpenSnackbar);
   const getProducts = useReturnStore((state) => state.getProducts);
+  const getProductName = useReturnStore((state) => state.getProductName);
   const listProducts = useReturnStore((state) => state.listProducts);
   const listName = useReturnStore((state) => state.listName);
   const listNameCustomer = useReturnStore((state) => state.listNameCustomer);
@@ -113,7 +114,8 @@ export default function ReturnPage() {
   // Function for Getting Product Data from Database
   useEffect(() => {
     getProducts();
-  }, [getProducts]);
+    getProductName();
+  }, [getProducts, getProductName]);
 
   // Function for Filter Table
   const createSortHandler = (property) => (event) => {
@@ -317,7 +319,7 @@ export default function ReturnPage() {
                               new Intl.NumberFormat('in-in', {
                                 style: 'currency',
                                 currency: 'idr',
-                                maximumSignificantDigits: 3,
+                                maximumSignificantDigits: 4,
                               }).format(value)
                             ) : (
                               'Rp.0'
@@ -344,7 +346,9 @@ export default function ReturnPage() {
                               placeholder="10%"
                               sx={{ minWidth: column.minWidth }}
                             />
-                          ) : null}
+                          ) : (
+                            value
+                          )}
                         </TableCell>
                       );
                     })}
