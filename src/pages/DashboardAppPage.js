@@ -141,6 +141,7 @@ export default function DashboardAppPage() {
   // Function Helper for Edit
   const handleEdit = (event) => setProductId(event);
 
+  const filterLow = rows.filter((row) => Number(row.stock) < Number(row.stockWarning));
   // Return Display
   return loading ? (
     <Skeleton sx={{ mx: 5, alignItems: 'center' }} animation="wave" height={300} variant="rectangular" />
@@ -257,7 +258,7 @@ export default function DashboardAppPage() {
             </TableHead>
             <TableBody>
               {/* Start Define Rows */}
-              {stableSort(rows, getComparator(order, orderBy, descendingComparator))
+              {stableSort(filterLow, getComparator(order, orderBy, descendingComparator))
                 .filter((row) => filtered(row, search))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => (
