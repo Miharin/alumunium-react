@@ -183,7 +183,6 @@ export const transactionStore = create((set, get) => ({
     let totalPrice = 0;
     deleteProduct.forEach((product) => {
       totalPrice += product.subtotal;
-      set(() => ({ total: totalPrice }));
       const productRules =
         product.nameCustomer !== '' &&
         product.code !== '' &&
@@ -193,6 +192,7 @@ export const transactionStore = create((set, get) => ({
         product.stock !== '';
       set(() => (productRules ? { transactionIcon: true } : { transactionIcon: false }));
     });
+    set(() => ({ total: totalPrice }));
     set(() => ({ listProducts: deleteProduct }));
   },
   setTransactionMode: () => {
