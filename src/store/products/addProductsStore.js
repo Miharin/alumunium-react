@@ -48,10 +48,18 @@ export const addProductStore = create((set, get) => ({
   setDate: (event) => set(() => ({ date: event.value })),
   setName: (nameChoose, id) => {
     const getProduct = get().listProducts;
-    set(() => ({ listProducts: [], nameValue: nameChoose.name }));
+    let name = '';
+    if (nameChoose !== null || undefined) {
+      // eslint-disable-next-line
+      name = nameChoose.name;
+    }
+    set(() => ({ listProducts: [], nameValue: name }));
     if (nameChoose) {
       getProduct.forEach((product) => {
         if (product.id === id) {
+          if (nameChoose === null) {
+            console.log(product);
+          }
           product.name = nameChoose.name;
           product.code = nameChoose.code;
           product.categories = nameChoose.categories;
@@ -59,12 +67,19 @@ export const addProductStore = create((set, get) => ({
         }
         set((state) => ({ listProducts: [...state.listProducts, product] }));
       });
-      get().getProductName();
     } else {
-      const productFinal = getProduct.filter((product) => product.id !== id);
-      set(() => ({ listProducts: productFinal }));
-      get().getProducts();
+      getProduct.forEach((product) => {
+        if (product.id === id) {
+          product.name = '';
+          product.code = '';
+          product.categories = '';
+          product.merk = '';
+        }
+        // console.log(product, id);
+        set((state) => ({ listProducts: [...state.listProducts, product] }));
+      });
     }
+    get().getProductName();
   },
   setAddProduct: (event, id) => {
     const getProduct = get().listProducts;
