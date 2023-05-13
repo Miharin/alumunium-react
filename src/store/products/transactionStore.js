@@ -83,8 +83,8 @@ export const transactionStore = create((set, get) => ({
     }
   },
   setTransaction: (event, id) => {
-    let totalPrice = get().total;
     set(() => ({ total: 0 }));
+    let totalPrice = 0;
     const getProduct = get().listProducts;
     set(() => ({ listProducts: [] }));
     getProduct.forEach(async (product) => {
@@ -98,10 +98,10 @@ export const transactionStore = create((set, get) => ({
           product.subtotal =
             (event.name === 'qty' ? event.value : product.qty) * (product.price - Number(product.disc));
         }
-        totalPrice +=
-          event.name === 'disc2' && event.value !== '' ? product.subtotal - Number(event.value) : product.subtotal;
-        console.log(totalPrice);
       }
+      totalPrice +=
+        event.name === 'disc2' && event.value !== '' ? product.subtotal - Number(event.value) : product.subtotal;
+      console.log(totalPrice, product);
       const productRules =
         product.nameCustomer !== '' &&
         product.code !== '' &&
