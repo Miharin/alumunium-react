@@ -86,6 +86,7 @@ export default function Transaction() {
   const setPriceSelection = useTransactionStore((state) => state.setPriceSelection);
   const total = useTransactionStore((state) => state.total);
   const setDate = useTransactionStore((state) => state.setDate);
+  const getDataCode = useTransactionStore((state) => state.getDataCode);
   const rows = listProducts;
   // End ListProduct Initialization
 
@@ -112,7 +113,8 @@ export default function Transaction() {
   // Function for Getting Product Data from Database
   useEffect(() => {
     getProducts();
-  }, [getProducts]);
+    getDataCode();
+  }, [getProducts, getDataCode]);
 
   // Function for Filter Table
   const createSortHandler = (property) => (event) => {
