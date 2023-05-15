@@ -168,14 +168,14 @@ export const historyProductStore = create((set, get) => ({
             item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
           }`;
           if (
-            (name !== '' && name === product.data().name) ||
-            (name === '' &&
-              month !== '' &&
-              date.toString().toLowerCase().includes(month.toString().toLowerCase()) &&
-              date
-                .toString()
-                .toLowerCase()
-                .includes(year || yearPrev))
+            name !== '' &&
+            name === product.data().name &&
+            month !== '' &&
+            date.toString().toLowerCase().includes(month.toString().toLowerCase()) &&
+            date
+              .toString()
+              .toLowerCase()
+              .includes(year || yearPrev)
           ) {
             set((state) => ({
               products: [
@@ -204,34 +204,34 @@ export const historyProductStore = create((set, get) => ({
               ],
             }));
           }
-          if (name === '' && month === '') {
-            set((state) => ({
-              products: [
-                ...state.products,
-                {
-                  id: `${product.id}|${item.timeStamp.seconds.toString()}`,
-                  code: product.data().code,
-                  name: product.data().name,
-                  detail: item.detail,
-                  in: item.in,
-                  out: item.out,
-                  date: item.date !== undefined || null ? item.date : '-',
-                  total: item.out !== '0' && item.detail !== 'Stok Opname' ? item.total : '-',
-                  disc: (item.disc !== undefined || null || '') && item.out !== '0' ? item.disc : '-',
-                  nameCustomer: item.out !== '0' && item.detail !== 'Stok Opname' ? item.nameCustomer : '-',
-                  stock: item.stock,
-                  lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
-                    item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
-                  }`,
-                },
-              ],
-            }));
-          }
+          // if (name === '' && month === '') {
+          //   set((state) => ({
+          //     products: [
+          //       ...state.products,
+          //       {
+          //         id: `${product.id}|${item.timeStamp.seconds.toString()}`,
+          //         code: product.data().code,
+          //         name: product.data().name,
+          //         detail: item.detail,
+          //         in: item.in,
+          //         out: item.out,
+          //         date: item.date !== undefined || null ? item.date : '-',
+          //         total: item.out !== '0' && item.detail !== 'Stok Opname' ? item.total : '-',
+          //         disc: (item.disc !== undefined || null || '') && item.out !== '0' ? item.disc : '-',
+          //         nameCustomer: item.out !== '0' && item.detail !== 'Stok Opname' ? item.nameCustomer : '-',
+          //         stock: item.stock,
+          //         lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+          //           weekday: 'long',
+          //           year: 'numeric',
+          //           month: 'long',
+          //           day: 'numeric',
+          //         })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+          //           item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
+          //         }`,
+          //       },
+          //     ],
+          //   }));
+          // }
         });
       });
     });
