@@ -36,7 +36,7 @@ export const transactionStore = create((set, get) => ({
     disc: '0',
     priceSelect: '',
     name: '',
-    qty: '',
+    qty: '0',
     price: '',
     subtotal: '0',
   },
@@ -60,8 +60,8 @@ export const transactionStore = create((set, get) => ({
   setOpenSnackbar: () => set((state) => ({ openSnackbar: !state.openSnackbar })),
   setName: (nameChoose, id) => {
     const getProduct = get().listProducts;
-    set(() => ({ listProducts: [] }));
     if (nameChoose) {
+      set(() => ({ listProducts: [] }));
       getProduct.forEach(async (product) => {
         if (product.id === id) {
           product.nameCustomer = get().nameCus;
@@ -77,9 +77,18 @@ export const transactionStore = create((set, get) => ({
         get().getProductName();
       });
     } else {
-      const productFinal = getProduct.filter((product) => product.id !== id);
-      set(() => ({ listProducts: productFinal }));
-      get().getProducts();
+      set(() => ({ listProducts: [] }));
+      getProduct.forEach(async (product) => {
+        if (product.id === id) {
+          product.nameCustomer = '';
+          product.name = '';
+          product.code = '';
+          product.categories = '';
+          product.merk = '';
+        }
+        set((state) => ({ listProducts: [...state.listProducts, product] }));
+        get().getProductName();
+      });
     }
   },
   setTransaction: (event, id) => {
@@ -103,7 +112,6 @@ export const transactionStore = create((set, get) => ({
         event.name === 'disc2' && event.value !== ''
           ? product.subtotal - Number(event.value)
           : Number(product.subtotal);
-      console.log(totalPrice);
       const productRules =
         product.nameCustomer !== '' &&
         product.code !== '' &&
@@ -209,7 +217,7 @@ export const transactionStore = create((set, get) => ({
         merk: '',
         priceSelect: '',
         name: '',
-        qty: '',
+        qty: '0',
         disc: '0',
         price: '',
         subtotal: '0',

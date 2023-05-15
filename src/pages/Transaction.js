@@ -273,6 +273,7 @@ export default function Transaction() {
                               /* eslint-disable */
                               type="number"
                               inputRef={qty}
+                              value={value}
                               onChange={(event) => setTransaction(event.target, row.id)}
                               InputProps={{
                                 disableUnderline: true,
@@ -352,10 +353,10 @@ export default function Transaction() {
                               fullWidth
                               id={column.id}
                               name={column.id}
-                              value={value !== null || undefined ? row.labelPrice : value}
-                              onChange={(event, newValue) =>
-                                newValue ? setPriceSelection(row.id, newValue) : setPriceSelection(row.id, newValue)
-                              }
+                              value={value.label}
+                              onChange={(event, newValue) => {
+                                newValue ? setPriceSelection(row.id, newValue) : setPriceSelection(row.id, newValue);
+                              }}
                               options={[
                                 { id: 'price_1', label: 'Harga 1' },
                                 { id: 'price_2', label: 'Harga 2' },
