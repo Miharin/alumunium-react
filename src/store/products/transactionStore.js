@@ -246,7 +246,7 @@ export const transactionStore = create((set, get) => ({
     // eslint-disable-next-line
     const listProduct = get().listProducts;
     const listCodeProduct = [];
-    await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (codeProducts) => {
+    await getDocs(query(collection(db, 'listProducts'), orderBy('categories')), (codeProducts) => {
       codeProducts.forEach((codeProduct) => {
         listCodeProduct.push(codeProduct.data());
       });
