@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import {
   collection,
-  onSnapshot,
+  // onSnapshot,
   addDoc,
   query,
-  orderBy,
+  // orderBy,
   getDocs,
   updateDoc,
   Timestamp,
@@ -23,6 +23,7 @@ export const addProductStore = create((set, get) => ({
   listName: [],
   editProductId: '',
   listProducts: [],
+  listCodeProducts: [],
   nameValue: '',
   configs: {},
   date: '',
@@ -263,28 +264,33 @@ export const addProductStore = create((set, get) => ({
   getProductName: async () => {
     // eslint-disable-next-line
     const listProducts = get().listProducts;
-    const listCodeProduct = [];
-    await onSnapshot(query(collection(db, 'codeProducts'), orderBy('categories')), (codeProducts) => {
-      codeProducts.forEach((codeProduct) => {
-        listCodeProduct.push(codeProduct.data());
-      });
-      const CodeProductFinal = listCodeProduct.filter((code) => listProducts.every((list) => list.code !== code.code));
-      set(() => ({ listName: [] }));
-      CodeProductFinal.forEach((codes) => {
-        set((state) => ({
-          listName: [
-            ...state.listName,
-            {
-              code: codes.code,
-              name: codes.name,
-              label: `${codes.code} - ${codes.name}`,
-              merk: codes.merk,
-              categories: codes.categories,
-            },
-          ],
-        }));
-      });
+
+    const listCodeProduct = get().listCodeProducts;
+    const CodeProductFinal = listCodeProduct.filter((codes) => listProducts.every((list) => list.code !== codes.code));
+    set(() => ({ listName: [] }));
+    CodeProductFinal.forEach((codes) => {
+      set((state) => ({
+        listName: [
+          ...state.listName,
+          {
+            code: codes.code,
+            label: `${codes.code} - ${codes.name}`,
+            merk: codes.merk,
+            categories: codes.categories,
+            price_1: codes.price_1,
+            price_2: codes.price_2,
+            price_3: codes.price_3,
+          },
+        ],
+      }));
     });
+  },
+  getDataCode: async () => {
+    const getData = await getDocs(query(collection(db, 'listProducts')));
+    getData.forEach((codeProduct) => {
+      set((state) => ({ listCodeProducts: [...state.listCodeProducts, codeProduct.data()] }));
+    });
+    get().getProductName();
   },
   getProducts: async () => {
     set((state) => ({
@@ -308,6 +314,5 @@ export const addProductStore = create((set, get) => ({
         },
       ],
     }));
-    get().getProductName();
   },
 }));

@@ -82,7 +82,8 @@ export default function StockOpnamePage() {
   const getProducts = useStockOpnameStore((state) => state.getProducts);
   const listProducts = useStockOpnameStore((state) => state.listProducts);
   const listName = useStockOpnameStore((state) => state.listName);
-  const nameValue = useStockOpnameStore((state) => state.nameValue);
+  // const nameValue = useStockOpnameStore((state) => state.nameValue);
+  const getDataCode = useStockOpnameStore((state) => state.getDataCode);
   const rows = listProducts;
   // End ListProduct Initialization
 
@@ -106,7 +107,8 @@ export default function StockOpnamePage() {
   // Function for Getting Product Data from Database
   useEffect(() => {
     getProducts();
-  }, [getProducts]);
+    getDataCode();
+  }, [getProducts, getDataCode]);
 
   // Function for Filter Table
   const createSortHandler = (property) => (event) => {
@@ -199,8 +201,8 @@ export default function StockOpnamePage() {
                               fullWidth
                               freeSolo
                               id="name"
+                              value={value}
                               name="name"
-                              value={nameValue}
                               onChange={(event, newValue) =>
                                 newValue ? setName(newValue, row.id) : setName(newValue, row.id)
                               }

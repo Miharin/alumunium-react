@@ -25,6 +25,7 @@ export const returnStore = create((set, get) => ({
   selectedTime: '',
   nameCus: '',
   listProducts: [],
+  listCodeProducts: [],
   listNameCustomer: [],
   listTimeCustomer: [],
   selectedPrice: '',
@@ -70,6 +71,7 @@ export const returnStore = create((set, get) => ({
           product.code = nameChoose.code;
           product.categories = nameChoose.categories;
           product.merk = nameChoose.merk;
+          console.log(product);
         }
         get().listName.forEach((list) => {
           if (product.code === list.code) {
@@ -254,125 +256,125 @@ export const returnStore = create((set, get) => ({
       ],
     }));
   },
+  getDataCode: async () => {
+    const getData = await getDocs(query(collection(db, 'listProducts')));
+    getData.forEach((codeProduct) => {
+      set((state) => ({ listCodeProducts: [...state.listCodeProducts, codeProduct.data()] }));
+    });
+    get().getProductName();
+  },
   getProductName: async () => {
     /* eslint-disable */
     const selectedTime = get().selectedTime;
     const selectedName = get().selectedName;
     const listProduct = get().listProducts;
     /* eslint-disable */
-    const listCodeProduct = [];
-    await onSnapshot(query(collection(db, 'listProducts'), orderBy('categories')), (codeProducts) => {
-      codeProducts.forEach((codeProduct) => {
-        listCodeProduct.push(codeProduct.data());
-      });
-      const CodeProductFinal = listCodeProduct.filter((codes) => listProduct.every((list) => list.code !== codes.code));
-      set(() => ({ listName: [], listNameCustomer: [], listTimeCustomer: [] }));
-      CodeProductFinal.forEach((codes) => {
-        codes.history.forEach((code) => {
-          if (code.detail === 'Barang Keluar') {
-            if (get().listNameCustomer.length > 0) {
-              const filterName = codes.history.filter((code) =>
-                get().listNameCustomer.every(
-                  (name) => name.label !== code.nameCustomer && code.detail === 'Penjualan Kasir'
-                )
-              );
-              filterName.forEach((name) => {
-                set((state) => ({
-                  listNameCustomer: [
-                    ...state.listNameCustomer,
-                    { key: name.code + name.timeStamp.seconds, label: name.nameCustomer },
-                  ],
-                }));
-              });
-            } else {
+    const listCodeProduct = get().listCodeProducts;
+    const CodeProductFinal = listCodeProduct.filter((codes) => listProduct.every((list) => list.code !== codes.code));
+    set(() => ({ listName: [], listNameCustomer: [], listTimeCustomer: [] }));
+    CodeProductFinal.forEach((codes) => {
+      codes.history.forEach((code) => {
+        if (code.detail === 'Barang Keluar') {
+          if (get().listNameCustomer.length > 0) {
+            const filterName = codes.history.filter((code) =>
+              get().listNameCustomer.every(
+                (name) => name.label !== code.nameCustomer && code.detail === 'Penjualan Kasir'
+              )
+            );
+            filterName.forEach((name) => {
               set((state) => ({
                 listNameCustomer: [
                   ...state.listNameCustomer,
-                  { key: code.code + code.timeStamp.seconds, label: code.nameCustomer },
+                  { key: name.code + name.timeStamp.seconds, label: name.nameCustomer },
                 ],
               }));
-            }
+            });
+          } else {
+            set((state) => ({
+              listNameCustomer: [
+                ...state.listNameCustomer,
+                { key: code.code + code.timeStamp.seconds, label: code.nameCustomer },
+              ],
+            }));
+          }
 
-            if (get().listTimeCustomer.length > 0) {
-              const filterName = codes.history.filter((code) =>
-                get().listTimeCustomer.every(
-                  (name) =>
-                    name.label !==
-                      `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })} Pada Jam ${new Date(code.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
-                        code.lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
-                        code.lastInput.split('@', 1)[0].slice(1)
-                      }` && code.detail === 'Penjualan Kasir'
-                )
-              );
-              filterName.forEach((name) => {
-                set((state) => ({
-                  listTimeCustomer: [
-                    ...state.listTimeCustomer,
-                    {
-                      key: name.code + name.timeStamp.seconds,
-                      label: `${new Date(name.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })} Pada Jam ${new Date(name.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
-                        name.lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
-                        name.lastInput.split('@', 1)[0].slice(1)
-                      }`,
-                    },
-                  ],
-                }));
-              });
-            } else {
-              set((state) => ({
-                listTimeCustomer: [
-                  ...state.listTimeCustomer,
-                  {
-                    key: codes.code + code.timeStamp.seconds,
-                    label: `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+          if (get().listTimeCustomer.length > 0) {
+            const filterName = codes.history.filter((code) =>
+              get().listTimeCustomer.every(
+                (name) =>
+                  name.label !==
+                    `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
                     })} Pada Jam ${new Date(code.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
                       code.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + code.lastInput.split('@', 1)[0].slice(1)
+                    }` && code.detail === 'Penjualan Kasir'
+              )
+            );
+            filterName.forEach((name) => {
+              set((state) => ({
+                listTimeCustomer: [
+                  ...state.listTimeCustomer,
+                  {
+                    key: name.code + name.timeStamp.seconds,
+                    label: `${new Date(name.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })} Pada Jam ${new Date(name.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+                      name.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + name.lastInput.split('@', 1)[0].slice(1)
                     }`,
                   },
                 ],
               }));
-            }
-            if (selectedTime !== '' && selectedName !== '') {
-              const time = `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })} Pada Jam ${new Date(code.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
-                code.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + code.lastInput.split('@', 1)[0].slice(1)
-              }`;
-              if (time === selectedTime && code.nameCustomer === selectedName) {
-                set((state) => ({
-                  listName: [
-                    ...state.listName,
-                    {
-                      code: codes.code,
-                      label: codes.name,
-                      merk: codes.merk,
-                      categories: codes.categories,
-                      priceSelect: code.priceSelect,
-                      total: code.total,
-                    },
-                  ],
-                }));
-              }
+            });
+          } else {
+            set((state) => ({
+              listTimeCustomer: [
+                ...state.listTimeCustomer,
+                {
+                  key: codes.code + code.timeStamp.seconds,
+                  label: `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })} Pada Jam ${new Date(code.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+                    code.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + code.lastInput.split('@', 1)[0].slice(1)
+                  }`,
+                },
+              ],
+            }));
+          }
+          if (selectedTime !== '' && selectedName !== '') {
+            const time = `${new Date(code.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })} Pada Jam ${new Date(code.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+              code.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + code.lastInput.split('@', 1)[0].slice(1)
+            }`;
+            if (time === selectedTime && code.nameCustomer === selectedName) {
+              set((state) => ({
+                listName: [
+                  ...state.listName,
+                  {
+                    code: codes.code,
+                    label: codes.name,
+                    merk: codes.merk,
+                    categories: codes.categories,
+                    priceSelect: code.priceSelect,
+                    total: code.total,
+                  },
+                ],
+              }));
             }
           }
-        });
+        }
       });
     });
   },

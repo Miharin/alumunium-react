@@ -80,7 +80,7 @@ export default function ReturnPage() {
   const snackbarMessage = useReturnStore((state) => state.snackbarMessage);
   const setOpenSnackbar = useReturnStore((state) => state.setOpenSnackbar);
   const getProducts = useReturnStore((state) => state.getProducts);
-  const getProductName = useReturnStore((state) => state.getProductName);
+  // const getProductName = useReturnStore((state) => state.getProductName);
   const listProducts = useReturnStore((state) => state.listProducts);
   const listName = useReturnStore((state) => state.listName);
   const listNameCustomer = useReturnStore((state) => state.listNameCustomer);
@@ -89,6 +89,7 @@ export default function ReturnPage() {
   const selectedName = useReturnStore((state) => state.selectedName);
   const selectedTime = useReturnStore((state) => state.selectedTime);
   const setTimeSelection = useReturnStore((state) => state.setTimeSelection);
+  const getDataCode = useReturnStore((state) => state.getDataCode);
   //   const total = useReturnStore((state) => state.total);
   const rows = listProducts;
   // End ListProduct Initialization
@@ -114,8 +115,8 @@ export default function ReturnPage() {
   // Function for Getting Product Data from Database
   useEffect(() => {
     getProducts();
-    getProductName();
-  }, [getProducts, getProductName]);
+    getDataCode();
+  }, [getProducts, getDataCode]);
 
   // Function for Filter Table
   const createSortHandler = (property) => (event) => {

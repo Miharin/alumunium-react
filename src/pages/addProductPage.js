@@ -83,6 +83,7 @@ export default function AddProductPage() {
   const listProducts = useAddProductStore((state) => state.listProducts);
   const listName = useAddProductStore((state) => state.listName);
   const setDate = useAddProductStore((state) => state.setDate);
+  const getDataCode = useAddProductStore((state) => state.getDataCode);
   const rows = listProducts;
   // End ListProduct Initialization
 
@@ -108,7 +109,8 @@ export default function AddProductPage() {
   // Function for Getting Product Data from Database
   useEffect(() => {
     getProducts();
-  }, [getProducts]);
+    getDataCode();
+  }, [getProducts, getDataCode]);
 
   const price1 = useRef(null);
   const price2 = useRef(null);
