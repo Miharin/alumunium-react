@@ -1,5 +1,15 @@
 import { create } from 'zustand';
-import { collection, onSnapshot, updateDoc, doc, serverTimestamp, deleteDoc, query, orderBy } from 'firebase/firestore';
+import {
+  collection,
+  // onSnapshot,
+  updateDoc,
+  doc,
+  serverTimestamp,
+  deleteDoc,
+  query,
+  orderBy,
+  getDocs,
+} from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { db } from 'config/firebaseConfig';
 
@@ -89,165 +99,163 @@ export const listProductStore = create((set, get) => ({
     getOpenSnackbar();
   },
   getField: async () => {
-    await onSnapshot(collection(db, 'configs'), (configsData) => {
-      configsData.forEach((config) => {
-        if (config.id === 'ProductCode') {
-          const dataCategories = config.data().categories;
-          const dataMerk = [];
-          for (let a = 0; a < config.data().merk.length; a++) {
-            const merks = config.data().merk[a];
-            dataMerk.push(merks[0].toUpperCase() + merks.slice(1).toString().toLowerCase());
-          }
-          set(() => ({
-            listCategories: dataCategories,
-            listMerk: dataMerk,
-          }));
+    const getData = await getDocs(collection(db, 'configs'));
+    getData.forEach((config) => {
+      if (config.id === 'ProductCode') {
+        const dataCategories = config.data().categories;
+        const dataMerk = [];
+        for (let a = 0; a < config.data().merk.length; a++) {
+          const merks = config.data().merk[a];
+          dataMerk.push(merks[0].toUpperCase() + merks.slice(1).toString().toLowerCase());
         }
-      });
+        set(() => ({
+          listCategories: dataCategories,
+          listMerk: dataMerk,
+        }));
+      }
     });
   },
   getProducts: async () => {
     const merks = get().merk.toUpperCase();
     const categorieses = get().categories;
-    await onSnapshot(query(collection(db, 'listProducts'), orderBy('stock')), (listProduct) => {
-      set(() => ({ listProducts: [] }));
-      listProduct.forEach(async (productData) => {
-        if (productData.data().timeStamp !== null) {
-          if (
-            merks !== '' &&
-            categorieses !== '' &&
-            merks.toUpperCase() === productData.data().merk.toUpperCase() &&
-            categorieses.toUpperCase() === productData.data().categories.toUpperCase()
-          ) {
-            set((state) => ({
-              listProducts: [
-                ...state.listProducts,
-                {
-                  id: productData.id,
-                  code: productData.data().code,
-                  categories: productData.data().categories,
-                  merk: productData.data().merk,
-                  name: productData.data().name,
-                  price_1: productData.data().price_1,
-                  price_2: productData.data().price_2,
-                  price_3: productData.data().price_3,
-                  stock: productData.data().stock,
-                  stockWarning: productData.data().stockWarning,
-                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })} Pada Jam ${new Date(productData.data().timeStamp.seconds * 1000).toLocaleTimeString(
-                    'in-in'
-                  )} Oleh ${
-                    productData.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
-                    productData.data().lastInput.split('@', 1)[0].slice(1)
-                  }`,
-                },
-              ],
-            }));
-          }
-          if (
-            categorieses !== '' &&
-            categorieses.toUpperCase() === productData.data().categories.toUpperCase() &&
-            merks === ''
-          ) {
-            set((state) => ({
-              listProducts: [
-                ...state.listProducts,
-                {
-                  id: productData.id,
-                  code: productData.data().code,
-                  categories: productData.data().categories,
-                  merk: productData.data().merk,
-                  name: productData.data().name,
-                  price_1: productData.data().price_1,
-                  price_2: productData.data().price_2,
-                  price_3: productData.data().price_3,
-                  stock: productData.data().stock,
-                  stockWarning: productData.data().stockWarning,
-                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })} Pada Jam ${new Date(productData.data().timeStamp.seconds * 1000).toLocaleTimeString(
-                    'in-in'
-                  )} Oleh ${
-                    productData.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
-                    productData.data().lastInput.split('@', 1)[0].slice(1)
-                  }`,
-                },
-              ],
-            }));
-          }
-          if (merks !== '' && merks.toUpperCase() === productData.data().merk.toUpperCase() && categorieses === '') {
-            set((state) => ({
-              listProducts: [
-                ...state.listProducts,
-                {
-                  id: productData.id,
-                  code: productData.data().code,
-                  categories: productData.data().categories,
-                  merk: productData.data().merk,
-                  name: productData.data().name,
-                  price_1: productData.data().price_1,
-                  price_2: productData.data().price_2,
-                  price_3: productData.data().price_3,
-                  stock: productData.data().stock,
-                  stockWarning: productData.data().stockWarning,
-                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })} Pada Jam ${new Date(productData.data().timeStamp.seconds * 1000).toLocaleTimeString(
-                    'in-in'
-                  )} Oleh ${
-                    productData.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
-                    productData.data().lastInput.split('@', 1)[0].slice(1)
-                  }`,
-                },
-              ],
-            }));
-          }
-          if (merks === '' && categorieses === '') {
-            // get Month
-            // new Intl.DateTimeFormat('in-in', { month: 'long' }).format(productData.data().timeStamp.toDate()),
-            // get Year
-            // new Intl.DateTimeFormat('in-in', { year: 'numeric' }).format(productData.data().timeStamp.toDate())
-            set((state) => ({
-              listProducts: [
-                ...state.listProducts,
-                {
-                  id: productData.id,
-                  code: productData.data().code,
-                  categories: productData.data().categories,
-                  merk: productData.data().merk,
-                  name: productData.data().name,
-                  price_1: productData.data().price_1,
-                  price_2: productData.data().price_2,
-                  price_3: productData.data().price_3,
-                  stock: productData.data().stock,
-                  stockWarning: productData.data().stockWarning,
-                  lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })} Pada Jam ${new Date(productData.data().timeStamp.seconds * 1000).toLocaleTimeString(
-                    'in-in'
-                  )} Oleh ${
-                    productData.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
-                    productData.data().lastInput.split('@', 1)[0].slice(1)
-                  }`,
-                },
-              ],
-            }));
-          }
+    const getData = await getDocs(query(collection(db, 'listProducts'), orderBy('stock')));
+    set(() => ({ listProducts: [] }));
+    getData.forEach(async (productData) => {
+      if (productData.data().timeStamp !== null) {
+        if (
+          merks !== '' &&
+          categorieses !== '' &&
+          merks.toUpperCase() === productData.data().merk.toUpperCase() &&
+          categorieses.toUpperCase() === productData.data().categories.toUpperCase()
+        ) {
+          set((state) => ({
+            listProducts: [
+              ...state.listProducts,
+              {
+                id: productData.id,
+                code: productData.data().code,
+                categories: productData.data().categories,
+                merk: productData.data().merk,
+                name: productData.data().name,
+                price_1: productData.data().price_1,
+                price_2: productData.data().price_2,
+                price_3: productData.data().price_3,
+                stock: productData.data().stock,
+                stockWarning: productData.data().stockWarning,
+                lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })} Pada Jam ${new Date(productData.data().timeStamp.seconds * 1000).toLocaleTimeString(
+                  'in-in'
+                )} Oleh ${
+                  productData.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                  productData.data().lastInput.split('@', 1)[0].slice(1)
+                }`,
+              },
+            ],
+          }));
         }
-      });
+        if (
+          categorieses !== '' &&
+          categorieses.toUpperCase() === productData.data().categories.toUpperCase() &&
+          merks === ''
+        ) {
+          set((state) => ({
+            listProducts: [
+              ...state.listProducts,
+              {
+                id: productData.id,
+                code: productData.data().code,
+                categories: productData.data().categories,
+                merk: productData.data().merk,
+                name: productData.data().name,
+                price_1: productData.data().price_1,
+                price_2: productData.data().price_2,
+                price_3: productData.data().price_3,
+                stock: productData.data().stock,
+                stockWarning: productData.data().stockWarning,
+                lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })} Pada Jam ${new Date(productData.data().timeStamp.seconds * 1000).toLocaleTimeString(
+                  'in-in'
+                )} Oleh ${
+                  productData.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                  productData.data().lastInput.split('@', 1)[0].slice(1)
+                }`,
+              },
+            ],
+          }));
+        }
+        if (merks !== '' && merks.toUpperCase() === productData.data().merk.toUpperCase() && categorieses === '') {
+          set((state) => ({
+            listProducts: [
+              ...state.listProducts,
+              {
+                id: productData.id,
+                code: productData.data().code,
+                categories: productData.data().categories,
+                merk: productData.data().merk,
+                name: productData.data().name,
+                price_1: productData.data().price_1,
+                price_2: productData.data().price_2,
+                price_3: productData.data().price_3,
+                stock: productData.data().stock,
+                stockWarning: productData.data().stockWarning,
+                lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })} Pada Jam ${new Date(productData.data().timeStamp.seconds * 1000).toLocaleTimeString(
+                  'in-in'
+                )} Oleh ${
+                  productData.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                  productData.data().lastInput.split('@', 1)[0].slice(1)
+                }`,
+              },
+            ],
+          }));
+        }
+        if (merks === '' && categorieses === '') {
+          // get Month
+          // new Intl.DateTimeFormat('in-in', { month: 'long' }).format(productData.data().timeStamp.toDate()),
+          // get Year
+          // new Intl.DateTimeFormat('in-in', { year: 'numeric' }).format(productData.data().timeStamp.toDate())
+          set((state) => ({
+            listProducts: [
+              ...state.listProducts,
+              {
+                id: productData.id,
+                code: productData.data().code,
+                categories: productData.data().categories,
+                merk: productData.data().merk,
+                name: productData.data().name,
+                price_1: productData.data().price_1,
+                price_2: productData.data().price_2,
+                price_3: productData.data().price_3,
+                stock: productData.data().stock,
+                stockWarning: productData.data().stockWarning,
+                lastInput: `${new Date(productData.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })} Pada Jam ${new Date(productData.data().timeStamp.seconds * 1000).toLocaleTimeString(
+                  'in-in'
+                )} Oleh ${
+                  productData.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                  productData.data().lastInput.split('@', 1)[0].slice(1)
+                }`,
+              },
+            ],
+          }));
+        }
+      }
     });
     await delay(1000);
     set(() => ({ loading: false }));

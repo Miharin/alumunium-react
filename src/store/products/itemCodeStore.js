@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import {
   collection,
-  onSnapshot,
+  // onSnapshot,
   updateDoc,
   doc,
   addDoc,
@@ -94,6 +94,7 @@ export const itemCodeStore = create((set, get) => ({
     });
     set((state) => ({ snackbarMessage: `${addCategoriesNew} Berhasil Ditambahkan !` }));
     set((state) => ({ loading: !state.loading, addCategory: '', addCategoyValue: '' }));
+    get().getField();
     getOpenSnackbar();
     setOpen();
   },
@@ -256,103 +257,102 @@ export const itemCodeStore = create((set, get) => ({
     getOpenSnackbar();
   },
   getField: async () => {
-    await onSnapshot(collection(db, 'configs'), (configsData) => {
-      configsData.forEach((config) => {
-        if (config.id === 'ProductCode') {
-          const dataCategories = config.data().categories;
-          const dataMerk = [];
-          for (let a = 0; a < config.data().merk.length; a++) {
-            const merks = config.data().merk[a];
-            dataMerk.push(merks[0].toUpperCase() + merks.slice(1).toString().toLowerCase());
-          }
-          set(() => ({
-            listCategories: dataCategories,
-            listMerk: dataMerk,
-          }));
+    set(() => ({ listCategories: [], listMerk: [] }));
+    const getData = await getsDocs(collection(db, 'configs'));
+    getData.forEach((config) => {
+      if (config.id === 'ProductCode') {
+        const dataCategories = config.data().categories;
+        const dataMerk = [];
+        for (let a = 0; a < config.data().merk.length; a++) {
+          const merks = config.data().merk[a];
+          dataMerk.push(merks[0].toUpperCase() + merks.slice(1).toString().toLowerCase());
         }
-      });
+        set(() => ({
+          listCategories: dataCategories,
+          listMerk: dataMerk,
+        }));
+      }
     });
   },
   getCodeProducts: async () => {
     const merks = get().merk.toUpperCase();
     const categorieses = get().categories;
-    await onSnapshot(
-      query(collection(db, 'codeProducts'), orderBy('categories'), orderBy('merk'), orderBy('name')),
-      (codeProduct) => {
-        set(() => ({ codeProducts: [] }));
-        codeProduct.forEach(async (codeData) => {
-          if (
-            merks !== '' &&
-            categorieses !== '' &&
-            merks.toString().toLowerCase() === codeData.data().merk.toString().toLowerCase() &&
-            categorieses.toString().toLowerCase() === codeData.data().categories.toString().toLowerCase()
-          ) {
-            set((state) => ({
-              codeProducts: [
-                ...state.codeProducts,
-                {
-                  id: codeData.id,
-                  code: codeData.data().code,
-                  name: codeData.data().name,
-                  categories: codeData.data().categories,
-                  merk: codeData.data().merk,
-                },
-              ],
-            }));
-          }
-          if (
-            categorieses !== '' &&
-            categorieses.toString().toLowerCase() === codeData.data().categories.toString().toLowerCase() &&
-            merks === ''
-          ) {
-            set((state) => ({
-              codeProducts: [
-                ...state.codeProducts,
-                {
-                  id: codeData.id,
-                  code: codeData.data().code,
-                  name: codeData.data().name,
-                  categories: codeData.data().categories,
-                  merk: codeData.data().merk,
-                },
-              ],
-            }));
-          }
-          if (
-            merks !== '' &&
-            merks.toString().toLowerCase() === codeData.data().merk.toString().toLowerCase() &&
-            categorieses === ''
-          ) {
-            set((state) => ({
-              codeProducts: [
-                ...state.codeProducts,
-                {
-                  id: codeData.id,
-                  code: codeData.data().code,
-                  name: codeData.data().name,
-                  categories: codeData.data().categories,
-                  merk: codeData.data().merk,
-                },
-              ],
-            }));
-          }
-          if (merks === '' && categorieses === '') {
-            set((state) => ({
-              codeProducts: [
-                ...state.codeProducts,
-                {
-                  id: codeData.id,
-                  code: codeData.data().code,
-                  name: codeData.data().name,
-                  categories: codeData.data().categories,
-                  merk: codeData.data().merk,
-                },
-              ],
-            }));
-          }
-        });
-      }
+    const getData = await getDocs(
+      query(collection(db, 'codeProducts'), orderBy('categories'), orderBy('merk'), orderBy('name'))
     );
+    set(() => ({ codeProducts: [] }));
+    getData.forEach(async (codeData) => {
+      if (
+        merks !== '' &&
+        categorieses !== '' &&
+        merks.toString().toLowerCase() === codeData.data().merk.toString().toLowerCase() &&
+        categorieses.toString().toLowerCase() === codeData.data().categories.toString().toLowerCase()
+      ) {
+        set((state) => ({
+          codeProducts: [
+            ...state.codeProducts,
+            {
+              id: codeData.id,
+              code: codeData.data().code,
+              name: codeData.data().name,
+              categories: codeData.data().categories,
+              merk: codeData.data().merk,
+            },
+          ],
+        }));
+      }
+      if (
+        categorieses !== '' &&
+        categorieses.toString().toLowerCase() === codeData.data().categories.toString().toLowerCase() &&
+        merks === ''
+      ) {
+        set((state) => ({
+          codeProducts: [
+            ...state.codeProducts,
+            {
+              id: codeData.id,
+              code: codeData.data().code,
+              name: codeData.data().name,
+              categories: codeData.data().categories,
+              merk: codeData.data().merk,
+            },
+          ],
+        }));
+      }
+      if (
+        merks !== '' &&
+        merks.toString().toLowerCase() === codeData.data().merk.toString().toLowerCase() &&
+        categorieses === ''
+      ) {
+        set((state) => ({
+          codeProducts: [
+            ...state.codeProducts,
+            {
+              id: codeData.id,
+              code: codeData.data().code,
+              name: codeData.data().name,
+              categories: codeData.data().categories,
+              merk: codeData.data().merk,
+            },
+          ],
+        }));
+      }
+      if (merks === '' && categorieses === '') {
+        set((state) => ({
+          codeProducts: [
+            ...state.codeProducts,
+            {
+              id: codeData.id,
+              code: codeData.data().code,
+              name: codeData.data().name,
+              categories: codeData.data().categories,
+              merk: codeData.data().merk,
+            },
+          ],
+        }));
+      }
+    });
+
     await delay(2000);
     set((state) => ({ loading: !state.loading }));
   },

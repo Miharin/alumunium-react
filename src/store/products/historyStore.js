@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import {
   collection,
-  onSnapshot,
+  // onSnapshot,
   updateDoc,
   doc,
   getDocs,
@@ -136,105 +136,104 @@ export const historyStore = create((set, get) => ({
       ],
     }));
   },
-  getField: async () => {
-    set(() => ({ listName: [] }));
-    await onSnapshot(collection(db, 'codeProducts'), (configsData) => {
-      configsData.forEach((config) => {
-        set((state) => ({
-          listName: [
-            ...state.listName,
-            {
-              code: config.data().code,
-              label: config.data().name,
-            },
-          ],
-        }));
-      });
-    });
-  },
+  // getField: async () => {
+  //   set(() => ({ listName: [] }));
+  //   await onSnapshot(collection(db, 'codeProducts'), (configsData) => {
+  //     configsData.forEach((config) => {
+  //       set((state) => ({
+  //         listName: [
+  //           ...state.listName,
+  //           {
+  //             code: config.data().code,
+  //             label: config.data().name,
+  //           },
+  //         ],
+  //       }));
+  //     });
+  //   });
+  // },
   getProducts: async () => {
     const name = get().nameSelect;
     const month = get().monthSelect;
     const year = new Date().getFullYear();
     const yearPrev = new Date().getFullYear() - 1;
-    await onSnapshot(query(collection(db, 'listProducts'), orderBy('stock')), (codeProduct) => {
-      set(() => ({ products: [] }));
-      codeProduct.forEach(async (product) => {
-        product.data().history.forEach((item) => {
-          const date = `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
-            item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
-          }`;
-          if (
-            (name !== '' && name === product.data().name) ||
-            (name === '' &&
-              month !== '' &&
-              date.toString().toLowerCase().includes(month.toString().toLowerCase()) &&
-              date
-                .toString()
-                .toLowerCase()
-                .includes(year || yearPrev))
-          ) {
-            set((state) => ({
-              products: [
-                ...state.products,
-                {
-                  id: `${product.id}|${item.timeStamp.seconds.toString()}`,
-                  code: product.data().code,
-                  name: product.data().name,
-                  stock: item.stock,
-                  detail: item.detail,
-                  in: item.in,
-                  out: item.out,
-                  date: item.date !== undefined || null ? item.date : '-',
-                  disc: (item.disc !== undefined || null || '') && item.out !== '0' ? item.disc : '',
-                  total: item.out !== '0' ? item.total : '',
-                  nameCustomer: item.out !== '0' ? item.nameCustomer : '',
-                  lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
-                    item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
-                  }`,
-                },
-              ],
-            }));
-          }
-          if (name === '' && month === '') {
-            set((state) => ({
-              products: [
-                ...state.products,
-                {
-                  id: `${product.id}|${item.timeStamp.seconds.toString()}`,
-                  code: product.data().code,
-                  name: product.data().name,
-                  detail: item.detail,
-                  in: item.in,
-                  out: item.out,
-                  date: item.date !== undefined || null ? item.date : '-',
-                  total: item.out !== '0' && item.detail !== 'Stok Opname' ? item.total : '-',
-                  disc: (item.disc !== undefined || null || '') && item.out !== '0' ? item.disc : '-',
-                  nameCustomer: item.out !== '0' && item.detail !== 'Stok Opname' ? item.nameCustomer : '-',
-                  stock: item.stock,
-                  lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
-                    item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
-                  }`,
-                },
-              ],
-            }));
-          }
-        });
+    const getData = await getDocs(query(collection(db, 'listProducts'), orderBy('stock')));
+    set(() => ({ products: [] }));
+    getData.forEach(async (product) => {
+      product.data().history.forEach((item) => {
+        const date = `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+          item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
+        }`;
+        if (
+          (name !== '' && name === product.data().name) ||
+          (name === '' &&
+            month !== '' &&
+            date.toString().toLowerCase().includes(month.toString().toLowerCase()) &&
+            date
+              .toString()
+              .toLowerCase()
+              .includes(year || yearPrev))
+        ) {
+          set((state) => ({
+            products: [
+              ...state.products,
+              {
+                id: `${product.id}|${item.timeStamp.seconds.toString()}`,
+                code: product.data().code,
+                name: product.data().name,
+                stock: item.stock,
+                detail: item.detail,
+                in: item.in,
+                out: item.out,
+                date: item.date !== undefined || null ? item.date : '-',
+                disc: (item.disc !== undefined || null || '') && item.out !== '0' ? item.disc : '',
+                total: item.out !== '0' ? item.total : '',
+                nameCustomer: item.out !== '0' ? item.nameCustomer : '',
+                lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+                  item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
+                }`,
+              },
+            ],
+          }));
+        }
+        if (name === '' && month === '') {
+          set((state) => ({
+            products: [
+              ...state.products,
+              {
+                id: `${product.id}|${item.timeStamp.seconds.toString()}`,
+                code: product.data().code,
+                name: product.data().name,
+                detail: item.detail,
+                in: item.in,
+                out: item.out,
+                date: item.date !== undefined || null ? item.date : '-',
+                total: item.out !== '0' && item.detail !== 'Stok Opname' ? item.total : '-',
+                disc: (item.disc !== undefined || null || '') && item.out !== '0' ? item.disc : '-',
+                nameCustomer: item.out !== '0' && item.detail !== 'Stok Opname' ? item.nameCustomer : '-',
+                stock: item.stock,
+                lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+                  item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
+                }`,
+              },
+            ],
+          }));
+        }
       });
     });
     await delay(2000);
