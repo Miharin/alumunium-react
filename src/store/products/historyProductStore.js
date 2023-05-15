@@ -45,7 +45,7 @@ export const historyProductStore = create((set, get) => ({
   setNameSelect: (name) =>
     name !== undefined || null || ''
       ? set((state) => ({
-          nameSelect: name.label,
+          nameSelect: name.label.split(' - ')[1],
           removeProduct: { ...state.removeProduct, code: name.code, name: name.label },
           loading: !state.loading,
         }))
