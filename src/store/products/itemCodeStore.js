@@ -29,6 +29,7 @@ export const itemCodeStore = create((set, get) => ({
   listMerk: [],
   addCategory: '',
   addCategoryValue: '',
+  codeProductIndex: [],
   helperAddCategory: '',
   merk: '',
   categories: '',
@@ -277,20 +278,14 @@ export const itemCodeStore = create((set, get) => ({
   getCodeProducts: async () => {
     const merks = get().merk.toUpperCase();
     const categorieses = get().categories;
-    const getData = await getDocs(
-      query(collection(db, 'codeProducts'), orderBy('categories'), orderBy('merk'), orderBy('name'))
-    );
-    set(() => ({ codeProducts: [] }));
-    getData.forEach(async (codeData) => {
-      if (
-        merks !== '' &&
-        categorieses !== '' &&
-        merks.toString().toLowerCase() === codeData.data().merk.toString().toLowerCase() &&
-        categorieses.toString().toLowerCase() === codeData.data().categories.toString().toLowerCase()
-      ) {
+    if (get().codeProductIndex.length === 0) {
+      const getData = await getDocs(
+        query(collection(db, 'codeProducts'), orderBy('categories'), orderBy('merk'), orderBy('name'))
+      );
+      getData.forEach((codeData) => {
         set((state) => ({
-          codeProducts: [
-            ...state.codeProducts,
+          codeProductIndex: [
+            ...state.codeProductIndex,
             {
               id: codeData.id,
               code: codeData.data().code,
@@ -300,10 +295,32 @@ export const itemCodeStore = create((set, get) => ({
             },
           ],
         }));
+      });
+    }
+    set(() => ({ codeProducts: [] }));
+    get().codeProductIndex.forEach(async (codeData) => {
+      if (
+        merks !== '' &&
+        categorieses !== '' &&
+        merks.toString().toLowerCase() === codeData.merk.toString().toLowerCase() &&
+        categorieses.toString().toLowerCase() === codeData.categories.toString().toLowerCase()
+      ) {
+        set((state) => ({
+          codeProducts: [
+            ...state.codeProducts,
+            {
+              id: codeData.id,
+              code: codeData.code,
+              name: codeData.name,
+              categories: codeData.categories,
+              merk: codeData.merk,
+            },
+          ],
+        }));
       }
       if (
         categorieses !== '' &&
-        categorieses.toString().toLowerCase() === codeData.data().categories.toString().toLowerCase() &&
+        categorieses.toString().toLowerCase() === codeData.categories.toString().toLowerCase() &&
         merks === ''
       ) {
         set((state) => ({
@@ -311,17 +328,17 @@ export const itemCodeStore = create((set, get) => ({
             ...state.codeProducts,
             {
               id: codeData.id,
-              code: codeData.data().code,
-              name: codeData.data().name,
-              categories: codeData.data().categories,
-              merk: codeData.data().merk,
+              code: codeData.code,
+              name: codeData.name,
+              categories: codeData.categories,
+              merk: codeData.merk,
             },
           ],
         }));
       }
       if (
         merks !== '' &&
-        merks.toString().toLowerCase() === codeData.data().merk.toString().toLowerCase() &&
+        merks.toString().toLowerCase() === codeData.merk.toString().toLowerCase() &&
         categorieses === ''
       ) {
         set((state) => ({
@@ -329,10 +346,10 @@ export const itemCodeStore = create((set, get) => ({
             ...state.codeProducts,
             {
               id: codeData.id,
-              code: codeData.data().code,
-              name: codeData.data().name,
-              categories: codeData.data().categories,
-              merk: codeData.data().merk,
+              code: codeData.code,
+              name: codeData.name,
+              categories: codeData.categories,
+              merk: codeData.merk,
             },
           ],
         }));
@@ -343,10 +360,10 @@ export const itemCodeStore = create((set, get) => ({
             ...state.codeProducts,
             {
               id: codeData.id,
-              code: codeData.data().code,
-              name: codeData.data().name,
-              categories: codeData.data().categories,
-              merk: codeData.data().merk,
+              code: codeData.code,
+              name: codeData.name,
+              categories: codeData.categories,
+              merk: codeData.merk,
             },
           ],
         }));
