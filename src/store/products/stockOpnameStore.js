@@ -232,6 +232,7 @@ export const stockOpnameStore = create((set, get) => ({
             price_1: codes.price_1,
             price_2: codes.price_2,
             price_3: codes.price_3,
+            stock: codes.stock,
           },
         ],
       }));

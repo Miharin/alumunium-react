@@ -96,6 +96,7 @@ export default function DashboardAppPage() {
   const setOpenSnackbar = useListProductStore((state) => state.setOpenSnackbar);
   const getProducts = useListProductStore((state) => state.getProducts);
   const listProducts = useListProductStore((state) => state.listProducts);
+  const reset = useListProductStore((state) => state.reset);
   const rows = listProducts;
   // End ListProduct Initialization
 
@@ -129,9 +130,14 @@ export default function DashboardAppPage() {
 
   // Function for Getting Product Data from Database
   useEffect(() => {
+    if (window.performance) {
+      if (performance.navigation.type === 1) {
+        reset();
+      }
+    }
     getField();
     getProducts();
-  }, [getField, getProducts]);
+  }, [getField, getProducts, reset]);
 
   // Function for Filter Table
   const createSortHandler = (property) => (event) => {
@@ -370,7 +376,7 @@ export default function DashboardAppPage() {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={rows.length}
+          count={filterLow.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={(event, newPage) => setPage(newPage)}
