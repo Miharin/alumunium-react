@@ -201,6 +201,7 @@ export const listProductStore = create(
           if (getDataRealTime.length > 0) {
             getDataRealTime.forEach((productData) => {
               set((state) => ({
+                latestTime: getDataRealTime.docs[0].data().timeStamp.seconds + 1,
                 listProductsIndex: [
                   ...state.listProducts,
                   {

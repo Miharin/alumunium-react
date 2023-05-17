@@ -103,6 +103,7 @@ export default function ProductPage() {
   const getProducts = useListProductStore((state) => state.getProducts);
   const listProducts = useListProductStore((state) => state.listProducts);
   const setDeleteProduct = useListProductStore((state) => state.setDeleteProduct);
+  const reset = useListProductStore((state) => state.reset);
   const rows = listProducts;
   // End ListProduct Initialization
 
@@ -142,9 +143,14 @@ export default function ProductPage() {
 
   // Function for Getting Product Data from Database
   useEffect(() => {
+    if (window.performance) {
+      if (performance.navigation.type === 1) {
+        reset();
+      }
+    }
     getField();
     getProducts();
-  }, [getField, getProducts]);
+  }, [getField, getProducts, reset]);
 
   // Function for Filter Table
   const createSortHandler = (property) => (event) => {
