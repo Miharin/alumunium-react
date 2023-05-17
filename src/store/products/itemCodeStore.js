@@ -258,7 +258,7 @@ export const itemCodeStore = create((set, get) => ({
   },
   getField: async () => {
     set(() => ({ listCategories: [], listMerk: [] }));
-    const getData = await getsDocs(collection(db, 'configs'));
+    const getData = await getDocs(collection(db, 'configs'));
     getData.forEach((config) => {
       if (config.id === 'ProductCode') {
         const dataCategories = config.data().categories;
