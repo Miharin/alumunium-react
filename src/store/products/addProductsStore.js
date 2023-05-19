@@ -266,6 +266,7 @@ export const addProductStore = create((set, get) => ({
     const listProducts = get().listProducts;
 
     const listCodeProduct = get().listCodeProducts;
+    console.log();
     const CodeProductFinal = listCodeProduct.filter((codes) => listProducts.every((list) => list.code !== codes.code));
     set(() => ({ listName: [] }));
     CodeProductFinal.forEach((codes) => {
@@ -286,7 +287,7 @@ export const addProductStore = create((set, get) => ({
     });
   },
   getDataCode: async () => {
-    const getData = await getDocs(query(collection(db, 'listProducts')));
+    const getData = await getDocs(query(collection(db, 'codeProducts')));
     getData.forEach((codeProduct) => {
       set((state) => ({ listCodeProducts: [...state.listCodeProducts, codeProduct.data()] }));
     });
