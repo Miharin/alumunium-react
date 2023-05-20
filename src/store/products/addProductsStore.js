@@ -10,9 +10,11 @@ import {
   Timestamp,
   arrayUnion,
   doc,
+  // limit,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { db } from 'config/firebaseConfig';
+import { orderBy } from 'lodash';
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -61,7 +63,7 @@ export const addProductStore = create((set, get) => ({
           if (nameChoose === null) {
             console.log(product);
           }
-          product.name = nameChoose.name;
+          product.name = nameChoose.label.split(' - ')[1];
           product.code = nameChoose.code;
           product.categories = nameChoose.categories;
           product.merk = nameChoose.merk;
@@ -287,7 +289,7 @@ export const addProductStore = create((set, get) => ({
     });
   },
   getDataCode: async () => {
-    const getData = await getDocs(query(collection(db, 'codeProducts')));
+    const getData = await getDocs(query(collection(db, 'codeProducts')), orderBy('timeStamp', 'desc'));
     getData.forEach((codeProduct) => {
       set((state) => ({ listCodeProducts: [...state.listCodeProducts, codeProduct.data()] }));
     });
