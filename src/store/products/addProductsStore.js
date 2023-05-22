@@ -50,7 +50,6 @@ export const addProductStore = create((set, get) => ({
   setOpenSnackbar: () => set((state) => ({ openSnackbar: !state.openSnackbar })),
   setDate: (event) => set(() => ({ date: event.value })),
   setName: async (nameChoose, id) => {
-    set(() => ({ loading: true }));
     const getProduct = get().listProducts;
     let name = '';
     if (nameChoose !== null || undefined) {
@@ -69,7 +68,10 @@ export const addProductStore = create((set, get) => ({
           product.categories = nameChoose.categories;
           product.merk = nameChoose.merk;
         }
+        set(() => ({ loading: true }));
         await set((state) => ({ listProducts: [...state.listProducts, product] }));
+        await delay(350);
+        set(() => ({ loading: false }));
       });
     } else {
       getProduct.forEach(async (product) => {
@@ -80,11 +82,12 @@ export const addProductStore = create((set, get) => ({
           product.merk = '';
         }
         // console.log(product, id);
+        set(() => ({ loading: true }));
         await set((state) => ({ listProducts: [...state.listProducts, product] }));
+        await delay(350);
+        set(() => ({ loading: false }));
       });
     }
-    await delay(350);
-    set(() => ({ loading: false }));
     get().getProductName();
   },
   setAddProduct: (event, id) => {
