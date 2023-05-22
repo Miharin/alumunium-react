@@ -49,7 +49,8 @@ export const addProductStore = create((set, get) => ({
   addProductIcon: false,
   setOpenSnackbar: () => set((state) => ({ openSnackbar: !state.openSnackbar })),
   setDate: (event) => set(() => ({ date: event.value })),
-  setName: (nameChoose, id) => {
+  setName: async (nameChoose, id) => {
+    set(() => ({ loading: true }));
     const getProduct = get().listProducts;
     let name = '';
     if (nameChoose !== null || undefined) {
@@ -82,6 +83,8 @@ export const addProductStore = create((set, get) => ({
         set((state) => ({ listProducts: [...state.listProducts, product] }));
       });
     }
+    await delay(350);
+    set(() => ({ loading: false }));
     get().getProductName();
   },
   setAddProduct: (event, id) => {
