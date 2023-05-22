@@ -59,7 +59,7 @@ export const addProductStore = create((set, get) => ({
     }
     set(() => ({ listProducts: [], nameValue: name }));
     if (nameChoose) {
-      getProduct.forEach((product) => {
+      getProduct.forEach(async (product) => {
         if (product.id === id) {
           if (nameChoose === null) {
             console.log(product);
@@ -69,10 +69,10 @@ export const addProductStore = create((set, get) => ({
           product.categories = nameChoose.categories;
           product.merk = nameChoose.merk;
         }
-        set((state) => ({ listProducts: [...state.listProducts, product] }));
+        await set((state) => ({ listProducts: [...state.listProducts, product] }));
       });
     } else {
-      getProduct.forEach((product) => {
+      getProduct.forEach(async (product) => {
         if (product.id === id) {
           product.name = '';
           product.code = '';
@@ -80,7 +80,7 @@ export const addProductStore = create((set, get) => ({
           product.merk = '';
         }
         // console.log(product, id);
-        set((state) => ({ listProducts: [...state.listProducts, product] }));
+        await set((state) => ({ listProducts: [...state.listProducts, product] }));
       });
     }
     await delay(350);
