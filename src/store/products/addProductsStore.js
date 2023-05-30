@@ -202,7 +202,7 @@ export const addProductStore = create((set, get) => ({
       });
     }
     await delay(1000);
-    set(() => ({ snackbarMessage: `${TotalProduct} Produk Berhasil Ditambahkan !` }));
+    set(() => ({ snackbarMessage: `${TotalProduct} Produk Berhasil Ditambahkan !`, listProducts: [] }));
     getOpenSnackbar();
     get().getProducts();
   },
@@ -272,9 +272,7 @@ export const addProductStore = create((set, get) => ({
   getProductName: async () => {
     // eslint-disable-next-line
     const listProducts = get().listProducts;
-
     const listCodeProduct = get().listCodeProducts;
-    console.log();
     const CodeProductFinal = listCodeProduct.filter((codes) => listProducts.every((list) => list.code !== codes.code));
     set(() => ({ listName: [] }));
     CodeProductFinal.forEach((codes) => {
