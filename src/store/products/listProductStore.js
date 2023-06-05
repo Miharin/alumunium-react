@@ -113,7 +113,7 @@ export const listProductStore = create(
               const dataMerk = [];
               for (let a = 0; a < config.data().merk.length; a++) {
                 const merks = config.data().merk[a];
-                if (merks !== undefined) {
+                if (merks !== undefined && merks !== '' && merks !== null) {
                   dataMerk.push(merks[0].toUpperCase() + merks.slice(1).toString().toLowerCase());
                 }
               }
