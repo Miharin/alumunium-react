@@ -80,7 +80,7 @@ export const itemCodeStore = create((set, get) => ({
     let tempArrayFinal = [];
     let addCategoriesNew = '';
     if (addCategories === 'merk') {
-      const addCategoriesFinal = get().addCategoryValue.toUpperCase();
+      addCategoriesNew = get().addCategoryValue.toUpperCase();
     } else {
       for (let i = 0; i < tempArray.length; i++) {
         tempArrayFinal.push(tempArray[i][0].toUpperCase() + tempArray[i].slice(1).toLowerCase());
