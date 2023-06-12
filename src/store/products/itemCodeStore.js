@@ -168,6 +168,8 @@ export const itemCodeStore = create((set, get) => ({
     const filterName = getCodeProduct.filter((code) => code.name === codeProductAddFinal.name);
     if (filterCode.length > 0 && event.name === 'code') {
       set(() => ({ helperCode: `${filterCode[0].code} Sudah Ada !`, addCodeProductIcon: false }));
+    } else {
+      set(() => ({ helperCode: '', addCodeProductIcon: false }));
     }
     if (filterName.length > 0 && event.name === 'name') {
       set(() => ({ helperCodeName: `${filterName[0].name} Sudah Ada !`, addCodeProductIcon: false }));
@@ -188,6 +190,7 @@ export const itemCodeStore = create((set, get) => ({
       addCodeProduct: { ...state.addCodeProduct, timeStamp: serverTimestamp() },
       loading: !state.loading,
     }));
+    const codeIndex = get().codeProducts;
     const codeProductAddFinal = get().addCodeProduct;
     const helperCodeName = get().helperCodeName;
     const helperCode = get().helperCode;
@@ -200,7 +203,9 @@ export const itemCodeStore = create((set, get) => ({
       } catch (err) {
         console.log(err);
       }
-      set((state) => ({ snackbarMessage: `${codeProductAddFinal.name} Berhasil Ditambahkan !` }));
+      set((state) => ({
+        snackbarMessage: `${codeProductAddFinal.name} Berhasil Ditambahkan !`,
+      }));
       set((state) => ({
         addCodeProduct: {
           id: '',
@@ -210,9 +215,9 @@ export const itemCodeStore = create((set, get) => ({
           name: '',
         },
         addCodeProductMode: !state.addCodeProductMode,
-        loading: !state.loading,
       }));
       get().setOpenSnackbar();
+      get().getCodeProducts();
     }
   },
   setCodeProductId: (id) =>
@@ -373,6 +378,6 @@ export const itemCodeStore = create((set, get) => ({
     });
 
     await delay(2000);
-    set((state) => ({ loading: !state.loading }));
+    set((state) => ({ loading: false }));
   },
 }));
