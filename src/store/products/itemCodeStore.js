@@ -217,7 +217,7 @@ export const itemCodeStore = create((set, get) => ({
         addCodeProductMode: !state.addCodeProductMode,
       }));
       get().setOpenSnackbar();
-      get().getCodeProducts();
+      get().getCodeProducts(codeProductAddFinal);
     }
   },
   setCodeProductId: (id) =>
@@ -282,7 +282,7 @@ export const itemCodeStore = create((set, get) => ({
       }
     });
   },
-  getCodeProducts: async () => {
+  getCodeProducts: async (codeProductNew) => {
     const merks = get().merk.toUpperCase();
     const categorieses = get().categories;
     if (get().codeProductIndex.length === 0) {
@@ -376,8 +376,23 @@ export const itemCodeStore = create((set, get) => ({
         }));
       }
     });
+    if (codeProductNew !== null && codeProductNew !== undefined) {
+      console.log(codeProductNew);
+      set((state) => ({
+        codeProducts: [
+          ...state.codeProducts,
+          {
+            id: codeProductNew.code + codeProductNew.name,
+            code: codeProductNew.code,
+            name: codeProductNew.name,
+            categories: codeProductNew.categories,
+            merk: codeProductNew.merk,
+          },
+        ],
+      }));
+    }
 
-    await delay(2000);
+    await delay(500);
     set((state) => ({ loading: false }));
   },
 }));
