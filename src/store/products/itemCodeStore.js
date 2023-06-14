@@ -377,7 +377,6 @@ export const itemCodeStore = create((set, get) => ({
       }
     });
     if (codeProductNew !== null && codeProductNew !== undefined) {
-      console.log(codeProductNew);
       set((state) => ({
         codeProducts: [
           ...state.codeProducts,
