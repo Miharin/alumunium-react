@@ -71,7 +71,6 @@ export const returnStore = create((set, get) => ({
           product.code = nameChoose.code;
           product.categories = nameChoose.categories;
           product.merk = nameChoose.merk;
-          console.log(product);
         }
         get().listName.forEach((list) => {
           if (product.code === list.code) {
@@ -282,6 +281,7 @@ export const returnStore = create((set, get) => ({
               )
             );
             filterName.forEach((name) => {
+              console.log(name);
               set((state) => ({
                 listNameCustomer: [
                   ...state.listNameCustomer,
@@ -291,13 +291,9 @@ export const returnStore = create((set, get) => ({
             });
           } else {
             set((state) => ({
-              listNameCustomer: [
-                ...state.listNameCustomer,
-                { key: code.code + code.timeStamp.seconds, label: code.nameCustomer },
-              ],
+              listNameCustomer: [...state.listNameCustomer, { key: code.timeStamp.seconds, label: code.nameCustomer }],
             }));
           }
-
           if (get().listTimeCustomer.length > 0) {
             const filterName = codes.history.filter((code) =>
               get().listTimeCustomer.every(
