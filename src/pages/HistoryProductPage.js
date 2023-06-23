@@ -23,8 +23,11 @@ import {
   Alert,
   Skeleton,
   Snackbar,
+  ButtonGroup,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
-import { FilterAltRounded } from '@mui/icons-material';
+import { DeleteForeverRounded, FilterAltRounded } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 
 // store
@@ -84,6 +87,7 @@ export default function HistoryProductPage() {
   const snackbarType = useHistoryProductStore((state) => state.snackbarType);
   const monthSelect = useHistoryProductStore((state) => state.monthSelect);
   const setMonthSelect = useHistoryProductStore((state) => state.setMonthSelect);
+  const setDeleteProduct = useHistoryProductStore((state) => state.setDeleteProduct);
   const rows = products;
   // End ProductCode Initialization
 
@@ -100,6 +104,12 @@ export default function HistoryProductPage() {
     { id: 'nameCustomer', label: 'Nama Pembeli', minWidth: 100, align: 'left' },
     { id: 'stock', label: 'Stok Total', minWidth: 150, align: 'left' },
     { id: 'lastInput', label: 'Oleh', minWidth: 300, align: 'left' },
+    {
+      id: 'action',
+      label: 'Action',
+      minWidth: 150,
+      align: 'left',
+    },
   ];
 
   // Function for Getting Code Product Data from Database
@@ -278,13 +288,23 @@ export default function HistoryProductPage() {
                         >
                           {/* Start Edit Rows and Display Rows */}
                           {(column.id === 'total' && row.detail !== 'Stok Opname' && row.out !== '0') ||
-                          (column.id === 'disc' && row.detail !== 'Stok Opname' && row.out !== '0')
-                            ? new Intl.NumberFormat('in-in', {
-                                style: 'currency',
-                                currency: 'idr',
-                                maximumSignificantDigits: 4,
-                              }).format(value)
-                            : value}
+                          (column.id === 'disc' && row.detail !== 'Stok Opname' && row.out !== '0') ? (
+                            new Intl.NumberFormat('in-in', {
+                              style: 'currency',
+                              currency: 'idr',
+                              maximumSignificantDigits: 4,
+                            }).format(value)
+                          ) : column.id === 'action' ? (
+                            <ButtonGroup variant="outlined">
+                              <IconButton onClick={() => setDeleteProduct(row)}>
+                                <Tooltip title="Delete">
+                                  <DeleteForeverRounded sx={{ color: '#737373' }} />
+                                </Tooltip>
+                              </IconButton>
+                            </ButtonGroup>
+                          ) : (
+                            value
+                          )}
                           {/* End Edit Rows and Display Rows */}
                           {/* Start Add Rows */}
                         </TableCell>

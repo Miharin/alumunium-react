@@ -10,6 +10,9 @@ import {
   serverTimestamp,
   query,
   orderBy,
+  limit,
+  where,
+  arrayRemove,
 } from 'firebase/firestore';
 import { db } from 'config/firebaseConfig';
 import { getAuth } from 'firebase/auth';
@@ -32,6 +35,7 @@ export const historyProductStore = create((set, get) => ({
   products: [],
   productsIndex: [],
   search: '',
+  test: [],
   removeProduct: {
     id: '',
     code: '',
@@ -135,20 +139,80 @@ export const historyProductStore = create((set, get) => ({
       ],
     }));
   },
-  getField: async () => {
-    set(() => ({ listName: [] }));
-    const getData = await getDocs(collection(db, 'codeProducts'));
-    getData.forEach((config) => {
-      set((state) => ({
-        listName: [
-          ...state.listName,
-          {
-            code: config.data().code,
-            label: `${config.data().code} - ${config.data().name}`,
-          },
-        ],
-      }));
+  setDeleteProduct: async (data) => {
+    const id = data.code;
+    const deleteProd = await getDocs(query(collection(db, 'listProducts'), where('code', '==', id), limit(1)));
+    const prodNew = get().products;
+    deleteProd.forEach((prod) => {
+      prod.data().history.forEach((historyProd) => {
+        const date = `${new Date(historyProd.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })} Pada Jam ${new Date(historyProd.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+          historyProd.lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+          historyProd.lastInput.split('@', 1)[0].slice(1)
+        }`;
+        if (data.lastInput === date) {
+          const update = doc(db, 'listProducts', data.id.split('|')[0]);
+          // update stock
+          const stockUp =
+            data.detail === 'Item Masuk'
+              ? Number(prod.data().stock) - Number(data.in)
+              : Number(prod.data().stock) + Number(data.out);
+          // delete from data history
+          updateDoc(update, { stock: stockUp, history: arrayRemove(historyProd) });
+          // change in local
+          set(() => ({ products: [] }));
+          prodNew.forEach((product) => {
+            if (product.lastInput !== date && product.code !== id) {
+              set((state) => ({ products: [...state.products, product] }));
+            }
+          });
+        }
+      });
     });
+  },
+  getField: async () => {
+    // template
+    // testing get all product with highest sale
+    // const test = await getDocs(query(collection(db, 'listProducts'), limit(10)));
+    // test.forEach((product) => {
+    //   let stockOut = 0;
+    //   product.data().history.forEach((history) => {
+    //     if (history.detail === 'Barang Keluar') {
+    //       // eslint-disable-next-line
+    //       stockOut = stockOut + Number(history.out);
+    //     }
+    //   });
+
+    //   set((state) => ({
+    //     test: [
+    //       ...state.test,
+    //       {
+    //         code: product.data().code,
+    //         name: product.data().name,
+    //         stock: stockOut,
+    //       },
+    //     ],
+    //   }));
+    // });
+    if (get().listName.length === 0) {
+      set(() => ({ listName: [] }));
+      const getData = await getDocs(collection(db, 'codeProducts'));
+      getData.forEach((config) => {
+        set((state) => ({
+          listName: [
+            ...state.listName,
+            {
+              code: config.data().code,
+              label: `${config.data().code} - ${config.data().name}`,
+            },
+          ],
+        }));
+      });
+    }
   },
   getProducts: async () => {
     const name = get().nameSelect;
@@ -157,7 +221,7 @@ export const historyProductStore = create((set, get) => ({
     const yearPrev = new Date().getFullYear() - 1;
     if (get().productsIndex.length === 0) {
       set(() => ({ productsIndex: [] }));
-      const getData = await getDocs(query(collection(db, 'listProducts'), orderBy('stock')));
+      const getData = await getDocs(query(collection(db, 'listProducts'), orderBy('code', 'asc'), limit(10)));
       getData.forEach((product) => {
         product.data().history.forEach((item) => {
           set((state) => ({
