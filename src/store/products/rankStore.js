@@ -9,7 +9,7 @@ import {
   Timestamp,
   serverTimestamp,
   query,
-  orderBy,
+  //   orderBy,
   limit,
   where,
   arrayRemove,
@@ -19,7 +19,7 @@ import { getAuth } from 'firebase/auth';
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-export const historyProductStore = create((set, get) => ({
+export const rankStore = create((set, get) => ({
   loading: true,
   openSnackbar: false,
   snackbarMessage: '',
@@ -198,36 +198,24 @@ export const historyProductStore = create((set, get) => ({
     const yearPrev = new Date().getFullYear() - 1;
     if (get().productsIndex.length === 0) {
       set(() => ({ productsIndex: [] }));
-      const getData = await getDocs(query(collection(db, 'listProducts'), orderBy('code', 'asc')));
+      const getData = await getDocs(query(collection(db, 'listProducts')));
       getData.forEach((product) => {
+        let stockOutVal = 0;
         product.data().history.forEach((item) => {
-          set((state) => ({
-            productsIndex: [
-              ...state.productsIndex,
-              {
-                id: `${product.id}|${item.timeStamp.seconds.toString()}`,
-                code: product.data().code,
-                name: product.data().name,
-                stock: item.stock,
-                detail: item.detail,
-                in: item.in,
-                out: item.out,
-                date: item.date !== undefined || null ? item.date : '-',
-                disc: (item.disc !== undefined || null || '') && item.out !== '0' ? item.disc : '',
-                total: item.out !== '0' ? item.total : '',
-                nameCustomer: item.out !== '0' ? item.nameCustomer : '',
-                lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
-                  item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
-                }`,
-              },
-            ],
-          }));
+          // eslint-disable-next-line
+          stockOutVal = stockOutVal + Number(item.out);
         });
+        set((state) => ({
+          productsIndex: [
+            ...state.productsIndex,
+            {
+              id: product.id,
+              code: product.data().code,
+              name: product.data().name,
+              stockOut: stockOutVal,
+            },
+          ],
+        }));
       });
     }
     set(() => ({ products: [] }));
@@ -246,18 +234,10 @@ export const historyProductStore = create((set, get) => ({
           products: [
             ...state.products,
             {
-              id: `${product.id}|${Math.random()}`,
+              id: product.id,
               code: product.code,
               name: product.name,
-              stock: product.stock,
-              detail: product.detail,
-              in: product.in,
-              out: product.out,
-              date: product.date !== undefined || null ? product.date : '-',
-              disc: (product.disc !== undefined || null || '') && product.out !== '0' ? product.disc : '',
-              total: product.out !== '0' ? product.total : '',
-              nameCustomer: product.out !== '0' ? product.nameCustomer : '',
-              lastInput: product.lastInput,
+              stockOut: product.stockOut,
             },
           ],
         }));
@@ -267,18 +247,10 @@ export const historyProductStore = create((set, get) => ({
           products: [
             ...state.products,
             {
-              id: `${product.id}|${Math.random()}`,
+              id: product.id,
               code: product.code,
               name: product.name,
-              detail: product.detail,
-              in: product.in,
-              out: product.out,
-              date: product.date !== undefined || null ? product.date : '-',
-              total: product.out !== '0' && product.detail !== 'Stok Opname' ? product.total : '-',
-              disc: (product.disc !== undefined || null || '') && product.out !== '0' ? product.disc : '-',
-              nameCustomer: product.out !== '0' && product.detail !== 'Stok Opname' ? product.nameCustomer : '-',
-              stock: product.stock,
-              lastInput: product.lastInput,
+              stockOut: product.stockOut,
             },
           ],
         }));

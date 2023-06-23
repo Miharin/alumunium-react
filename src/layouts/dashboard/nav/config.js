@@ -12,6 +12,7 @@ import {
   ReceiptRounded,
   KeyboardReturnRounded,
   PublishedWithChangesRounded,
+  StarOutlineRounded,
 } from '@mui/icons-material';
 import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
 // Import Router
@@ -113,6 +114,13 @@ export const NavSection = (onCloseNav) => {
             selected: 9,
             icon: <PublishedWithChangesRounded />,
             links: '/dashboard/products/stockOpname',
+          },
+          {
+            id: 'P8',
+            name: 'Ranking Penjualan Produk',
+            selected: 10,
+            icon: <StarOutlineRounded />,
+            links: '/dashboard/products/rank',
           },
         ],
       },

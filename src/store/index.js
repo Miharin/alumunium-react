@@ -10,3 +10,4 @@ export { transactionStore as useTransactionStore } from 'store/products/transact
 export { stockOpnameStore as useStockOpnameStore } from 'store/products/stockOpnameStore';
 export { returnStore as useReturnStore } from 'store/products/returnStore';
 export { historyStore as useHistoryStore } from 'store/products/historyStore';
+export { rankStore as useRankStore } from 'store/products/rankStore';
