@@ -61,7 +61,7 @@ export const rankStore = create((set, get) => ({
           monthSelect: month,
           loading: !state.loading,
         }))
-      : (set((state) => ({ nameSelect: '', loading: !state.loading })), get().deleteRemoveProductNew()),
+      : (set((state) => ({ monthSelect: '', loading: !state.loading })), get().deleteRemoveProductNew()),
   setRemoveProduct: (event) => {
     set((state) => ({ removeProduct: { ...state.removeProduct, [event.name]: event.value } }));
     set((state) =>
@@ -213,6 +213,15 @@ export const rankStore = create((set, get) => ({
               code: product.data().code,
               name: product.data().name,
               stockOut: stockOutVal,
+              lastInput: `${new Date(product.data().timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })} Pada Jam ${new Date(product.data().timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+                product.data().lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                product.data().lastInput.split('@', 1)[0].slice(1)
+              }`,
             },
           ],
         }));
@@ -238,6 +247,7 @@ export const rankStore = create((set, get) => ({
               code: product.code,
               name: product.name,
               stockOut: product.stockOut,
+              lastInput: product.lastInput,
             },
           ],
         }));
@@ -251,6 +261,7 @@ export const rankStore = create((set, get) => ({
               code: product.code,
               name: product.name,
               stockOut: product.stockOut,
+              lastInput: product.lastInput,
             },
           ],
         }));

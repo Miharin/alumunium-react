@@ -4,8 +4,8 @@ import React, { useEffect } from 'react';
 // @mui Components
 import {
   Slide,
-  // TextField,
-  // InputAdornment,
+  TextField,
+  InputAdornment,
   ClickAwayListener,
   Box,
   Paper,
@@ -17,9 +17,9 @@ import {
   TablePagination,
   TableRow,
   TableSortLabel,
-  // Autocomplete,
-  // Stack,
-  // Divider,
+  Autocomplete,
+  Stack,
+  Divider,
   Alert,
   Skeleton,
   Snackbar,
@@ -64,17 +64,17 @@ export default function RankProductPage() {
   const orderBy = useTableHelper((state) => state.orderBy);
   const descendingComparator = useTableHelper((state) => state.descendingComparator);
   const search = useTableHelper((state) => state.search);
-  // const setSearch = useTableHelper((state) => state.setSearch);
+  const setSearch = useTableHelper((state) => state.setSearch);
   const showSearch = useTableHelper((state) => state.showSearch);
   const setShowSearch = useTableHelper((state) => state.setShowSearch);
-  const filtered = useTableHelper((state) => state.filteredDetail);
+  const filtered = useTableHelper((state) => state.filteredRank);
   // End Helper Table
 
   // Start CodeProduct Initialization
   const loading = useRankStore((state) => state.loading);
-  // const listName = useRankStore((state) => state.listName);
-  // const nameSelect = useRankStore((state) => state.nameSelect);
-  // const setNameSelect = useRankStore((state) => state.setNameSelect);
+  const listName = useRankStore((state) => state.listName);
+  const nameSelect = useRankStore((state) => state.nameSelect);
+  const setNameSelect = useRankStore((state) => state.setNameSelect);
   const products = useRankStore((state) => state.products);
   const openSnackbar = useRankStore((state) => state.openSnackbar);
   const snackbarMessage = useRankStore((state) => state.snackbarMessage);
@@ -122,7 +122,7 @@ export default function RankProductPage() {
         </Snackbar>
         {showSearch ? (
           <ClickAwayListener onClickAway={setShowSearch}>
-            {/* <Slide direction="down" in={showSearch} mountOnEnter unmountOnExit>
+            <Slide direction="down" in={showSearch} mountOnEnter unmountOnExit>
               <Stack direction="row" spacing={0}>
                 <TextField
                   sx={{ my: 4, mx: 2 }}
@@ -162,7 +162,7 @@ export default function RankProductPage() {
                   )}
                 />
                 <Divider orientation="vertical" variant="middle" flexItem />
-                <Autocomplete
+                {/* <Autocomplete
                   freeSolo
                   isOptionEqualToValue={(option, value) => option.label === value.value}
                   sx={{ mx: 2 }}
@@ -193,11 +193,10 @@ export default function RankProductPage() {
                       InputProps={{ ...params.InputProps, disableUnderline: true }}
                       variant="standard"
                       placeholder="Bulan"
-                    />
-                  )}
-                />
+                    /> */}
+                {/* )} /> */}
               </Stack>
-            </Slide> */}
+            </Slide>
           </ClickAwayListener>
         ) : (
           <Slide direction="down" in={!showSearch} mountOnEnter unmountOnExit>
