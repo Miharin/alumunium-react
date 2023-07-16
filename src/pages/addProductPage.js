@@ -112,11 +112,11 @@ export default function AddProductPage() {
     getDataCode();
   }, [getProducts, getDataCode]);
 
-  const price1 = useRef(null);
-  const price2 = useRef(null);
-  const price3 = useRef(null);
-  const stock = useRef(null);
-  const stockWarning = useRef(null);
+  const price1 = useRef();
+  const price2 = useRef();
+  const price3 = useRef();
+  const stock = useRef();
+  const stockWarning = useRef();
   // Function for Filter Table
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property, order, orderBy);
@@ -244,6 +244,7 @@ export default function AddProductPage() {
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                     {columns.map((column) => {
                       const value = row[column.id];
+                      console.log(rows);
                       return (
                         <TableCell
                           key={column.id}
@@ -259,9 +260,14 @@ export default function AddProductPage() {
                               id="name"
                               name="name"
                               value={value}
-                              onChange={(event, newValue) =>
-                                newValue ? setName(newValue, row.id) : setName(newValue, row.id)
-                              }
+                              onChange={(event, newValue) => {
+                                if (newValue) {
+                                  setName(newValue, row.id);
+                                  console.log(price1.current.value);
+                                } else {
+                                  setName(newValue, row.id);
+                                }
+                              }}
                               options={listName}
                               renderInput={(params) => (
                                 <TextField
@@ -293,17 +299,50 @@ export default function AddProductPage() {
                               // eslint-disable-next-line
                               autoFocus={true}
                               name={column.id}
+                              defaultValue={
+                                column.id === 'price_1'
+                                  ? // eslint-disable-next-line
+                                    value !== null
+                                    ? value
+                                    : ''
+                                  : column.id === 'price_2'
+                                  ? // eslint-disable-next-line
+                                    value !== null
+                                    ? value
+                                    : ''
+                                  : column.id === 'price_3'
+                                  ? // eslint-disable-next-line
+                                    value !== null
+                                    ? value
+                                    : ''
+                                  : column.id === 'stock'
+                                  ? // eslint-disable-next-line
+                                    value !== null
+                                    ? value
+                                    : ''
+                                  : column.id === 'stockWarning'
+                                  ? // eslint-disable-next-line
+                                    value !== null
+                                    ? value
+                                    : ''
+                                  : null
+                              }
                               inputRef={
                                 column.id === 'price_1'
-                                  ? price1
+                                  ? // eslint-disable-next-line
+                                    price1
                                   : column.id === 'price_2'
-                                  ? price2
+                                  ? // eslint-disable-next-line
+                                    price2
                                   : column.id === 'price_3'
-                                  ? price3
+                                  ? // eslint-disable-next-line
+                                    price3
                                   : column.id === 'stock'
-                                  ? stock
+                                  ? // eslint-disable-next-line
+                                    stock
                                   : column.id === 'stockWarning'
-                                  ? stockWarning
+                                  ? // eslint-disable-next-line
+                                    stockWarning
                                   : null
                               }
                               inputProps={{
