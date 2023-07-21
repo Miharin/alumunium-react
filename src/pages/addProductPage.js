@@ -89,15 +89,15 @@ export default function AddProductPage() {
 
   // Declaration for Column of Table
   const columns = [
-    { id: 'code', label: 'Kode', minWidth: 150, align: 'left' },
-    { id: 'categories', label: 'Kategori', minWidth: 150, align: 'left' },
-    { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
-    { id: 'name', label: 'Nama', minWidth: 300, align: 'left' },
-    { id: 'price_1', label: 'Harga 1', minWidth: 150, align: 'left' },
-    { id: 'price_2', label: 'Harga 2', minWidth: 150, align: 'left' },
-    { id: 'price_3', label: 'Harga 3', minWidth: 150, align: 'left' },
-    { id: 'stock', label: 'Jumlah', minWidth: 150, align: 'left' },
-    { id: 'stockWarning', label: 'Peringatan Stok', minWidth: 200, align: 'left' },
+    { id: 'code', label: 'Kode', minWidth: 100, align: 'left' },
+    { id: 'categories', label: 'Kategori', minWidth: 100, align: 'left' },
+    { id: 'merk', label: 'Merk', minWidth: 100, align: 'left' },
+    { id: 'name', label: 'Nama', minWidth: 600, align: 'left' },
+    { id: 'price_1', label: 'Harga 1', minWidth: 100, align: 'left' },
+    { id: 'price_2', label: 'Harga 2', minWidth: 100, align: 'left' },
+    { id: 'price_3', label: 'Harga 3', minWidth: 100, align: 'left' },
+    { id: 'stock', label: 'Jumlah', minWidth: 100, align: 'left' },
+    { id: 'stockWarning', label: 'Peringatan Stok', minWidth: 100, align: 'left' },
     {
       id: 'action',
       label: 'Action',

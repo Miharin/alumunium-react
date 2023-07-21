@@ -232,8 +232,9 @@ export const historyProductStore = create((set, get) => ({
     }
     set(() => ({ products: [] }));
     get().productsIndex.forEach(async (product) => {
+      console.log(product);
       if (
-        (name !== '' && name === product.data().name) ||
+        (name !== '' && name === product.name) ||
         (name === '' &&
           month !== '' &&
           product.lastInput.toString().toLowerCase().includes(month.toString().toLowerCase()) &&
