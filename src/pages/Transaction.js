@@ -92,20 +92,20 @@ export default function Transaction() {
 
   // Declaration for Column of Table
   const columns = [
-    { id: 'code', label: 'Kode', minWidth: 150, align: 'left' },
-    { id: 'categories', label: 'Kategori', minWidth: 150, align: 'left' },
-    { id: 'merk', label: 'Merk', minWidth: 150, align: 'left' },
-    { id: 'name', label: 'Nama', minWidth: 300, align: 'left' },
-    { id: 'qty', label: 'Jumlah', minWidth: 150, align: 'left' },
-    { id: 'priceSelect', label: 'Pilihan Harga', minWidth: '150', align: 'left' },
-    { id: 'price', label: 'Harga', minWidth: 150, align: 'left' },
-    { id: 'disc', label: 'Potongan Reject', minWidth: 150, align: 'left' },
-    { id: 'disc2', label: 'Potongan Per Karung / Karton', minWidth: 150, align: 'left' },
-    { id: 'subtotal', label: 'Sub Total', minWidth: 150, align: 'left' },
+    { id: 'code', label: 'Kode', minWidth: 100, align: 'left' },
+    { id: 'categories', label: 'Kategori', minWidth: 100, align: 'left' },
+    { id: 'merk', label: 'Merk', minWidth: 100, align: 'left' },
+    { id: 'name', label: 'Nama', minWidth: 600, align: 'left' },
+    { id: 'qty', label: 'Jumlah', minWidth: 100, align: 'left' },
+    { id: 'priceSelect', label: 'Pilihan Harga', minWidth: '100', align: 'left' },
+    { id: 'price', label: 'Harga', minWidth: 100, align: 'left' },
+    { id: 'disc', label: 'Diskon Reject', minWidth: 100, align: 'left' },
+    { id: 'disc2', label: 'Diskon Per Karung / Karton', minWidth: 100, align: 'left' },
+    { id: 'subtotal', label: 'Sub Total', minWidth: 100, align: 'left' },
     {
       id: 'action',
       label: 'Action',
-      minWidth: 150,
+      minWidth: 100,
       align: 'left',
     },
   ];
