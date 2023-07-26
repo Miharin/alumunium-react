@@ -82,6 +82,7 @@ export default function AddProductPage() {
   const getProducts = useAddProductStore((state) => state.getProducts);
   const listProducts = useAddProductStore((state) => state.listProducts);
   const listName = useAddProductStore((state) => state.listName);
+  const date = useAddProductStore((state) => state.date);
   const setDate = useAddProductStore((state) => state.setDate);
   const getDataCode = useAddProductStore((state) => state.getDataCode);
   const rows = listProducts;
@@ -174,6 +175,10 @@ export default function AddProductPage() {
             //     }
             //   },
             // }}
+            defaultValue={
+              // eslint-disable-next-line
+              date !== null ? date : null
+            }
             type="text"
             onChange={(event) => setDate(event.target)}
             InputProps={{ disableUnderline: true }}
