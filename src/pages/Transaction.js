@@ -124,6 +124,7 @@ export default function Transaction() {
   const qty = React.useRef(null);
   const disc = React.useRef(null);
   const disc2 = React.useRef(null);
+  // console.log(rows);
   // Return Display
   return loading ? (
     <Skeleton sx={{ mx: 5, alignItems: 'center' }} animation="wave" height={300} variant="rectangular" />
@@ -320,6 +321,18 @@ export default function Transaction() {
                               required
                               // eslint-disable-next-line
                               autoFocus={true}
+                              defaultValue={
+                                column.id === 'disc'
+                                  ? // eslint-disable-next-line
+                                    value !== null
+                                    ? value
+                                    : ''
+                                  : column.id === 'disc2'
+                                  ? value !== null
+                                    ? value
+                                    : ''
+                                  : null
+                              }
                               inputRef={column.id === 'disc' ? disc : column.id === 'disc2' ? disc2 : null}
                               inputProps={{
                                 onKeyPress: (event) => {

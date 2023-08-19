@@ -193,10 +193,12 @@ export const transactionStore = create((set, get) => ({
     });
     set(() => ({ total: totalPrice }));
     set(() => ({ listProducts: deleteProduct }));
+    get().getProductName();
   },
   setTransactionMode: () => {
-    set((state) => ({
-      editProductId: state.listProducts.length,
+    const getProduct = get().listProducts[get().listProducts.length - 1];
+    set(() => ({
+      editProductId: getProduct.id + 1,
       transactionIcon: false,
     }));
     set(() => ({
