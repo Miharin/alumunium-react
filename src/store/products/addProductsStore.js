@@ -10,11 +10,12 @@ import {
   Timestamp,
   arrayUnion,
   doc,
-  // limit,
+  limit,
+  where,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { db } from 'config/firebaseConfig';
-import { orderBy } from 'lodash';
+// import { orderBy } from 'lodash';
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -292,8 +293,31 @@ export const addProductStore = create((set, get) => ({
       }));
     });
   },
-  getDataCode: async () => {
-    const getData = await getDocs(query(collection(db, 'codeProducts')), orderBy('timeStamp', 'desc'));
+  getDataCode: async (nameChoose) => {
+    let getData = {};
+    const getFromName = await getDocs(
+      query(
+        collection(db, 'codeProducts'),
+        where('name', '>=', nameChoose),
+        where('name', '<', `${nameChoose}z`),
+        limit(10)
+      )
+    );
+    const getFromCode = await getDocs(
+      query(
+        collection(db, 'codeProducts'),
+        where('code', '>=', nameChoose),
+        where('code', '<', `${nameChoose}z`),
+        limit(10)
+      )
+    );
+    if (getFromName.docs.length === 0) {
+      getData = getFromCode;
+    } else {
+      getData = getFromName;
+    }
+    set(() => ({ listCodeProducts: [] }));
+    // const getData = await getDocs(query(collection(db, 'codeProducts')), orderBy('timeStamp', 'desc'));
     getData.forEach((codeProduct) => {
       set((state) => ({ listCodeProducts: [...state.listCodeProducts, codeProduct.data()] }));
     });

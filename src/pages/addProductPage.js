@@ -110,8 +110,8 @@ export default function AddProductPage() {
   // Function for Getting Product Data from Database
   useEffect(() => {
     getProducts();
-    getDataCode();
-  }, [getProducts, getDataCode]);
+    // getDataCode();
+  }, [getProducts]);
 
   const price1 = useRef();
   const price2 = useRef();
@@ -249,7 +249,6 @@ export default function AddProductPage() {
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                     {columns.map((column) => {
                       const value = row[column.id];
-                      console.log(rows);
                       return (
                         <TableCell
                           key={column.id}
@@ -265,10 +264,16 @@ export default function AddProductPage() {
                               id="name"
                               name="name"
                               value={value}
+                              onInputChange={(event, newValue) => {
+                                if (newValue) {
+                                  getDataCode(newValue);
+                                } else {
+                                  getDataCode(newValue);
+                                }
+                              }}
                               onChange={(event, newValue) => {
                                 if (newValue) {
                                   setName(newValue, row.id);
-                                  console.log(price1.current.value);
                                 } else {
                                   setName(newValue, row.id);
                                 }

@@ -30,7 +30,7 @@ import { CheckCircleOutlineRounded, DoDisturbRounded, AddRounded } from '@mui/ic
 import { visuallyHidden } from '@mui/utils';
 
 // store
-import { useTableHelper, useTransactionStore } from 'store/index';
+import { useTableHelper, useMutationStore } from 'store/index';
 // End Import
 
 // Start Function of Filtered
@@ -55,7 +55,7 @@ const stableSort = (array, comparator) => {
 };
 // End Function of Filtered
 
-export default function Transaction() {
+export default function Mutation() {
   // Start Helper Table
   const page = useTableHelper((state) => state.page);
   const rowsPerPage = useTableHelper((state) => state.rowsPerPage);
@@ -68,40 +68,37 @@ export default function Transaction() {
   // End Helper Table
 
   // Start ListProduct Initialization
-  const loading = useTransactionStore((state) => state.loading);
-  const setName = useTransactionStore((state) => state.setName);
-  const nameCus = useTransactionStore((state) => state.nameCus);
-  const transactionMode = useTransactionStore((state) => state.transactionMode);
-  const setTransactionMode = useTransactionStore((state) => state.setTransactionMode);
-  const deleteTransactionNew = useTransactionStore((state) => state.deleteTransactionNew);
-  const setTransaction = useTransactionStore((state) => state.setTransaction);
-  const transactionIcon = useTransactionStore((state) => state.transactionIcon);
-  const setFinalTransaction = useTransactionStore((state) => state.setFinalTransaction);
-  const openSnackbar = useTransactionStore((state) => state.openSnackbar);
-  const snackbarMessage = useTransactionStore((state) => state.snackbarMessage);
-  const setOpenSnackbar = useTransactionStore((state) => state.setOpenSnackbar);
-  const getProducts = useTransactionStore((state) => state.getProducts);
-  const listProducts = useTransactionStore((state) => state.listProducts);
-  const listName = useTransactionStore((state) => state.listName);
-  const setPriceSelection = useTransactionStore((state) => state.setPriceSelection);
-  const total = useTransactionStore((state) => state.total);
-  const setDate = useTransactionStore((state) => state.setDate);
-  const getDataCode = useTransactionStore((state) => state.getDataCode);
+  const loading = useMutationStore((state) => state.loading);
+  const setName = useMutationStore((state) => state.setName);
+  const transactionMode = useMutationStore((state) => state.transactionMode);
+  const setTransactionMode = useMutationStore((state) => state.setTransactionMode);
+  const deleteTransactionNew = useMutationStore((state) => state.deleteTransactionNew);
+  const setTransaction = useMutationStore((state) => state.setTransaction);
+  const transactionIcon = useMutationStore((state) => state.transactionIcon);
+  const setFinalTransaction = useMutationStore((state) => state.setFinalTransaction);
+  const openSnackbar = useMutationStore((state) => state.openSnackbar);
+  const snackbarMessage = useMutationStore((state) => state.snackbarMessage);
+  const setOpenSnackbar = useMutationStore((state) => state.setOpenSnackbar);
+  const getProducts = useMutationStore((state) => state.getProducts);
+  const listProducts = useMutationStore((state) => state.listProducts);
+  const listName = useMutationStore((state) => state.listName);
+  // const setPriceSelection = useMutationStore((state) => state.setPriceSelection);
+  // const total = useMutationStore((state) => state.total);
+  const setDate = useMutationStore((state) => state.setDate);
+  const getDataCode = useMutationStore((state) => state.getDataCode);
   const rows = listProducts;
   // End ListProduct Initialization
 
   // Declaration for Column of Table
   const columns = [
-    { id: 'code', label: 'Kode', minWidth: 100, align: 'left' },
-    { id: 'categories', label: 'Kategori', minWidth: 100, align: 'left' },
-    { id: 'merk', label: 'Merk', minWidth: 100, align: 'left' },
-    { id: 'name', label: 'Nama', minWidth: 600, align: 'left' },
-    { id: 'qty', label: 'Jumlah', minWidth: 100, align: 'left' },
-    { id: 'priceSelect', label: 'Pilihan Harga', minWidth: '100', align: 'left' },
-    { id: 'price', label: 'Harga', minWidth: 100, align: 'left' },
-    { id: 'disc', label: 'Diskon Reject', minWidth: 100, align: 'left' },
-    { id: 'disc2', label: 'Diskon Per Karung / Karton', minWidth: 100, align: 'left' },
-    { id: 'subtotal', label: 'Sub Total', minWidth: 100, align: 'left' },
+    { id: 'codeBox', label: 'Kode Box', minWidth: 150, align: 'left' },
+    { id: 'nameBox', label: 'Nama Barang Box', minWidth: 300, align: 'left' },
+    { id: 'qtyBox', label: 'Jumlah Box', minWidth: 100, align: 'left' },
+    { id: 'qtyBoxPack', label: 'Isi Box / Pak', minWidth: 100, align: 'left' },
+    { id: 'totalPackConvert', label: 'Total Pak', minWidth: 100, align: 'left' },
+    { id: 'codePack', label: 'Kode Pak', minWidth: 150, align: 'left' },
+    { id: 'namePack', label: 'Nama Barang Pak', minWidth: 300, align: 'left' },
+    { id: 'totalPackIn', label: 'Total Pak', minWidth: 100, align: 'left' },
     {
       id: 'action',
       label: 'Action',
@@ -120,9 +117,10 @@ export default function Transaction() {
     onRequestSort(event, property, order, orderBy);
   };
 
-  const qty = React.useRef(null);
+  const qtyBox = React.useRef(null);
+  const qtyBoxPack = React.useRef(null);
   const disc = React.useRef(null);
-  const disc2 = React.useRef(null);
+  // const disc2 = React.useRef(null);
   // console.log(rows);
   // Return Display
   return loading ? (
@@ -130,10 +128,10 @@ export default function Transaction() {
   ) : (
     <>
       <Helmet>
-        <title> Transaksi | Alu Jaya </title>
+        <title> Mutasi Box ke Pak | Alu Jaya </title>
       </Helmet>
       <Paper sx={{ mx: 5, alignItems: 'center', pt: 1 }} elevation={5}>
-        <Stack direction="row" spacing={2} sx={{ m: 2 }}>
+        {/* <Stack direction="row" spacing={2} sx={{ m: 2 }}>
           <TextField
             required
             fullWidth
@@ -154,7 +152,7 @@ export default function Transaction() {
             variant="standard"
             placeholder="Tanggal"
           />
-        </Stack>
+        </Stack> */}
         {/* Start Function Showing Search and Filter */}
         <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={setOpenSnackbar}>
           <Alert onClose={setOpenSnackbar} severity="success" sx={{ width: '100%' }}>
@@ -227,18 +225,19 @@ export default function Transaction() {
                           sx={{ borderBottom: '1px solid #000' }}
                         >
                           {/* Start Add Rows */}
-                          {nameCus !== '' && transactionMode === true && column.id === 'name' ? (
+                          {transactionMode === true &&
+                          (column.id === 'nameBox' || (column.id === 'namePack' && row.nameBox !== '')) ? (
                             <Autocomplete
                               fullWidth
                               freeSolo
                               id="name"
-                              name="name"
+                              name={column.id}
                               value={value}
                               onInputChange={(event, newValue) =>
                                 newValue ? getDataCode(newValue) : getDataCode(newValue)
                               }
                               onChange={(event, newValue) =>
-                                newValue ? setName(newValue, row.id) : setName(newValue, row.id)
+                                newValue ? setName(newValue, row.id, column.id) : setName(newValue, row.id)
                               }
                               options={listName}
                               renderInput={(params) => (
@@ -251,7 +250,7 @@ export default function Transaction() {
                                 />
                               )}
                             />
-                          ) : nameCus !== '' && transactionMode === true && column.id === 'action' ? (
+                          ) : transactionMode === true && column.id === 'action' ? (
                             <ButtonGroup variant="outlined">
                               <IconButton onClick={() => deleteTransactionNew(row.id)}>
                                 <Tooltip title="Cancel">
@@ -259,10 +258,9 @@ export default function Transaction() {
                                 </Tooltip>
                               </IconButton>
                             </ButtonGroup>
-                          ) : nameCus !== '' &&
-                            row.priceSelect !== '' &&
+                          ) : row.nameBox !== '' &&
                             transactionMode === true &&
-                            column.id === 'qty' ? (
+                            (column.id === 'qtyBox' || column.id === 'qtyBoxPack') ? (
                             <TextField
                               required
                               fullWidth
@@ -271,13 +269,13 @@ export default function Transaction() {
                               name={column.id}
                               /* eslint-disable */
                               onInput={(e) => {
-                                e.target.name === 'qty'
+                                e.target.name === 'qtyBox' || e.target.name === 'qtyBox/pack'
                                   ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 3))
                                   : (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 5));
                               }}
                               /* eslint-disable */
                               type="number"
-                              inputRef={qty}
+                              inputRef={column.id === 'qtyBox' ? qtyBox : qtyBoxPack}
                               value={value}
                               onChange={(event) => setTransaction(event.target, row.id)}
                               InputProps={{
@@ -295,100 +293,6 @@ export default function Transaction() {
                               placeholder={column.label}
                               sx={{ minWidth: column.minWidth }}
                             />
-                          ) : nameCus !== '' && transactionMode === true && column.id === 'subtotal' ? (
-                            value !== '0' ? (
-                              new Intl.NumberFormat('in-in', {
-                                style: 'currency',
-                                currency: 'idr',
-                                maximumSignificantDigits: 4,
-                              }).format(value)
-                            ) : (
-                              'Rp.0'
-                            )
-                          ) : nameCus !== '' && transactionMode === true && column.id === 'price' ? (
-                            value !== '' ? (
-                              new Intl.NumberFormat('in-in', {
-                                style: 'currency',
-                                currency: 'idr',
-                                maximumSignificantDigits: 4,
-                              }).format(value)
-                            ) : (
-                              'Rp.0'
-                            )
-                          ) : nameCus !== '' &&
-                            row.priceSelect !== '' &&
-                            transactionMode === true &&
-                            (column.id === 'disc' || column.id === 'disc2') ? (
-                            <TextField
-                              required
-                              // eslint-disable-next-line
-                              autoFocus={true}
-                              defaultValue={
-                                column.id === 'disc'
-                                  ? // eslint-disable-next-line
-                                    value !== null
-                                    ? value
-                                    : ''
-                                  : column.id === 'disc2'
-                                  ? value !== null
-                                    ? value
-                                    : ''
-                                  : null
-                              }
-                              inputRef={column.id === 'disc' ? disc : column.id === 'disc2' ? disc2 : null}
-                              inputProps={{
-                                onKeyPress: (event) => {
-                                  const { key } = event;
-                                  if (key === 'Enter') {
-                                    /* eslint-disable */
-
-                                    if (event.target.name === 'disc') {
-                                      disc2.current.focus();
-                                    }
-                                    /* eslint-disable */
-                                  }
-                                },
-                              }}
-                              name={column.id}
-                              /* eslint-disable */
-                              onInput={(e) => {
-                                e.target.name === 'qty'
-                                  ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 3))
-                                  : (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 5));
-                              }}
-                              /* eslint-disable */
-                              type="number"
-                              onChange={(event) => setTransaction(event.target, row.id)}
-                              InputProps={{ disableUnderline: true }}
-                              variant="standard"
-                              placeholder={column.label}
-                              sx={{ minWidth: column.minWidth }}
-                            />
-                          ) : nameCus !== '' && transactionMode === true && column.id === 'priceSelect' ? (
-                            <Autocomplete
-                              freeSolo
-                              fullWidth
-                              id={column.id}
-                              name={column.id}
-                              value={value.label}
-                              onChange={(event, newValue) => {
-                                newValue ? setPriceSelection(row.id, newValue) : setPriceSelection(row.id, newValue);
-                              }}
-                              options={[
-                                { id: 'price_1', label: 'Harga 1' },
-                                { id: 'price_2', label: 'Harga 2' },
-                                { id: 'price_3', label: 'Harga 3' },
-                              ]}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  sx={{ minWidth: 100 }}
-                                  InputProps={{ ...params.InputProps, disableUnderline: true }}
-                                  variant="standard"
-                                  placeholder="Harga"
-                                />
-                              )}
-                            />
                           ) : (
                             value
                           )}
@@ -399,17 +303,6 @@ export default function Transaction() {
                 ))}
               {/* End Add Rows */}
               {/* End Define Rows */}
-              <TableRow>
-                <TableCell colSpan={3} sx={{ borderBottom: '1px solid #000' }} />
-                <TableCell colSpan={3} sx={{ borderBottom: '1px solid #000' }}>
-                  Total
-                </TableCell>
-                <TableCell sx={{ borderBottom: '1px solid #000' }}>
-                  {total === 0
-                    ? 'Rp.0.000,00'
-                    : new Intl.NumberFormat('in-in', { style: 'currency', currency: 'idr' }).format(total)}
-                </TableCell>
-              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>

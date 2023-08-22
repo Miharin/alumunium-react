@@ -17,6 +17,7 @@ import StockOpnamePage from 'pages/stockOpnamePage';
 import ReturnPage from 'pages/returnPages';
 import HistoryPage from 'pages/historyPage';
 import RankProductPage from 'pages/rankProduct';
+import Mutation from 'pages/MutationBoxToPack';
 import { useAuth } from 'store/index';
 
 // ----------------------------------------------------------------------
@@ -40,6 +41,7 @@ export default function Router() {
             { path: 'products/history', element: <HistoryProductPage /> },
             { path: 'products/stockOpname', element: <StockOpnamePage /> },
             { path: 'products/return', element: <ReturnPage /> },
+            { path: 'products/mutation', element: <Mutation /> },
             { path: 'products/rank', element: <RankProductPage /> },
             { path: 'products', element: <ProductList /> },
             { path: 'history', element: <HistoryPage /> },

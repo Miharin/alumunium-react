@@ -11,3 +11,4 @@ export { stockOpnameStore as useStockOpnameStore } from 'store/products/stockOpn
 export { returnStore as useReturnStore } from 'store/products/returnStore';
 export { historyStore as useHistoryStore } from 'store/products/historyStore';
 export { rankStore as useRankStore } from 'store/products/rankStore';
+export { mutationStore as useMutationStore } from 'store/products/mutation';
