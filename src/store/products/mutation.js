@@ -145,56 +145,53 @@ export const mutationStore = create((set, get) => ({
       product.lastInput = getAuth().currentUser.email;
     });
     const getOpenSnackbar = get().setOpenSnackbar;
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
     productAddFinal.forEach(async (product) => {
+      let productBox;
+      let productPack;
+      let boxID;
+      let PackID;
+      // Box
       const getDocBox = await getDocs(
         query(collection(db, 'listProducts'), where('name', '==', product.nameBox), limit(1))
       );
-      console.log(getDocBox);
+      getDocBox.forEach((item) => {
+        boxID = item.id;
+        productBox = {
+          history: arrayUnion({
+            date: new Date().toLocaleDateString('in-in', options),
+            detail: 'Mutasi Barang',
+            in: '0',
+            out: product.qtyBox,
+            stock: (Number(item.data().stock) - Number(product.qtyBox)).toString(),
+          }),
+          stock: (Number(item.data().stock) - Number(product.qtyBox)).toString(),
+        };
+      });
+      // Pack
+      const getDocPack = await getDocs(
+        query(collection(db, 'listProducts'), where('name', '==', product.namePack), limit(1))
+      );
+      getDocPack.forEach((item) => {
+        PackID = item.id;
+        productPack = {
+          history: arrayUnion({
+            date: new Date().toLocaleDateString('in-in', options),
+            detail: 'Mutasi Barang',
+            in: product.totalPackIn.toString(),
+            out: '0',
+            stock: (Number(item.data().stock) + Number(product.totalPackIn)).toString(),
+          }),
+          stock: (Number(item.data().stock) + Number(product.totalPackIn)).toString(),
+        };
+      });
+      const packData = doc(db, 'listProducts', PackID);
+      const boxData = doc(db, 'listProducts', boxID);
+      await updateDoc(packData, productBox);
+      await updateDoc(boxData, productPack);
     });
-    // const docIdEdit = [];
-    // const docId = await getDocs(collection(db, 'listProducts'));
-    // docId.forEach((item) => {
-    //   docIdEdit.push({ id: item.id, code: item.data().code, stock: item.data().stock });
-    // });
-    // const filter = productAddFinal.filter((product) =>
-    //   // eslint-disable-next-line
-    //   docIdEdit.some((Id) =>
-    //     product.code === Id.code
-    //       ? ((product.history = {
-    //           detail: 'Barang Keluar',
-    //           date: dateFinal,
-    //           nameCustomer: product.nameCustomer,
-    //           total: product.subtotal,
-    //           out: product.qty,
-    //           stock: (Number(Id.stock) - Number(product.qty)).toString(),
-    //           in: '0',
-    //           disc: product.disc,
-    //           priceSelect: product.priceSelect,
-    //           lastInput: product.lastInput,
-    //           timeStamp: product.timeStamp,
-    //         }),
-    //         (product.stock = (Number(Id.stock) - Number(product.qty)).toString()),
-    //         (product.id = Id.id))
-    //       : null
-    //   )
-    // );
-    // let TotalProduct = 0;
-    // if (filter.length > 0) {
-    //   filter.forEach(async (product) => {
-    //     const updateDocument = doc(db, 'listProducts', product.id);
-    //     let filterData = {};
-    //     filterData = {
-    //       stock: product.stock,
-    //       lastInput: product.lastInput,
-    //       timeStamp: product.timeStamp,
-    //       history: arrayUnion(product.history),
-    //     };
-    //     await updateDoc(updateDocument, filterData);
-    //     TotalProduct += 1;
-    //   });
-    // }
     await delay(1000);
-    set(() => ({ snackbarMessage: ` Produk Berhasil Transaksi !` }));
+    set(() => ({ snackbarMessage: `Mutasi Berhasil !` }));
     getOpenSnackbar();
     get().getProducts();
   },

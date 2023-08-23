@@ -13,6 +13,7 @@ import {
   KeyboardReturnRounded,
   PublishedWithChangesRounded,
   StarOutlineRounded,
+  CurrencyExchangeRounded,
 } from '@mui/icons-material';
 import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
 // Import Router
@@ -122,6 +123,13 @@ export const NavSection = (onCloseNav) => {
             icon: <StarOutlineRounded />,
             links: '/dashboard/products/rank',
           },
+          {
+            id: 'P9',
+            name: 'Mutasi Box ke Pack',
+            selected: 11,
+            icon: <CurrencyExchangeRounded />,
+            links: '/dashboard/products/mutation',
+          },
         ],
       },
     ];
@@ -191,6 +199,13 @@ export const NavSection = (onCloseNav) => {
             selected: 9,
             icon: <PublishedWithChangesRounded />,
             links: '/dashboard/products/stockOpname',
+          },
+          {
+            id: 'P8',
+            name: 'Mutasi Box ke Pak',
+            selected: 11,
+            icon: <CurrencyExchangeRounded />,
+            links: '/dashboard/products/mutation',
           },
         ],
       },
