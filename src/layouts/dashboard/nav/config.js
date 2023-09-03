@@ -130,6 +130,13 @@ export const NavSection = (onCloseNav) => {
             icon: <CurrencyExchangeRounded />,
             links: '/dashboard/products/mutation',
           },
+          {
+            id: 'P10',
+            name: 'Mutasi Roda',
+            selected: 12,
+            icon: <CurrencyExchangeRounded />,
+            links: '/dashboard/products/mutation-wheel',
+          },
         ],
       },
     ];

@@ -30,7 +30,7 @@ import { CheckCircleOutlineRounded, DoDisturbRounded, AddRounded } from '@mui/ic
 import { visuallyHidden } from '@mui/utils';
 
 // store
-import { useTableHelper, useMutationStore } from 'store/index';
+import { useTableHelper, useMutationWheelStore } from 'store/index';
 // End Import
 
 // Start Function of Filtered
@@ -68,37 +68,38 @@ export default function MutationWheel() {
   // End Helper Table
 
   // Start ListProduct Initialization
-  const loading = useMutationStore((state) => state.loading);
-  const setName = useMutationStore((state) => state.setName);
-  const transactionMode = useMutationStore((state) => state.transactionMode);
-  const setTransactionMode = useMutationStore((state) => state.setTransactionMode);
-  const deleteTransactionNew = useMutationStore((state) => state.deleteTransactionNew);
-  const setTransaction = useMutationStore((state) => state.setTransaction);
-  const transactionIcon = useMutationStore((state) => state.transactionIcon);
-  const setFinalTransaction = useMutationStore((state) => state.setFinalTransaction);
-  const openSnackbar = useMutationStore((state) => state.openSnackbar);
-  const snackbarMessage = useMutationStore((state) => state.snackbarMessage);
-  const setOpenSnackbar = useMutationStore((state) => state.setOpenSnackbar);
-  const getProducts = useMutationStore((state) => state.getProducts);
-  const listProducts = useMutationStore((state) => state.listProducts);
-  const listName = useMutationStore((state) => state.listName);
-  // const setPriceSelection = useMutationStore((state) => state.setPriceSelection);
-  // const total = useMutationStore((state) => state.total);
-  const setDate = useMutationStore((state) => state.setDate);
-  const getDataCode = useMutationStore((state) => state.getDataCode);
+  const loading = useMutationWheelStore((state) => state.loading);
+  const setName = useMutationWheelStore((state) => state.setName);
+  const transactionMode = useMutationWheelStore((state) => state.transactionMode);
+  const setTransactionMode = useMutationWheelStore((state) => state.setTransactionMode);
+  const deleteTransactionNew = useMutationWheelStore((state) => state.deleteTransactionNew);
+  const setTransaction = useMutationWheelStore((state) => state.setTransaction);
+  const transactionIcon = useMutationWheelStore((state) => state.transactionIcon);
+  const setFinalTransaction = useMutationWheelStore((state) => state.setFinalTransaction);
+  const openSnackbar = useMutationWheelStore((state) => state.openSnackbar);
+  const snackbarMessage = useMutationWheelStore((state) => state.snackbarMessage);
+  const setOpenSnackbar = useMutationWheelStore((state) => state.setOpenSnackbar);
+  const getProducts = useMutationWheelStore((state) => state.getProducts);
+  const listProducts = useMutationWheelStore((state) => state.listProducts);
+  const listName = useMutationWheelStore((state) => state.listName);
+  // const setPriceSelection = useMutationWheelStore((state) => state.setPriceSelection);
+  // const total = useMutationWheelStore((state) => state.total);
+  // const setDate = useMutationWheelStore((state) => state.setDate);
+  const getDataCode = useMutationWheelStore((state) => state.getDataCode);
   const rows = listProducts;
   // End ListProduct Initialization
 
   // Declaration for Column of Table
   const columns = [
-    { id: 'codeBox', label: 'Kode Box', minWidth: 150, align: 'left' },
-    { id: 'nameBox', label: 'Nama Barang Box', minWidth: 300, align: 'left' },
-    { id: 'qtyBox', label: 'Jumlah Box', minWidth: 100, align: 'left' },
-    { id: 'qtyBoxPack', label: 'Isi Box / Pak', minWidth: 100, align: 'left' },
-    { id: 'totalPackConvert', label: 'Total Pak', minWidth: 100, align: 'left' },
-    { id: 'codePack', label: 'Kode Pak', minWidth: 150, align: 'left' },
-    { id: 'namePack', label: 'Nama Barang Pak', minWidth: 300, align: 'left' },
-    { id: 'totalPackIn', label: 'Total Pak', minWidth: 100, align: 'left' },
+    { id: 'codeBox', label: 'Kode', minWidth: 150, align: 'left' },
+    { id: 'nameBox', label: 'Nama Barang', minWidth: 300, align: 'left' },
+    { id: 'qtyBox', label: 'Jumlah', minWidth: 100, align: 'left' },
+    { id: 'codeBox2', label: 'Kode', minWidth: 150, align: 'left' },
+    { id: 'nameBox2', label: 'Nama Barang', minWidth: 300, align: 'left' },
+    { id: 'qtyBox2', label: 'Jumlah', minWidth: 100, align: 'left' },
+    { id: 'codePack', label: 'Kode Set', minWidth: 150, align: 'left' },
+    { id: 'namePack', label: 'Nama Barang Set', minWidth: 300, align: 'left' },
+    { id: 'totalPackIn', label: 'Total', minWidth: 100, align: 'left' },
     {
       id: 'action',
       label: 'Action',
@@ -128,7 +129,7 @@ export default function MutationWheel() {
   ) : (
     <>
       <Helmet>
-        <title> Mutasi Box ke Pak | Alu Jaya </title>
+        <title> Mutasi Roda | Alu Jaya </title>
       </Helmet>
       <Paper sx={{ mx: 5, alignItems: 'center', pt: 1 }} elevation={5}>
         {/* <Stack direction="row" spacing={2} sx={{ m: 2 }}>
@@ -226,7 +227,9 @@ export default function MutationWheel() {
                         >
                           {/* Start Add Rows */}
                           {transactionMode === true &&
-                          (column.id === 'nameBox' || (column.id === 'namePack' && row.nameBox !== '')) ? (
+                          (column.id === 'nameBox' ||
+                            column.id === 'nameBox2' ||
+                            (column.id === 'namePack' && row.nameBox !== '' && row.nameBox2 !== '')) ? (
                             <Autocomplete
                               fullWidth
                               freeSolo
@@ -260,7 +263,7 @@ export default function MutationWheel() {
                             </ButtonGroup>
                           ) : row.nameBox !== '' &&
                             transactionMode === true &&
-                            (column.id === 'qtyBox' || column.id === 'qtyBoxPack') ? (
+                            (column.id === 'qtyBox' || column.id === 'qtyBox2') ? (
                             <TextField
                               required
                               fullWidth
@@ -269,7 +272,7 @@ export default function MutationWheel() {
                               name={column.id}
                               /* eslint-disable */
                               onInput={(e) => {
-                                e.target.name === 'qtyBox' || e.target.name === 'qtyBox/pack'
+                                e.target.name === 'qtyBox' || e.target.name === 'qtyBox2'
                                   ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 3))
                                   : (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 5));
                               }}

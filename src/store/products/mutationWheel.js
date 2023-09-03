@@ -20,12 +20,14 @@ export const mutationWheelStore = create((set, get) => ({
   date: '',
   transaction: {
     id: '',
-    codeBox: '',
+    codeBox1: '',
+    codeBox2: '',
     codePack: '',
     nameBox: '',
+    nameBox2: '',
     namePack: '',
     qtyBox: '0',
-    qtyBoxPack: '0',
+    qtyBox2: '0',
     totalPackConvert: '',
     totalPackIn: '',
   },
@@ -56,6 +58,9 @@ export const mutationWheelStore = create((set, get) => ({
           if (name === 'nameBox') {
             product.codeBox = nameChoose.code;
             product.nameBox = nameChoose.label.split(' - ')[1];
+          } else if (name === 'nameBox2') {
+            product.codeBox2 = nameChoose.code;
+            product.nameBox2 = nameChoose.label.split(' - ')[1];
           } else if (name === 'namePack') {
             product.codePack = nameChoose.code;
             product.namePack = nameChoose.label.split(' - ')[1];
@@ -69,9 +74,11 @@ export const mutationWheelStore = create((set, get) => ({
       getProduct.forEach(async (product) => {
         if (product.id === id) {
           product.codeBox = '';
+          product.codeBox2 = '';
           product.codePack = '';
           product.nameBox = '';
-          product.codePack = '';
+          product.codeBox2 = '';
+          product.namePack = '';
           set((state) => ({ listProducts: [...state.listProducts, product] }));
           get().getProductName();
         }
@@ -114,19 +121,21 @@ export const mutationWheelStore = create((set, get) => ({
     getProduct.forEach(async (product) => {
       if (product.id === id) {
         product[event.name] = event.value;
-        if (product.qtyBox !== '0' || product.qtyBoxPack !== '0') {
-          const total = product.qtyBox * product.qtyBoxPack;
+        if (product.qtyBox !== '0' && product.qtyBox2 !== '0') {
+          const total = (Number(product.qtyBox) + Number(product.qtyBox2)) / 4;
           product.totalPackConvert = total;
           product.totalPackIn = total;
         }
       }
       const productRules =
         product.codeBox !== '' &&
+        product.codeBox2 !== '' &&
         product.codePack !== '' &&
         product.nameBox !== '' &&
+        product.nameBox2 !== '' &&
         product.namePack !== '' &&
         product.qtyBox !== '0' &&
-        product.qtyBoxPack !== '0' &&
+        product.qtyBox2 !== '0' &&
         product.totalPackConvert !== '' &&
         product.totalPackIn !== '';
       set(() => (productRules ? { transactionIcon: true } : { transactionIcon: false }));
@@ -148,8 +157,10 @@ export const mutationWheelStore = create((set, get) => ({
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     productAddFinal.forEach(async (product) => {
       let productBox;
+      let productBox2;
       let productPack;
       let boxID;
+      let boxID2;
       let PackID;
       // Box
       const getDocBox = await getDocs(
@@ -166,6 +177,22 @@ export const mutationWheelStore = create((set, get) => ({
             stock: (Number(item.data().stock) - Number(product.qtyBox)).toString(),
           }),
           stock: (Number(item.data().stock) - Number(product.qtyBox)).toString(),
+        };
+      });
+      const getDocBox2 = await getDocs(
+        query(collection(db, 'listProducts'), where('name', '==', product.nameBox2), limit(1))
+      );
+      getDocBox2.forEach((item) => {
+        boxID2 = item.id;
+        productBox2 = {
+          history: arrayUnion({
+            date: new Date().toLocaleDateString('in-in', options),
+            detail: 'Mutasi Barang',
+            in: '0',
+            out: product.qtyBox2,
+            stock: (Number(item.data().stock) - Number(product.qtyBox2)).toString(),
+          }),
+          stock: (Number(item.data().stock) - Number(product.qtyBox2)).toString(),
         };
       });
       // Pack
@@ -187,7 +214,9 @@ export const mutationWheelStore = create((set, get) => ({
       });
       const packData = doc(db, 'listProducts', PackID);
       const boxData = doc(db, 'listProducts', boxID);
+      const boxData2 = doc(db, 'listProducts', boxID2);
       await updateDoc(packData, productBox);
+      await updateDoc(boxData2, productBox2);
       await updateDoc(boxData, productPack);
     });
     await delay(1000);
@@ -203,12 +232,15 @@ export const mutationWheelStore = create((set, get) => ({
     deleteProduct.forEach((product) => {
       totalPrice += product.subtotal;
       const productRules =
-        product.nameCustomer !== '' &&
-        product.code !== '' &&
-        product.categories !== '' &&
-        product.merk !== '' &&
-        product.name !== '' &&
-        product.stock !== '';
+        product.codeBox !== '' &&
+        product.codeBox2 !== '' &&
+        product.codePack !== '' &&
+        product.nameBox !== '' &&
+        product.nameBox2 !== '' &&
+        product.namePack !== '' &&
+        product.qtyBox !== '0' &&
+        product.totalPackConvert !== '' &&
+        product.totalPackIn !== '';
       set(() => (productRules ? { transactionIcon: true } : { transactionIcon: false }));
     });
     set(() => ({ total: totalPrice }));
@@ -224,12 +256,14 @@ export const mutationWheelStore = create((set, get) => ({
     set(() => ({
       transaction: {
         id: '',
-        codeBox: '',
+        codeBox1: '',
+        codeBox2: '',
         codePack: '',
         nameBox: '',
+        nameBox2: '',
         namePack: '',
         qtyBox: '0',
-        qtyBoxPack: '',
+        qtyBox2: '0',
         totalPackConvert: '',
         totalPackIn: '',
       },
@@ -240,11 +274,13 @@ export const mutationWheelStore = create((set, get) => ({
         {
           id: state.editProductId,
           codeBox: state.transaction.codeBox,
+          codeBox2: state.transaction.codeBox2,
           codePack: state.transaction.codePack,
           nameBox: state.transaction.nameBox,
+          nameBox2: state.transaction.nameBox2,
           namePack: state.transaction.namePack,
           qtyBox: state.transaction.qtyBox,
-          qtyBoxPack: state.transaction.qtyBox,
+          qtyBox2: state.transaction.qtyBox2,
           totalPackConvert: state.transaction.totalPackConvert,
           totalPackIn: state.transaction.totalPackIn,
         },
@@ -277,6 +313,7 @@ export const mutationWheelStore = create((set, get) => ({
   getProducts: async () => {
     set((state) => ({
       editProductId: state.listProducts.length,
+      transactionIcon: false,
     }));
     set((state) => ({
       transactionMode: true,
@@ -285,11 +322,13 @@ export const mutationWheelStore = create((set, get) => ({
         {
           id: state.editProductId,
           codeBox: state.transaction.codeBox,
+          codeBox2: state.transaction.codeBox2,
           codePack: state.transaction.codePack,
           nameBox: state.transaction.nameBox,
+          nameBox2: state.transaction.nameBox2,
           namePack: state.transaction.namePack,
           qtyBox: state.transaction.qtyBox,
-          qtyBoxPack: state.transaction.qtyBox,
+          qtyBox2: state.transaction.qtyBox2,
           totalPackConvert: state.transaction.totalPackConvert,
           totalPackIn: state.transaction.totalPackIn,
         },

@@ -84,7 +84,7 @@ export default function Mutation() {
   const listName = useMutationStore((state) => state.listName);
   // const setPriceSelection = useMutationStore((state) => state.setPriceSelection);
   // const total = useMutationStore((state) => state.total);
-  const setDate = useMutationStore((state) => state.setDate);
+  // const setDate = useMutationStore((state) => state.setDate);
   const getDataCode = useMutationStore((state) => state.getDataCode);
   const rows = listProducts;
   // End ListProduct Initialization
@@ -269,7 +269,7 @@ export default function Mutation() {
                               name={column.id}
                               /* eslint-disable */
                               onInput={(e) => {
-                                e.target.name === 'qtyBox' || e.target.name === 'qtyBox/pack'
+                                e.target.name === 'qtyBox' || e.target.name === 'qtyBoxPack'
                                   ? (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 3))
                                   : (e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 5));
                               }}

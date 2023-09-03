@@ -71,7 +71,7 @@ export const mutationStore = create((set, get) => ({
           product.codeBox = '';
           product.codePack = '';
           product.nameBox = '';
-          product.codePack = '';
+          product.namePack = '';
           set((state) => ({ listProducts: [...state.listProducts, product] }));
           get().getProductName();
         }
@@ -203,12 +203,14 @@ export const mutationStore = create((set, get) => ({
     deleteProduct.forEach((product) => {
       totalPrice += product.subtotal;
       const productRules =
-        product.nameCustomer !== '' &&
-        product.code !== '' &&
-        product.categories !== '' &&
-        product.merk !== '' &&
-        product.name !== '' &&
-        product.stock !== '';
+        product.codeBox !== '' &&
+        product.codePack !== '' &&
+        product.nameBox !== '' &&
+        product.namePack !== '' &&
+        product.qtyBox !== '0' &&
+        product.qtyBoxPack !== '0' &&
+        product.totalPackConvert !== '' &&
+        product.totalPackIn !== '';
       set(() => (productRules ? { transactionIcon: true } : { transactionIcon: false }));
     });
     set(() => ({ total: totalPrice }));
@@ -244,7 +246,7 @@ export const mutationStore = create((set, get) => ({
           nameBox: state.transaction.nameBox,
           namePack: state.transaction.namePack,
           qtyBox: state.transaction.qtyBox,
-          qtyBoxPack: state.transaction.qtyBox,
+          qtyBoxPack: state.transaction.qtyBoxPack,
           totalPackConvert: state.transaction.totalPackConvert,
           totalPackIn: state.transaction.totalPackIn,
         },
