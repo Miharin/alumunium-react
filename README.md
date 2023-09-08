@@ -38,3 +38,5 @@ Distributed under the MIT License. See [LICENSE](https://github.com/minimal-ui-k
 ## Contact us
 
 Email Us: support@minimals.cc
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/22e45a78-0fc5-41c9-b620-005564444040/deploy-status)](https://app.netlify.com/sites/alu-jaya/deploys)
