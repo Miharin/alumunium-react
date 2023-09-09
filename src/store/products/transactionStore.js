@@ -127,6 +127,9 @@ export const transactionStore = create((set, get) => ({
           product.subtotal =
             (event.name === 'qty' ? event.value : product.qty) * (product.price - Number(product.disc));
         }
+        if (event.name === 'disc2') {
+          product.subtotal -= Number(event.value);
+        }
       }
       totalPrice +=
         event.name === 'disc2' && event.value !== ''

@@ -21,6 +21,7 @@ import Mutation from 'pages/MutationBoxToPack';
 import MutationWheel from 'pages/MutationWheel';
 import { useAuth } from 'store/index';
 import MutationPcsToLusin from 'pages/MutationPcsToLusin';
+import MutationBoxToPcs from 'pages/mutationBoxToPcs';
 
 // ----------------------------------------------------------------------
 
@@ -44,6 +45,7 @@ export default function Router() {
             { path: 'products/stockOpname', element: <StockOpnamePage /> },
             { path: 'products/return', element: <ReturnPage /> },
             { path: 'products/mutation', element: <Mutation /> },
+            { path: 'products/mutation-box-to-pcs', element: <MutationBoxToPcs /> },
             { path: 'products/mutation-wheel', element: <MutationWheel /> },
             { path: 'products/mutation-pcs-to-lusin', element: <MutationPcsToLusin /> },
             { path: 'products/rank', element: <RankProductPage /> },

@@ -60,6 +60,16 @@ export const mutationStore = create((set, get) => ({
             product.codePack = nameChoose.code;
             product.namePack = nameChoose.label.split(' - ')[1];
           }
+          const productRules =
+            product.codeBox !== '' &&
+            product.codePack !== '' &&
+            product.nameBox !== '' &&
+            product.namePack !== '' &&
+            product.qtyBox !== '0' &&
+            product.qtyBoxPack !== '0' &&
+            product.totalPackConvert !== '' &&
+            product.totalPackIn !== '';
+          set(() => (productRules ? { transactionIcon: true } : { transactionIcon: false }));
         }
         set((state) => ({ listProducts: [...state.listProducts, product] }));
         get().getProductName();
