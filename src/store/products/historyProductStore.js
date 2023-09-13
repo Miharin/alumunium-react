@@ -205,7 +205,11 @@ export const historyProductStore = create((set, get) => ({
             productsIndex: [
               ...state.productsIndex,
               {
-                id: `${product.id}|${item.timeStamp.seconds.toString()}`,
+                id: `${product.id}|${
+                  item.timeStamp === undefined
+                    ? Math.floor(Math.random() * 20000000)
+                    : item.timeStamp.seconds.toString()
+                }`,
                 code: product.data().code,
                 name: product.data().name,
                 stock: item.stock,
@@ -216,14 +220,18 @@ export const historyProductStore = create((set, get) => ({
                 disc: (item.disc !== undefined || null || '') && item.out !== '0' ? item.disc : '',
                 total: item.out !== '0' ? item.total : '',
                 nameCustomer: item.out !== '0' ? item.nameCustomer : '',
-                lastInput: `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
-                  item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() + item.lastInput.split('@', 1)[0].slice(1)
-                }`,
+                lastInput:
+                  item.timeStamp === undefined
+                    ? item.date
+                    : `${new Date(item.timeStamp.seconds * 1000).toLocaleDateString('in-in', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })} Pada Jam ${new Date(item.timeStamp.seconds * 1000).toLocaleTimeString('in-in')} Oleh ${
+                        item.lastInput.split('@', 1)[0].charAt(0).toUpperCase() +
+                        item.lastInput.split('@', 1)[0].slice(1)
+                      }`,
               },
             ],
           }));
@@ -232,7 +240,6 @@ export const historyProductStore = create((set, get) => ({
     }
     set(() => ({ products: [] }));
     get().productsIndex.forEach(async (product) => {
-      console.log(product);
       if (
         (name !== '' && name === product.name) ||
         (name === '' &&
