@@ -151,6 +151,13 @@ export const NavSection = (onCloseNav) => {
             icon: <CurrencyExchangeRounded />,
             links: '/dashboard/products/mutation-pcs-to-lusin',
           },
+          {
+            id: 'P13',
+            name: 'Mutasi Pcs to Set',
+            selected: 13,
+            icon: <CurrencyExchangeRounded />,
+            links: '/dashboard/products/mutation-pcs-to-set',
+          },
         ],
       },
     ];

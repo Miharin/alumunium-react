@@ -5,7 +5,7 @@ import { db } from 'config/firebaseConfig';
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-export const mutationWheelStore = create((set, get) => ({
+export const mutationPcsToSetStore = create((set, get) => ({
   loading: true,
   openSnackbar: false,
   snackbarMessage: '',
@@ -134,7 +134,7 @@ export const mutationWheelStore = create((set, get) => ({
       if (product.id === id) {
         product[event.name] = event.value;
         if (product.qtyBox !== '0' && product.qtyBox2 !== '0') {
-          const total = (Number(product.qtyBox) + Number(product.qtyBox2)) / 4;
+          const total = (Number(product.qtyBox) + Number(product.qtyBox2)) / 2;
           product.totalPackConvert = total;
           product.totalPackIn = total;
         }
